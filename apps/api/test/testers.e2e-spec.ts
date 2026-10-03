@@ -200,9 +200,9 @@ describe.skipIf(!databaseUrl)(
             }),
         ),
       );
-      expect(responses.map((response) => response.status).sort((a, b) => a - b)).toEqual([
-        201, 409,
-      ]);
+      expect(
+        responses.map((response) => response.status).sort((a, b) => a - b),
+      ).toEqual([201, 409]);
       expect(
         await database.account.count({
           where: {
@@ -218,11 +218,22 @@ describe.skipIf(!databaseUrl)(
         { login: 'invalid login', password: 'Test-password-123!' },
         { login: 'valid.user', password: 'short' },
         { login: 'valid.user', password: 'x'.repeat(129) },
-        { login: 'valid.user', password: 'Test-password-123!', legacyKey: 'invalid' },
-        { login: 'valid.user', password: 'Test-password-123!', ownerHash: 'a'.repeat(64) },
+        {
+          login: 'valid.user',
+          password: 'Test-password-123!',
+          legacyKey: 'invalid',
+        },
+        {
+          login: 'valid.user',
+          password: 'Test-password-123!',
+          ownerHash: 'a'.repeat(64),
+        },
       ]) {
-        await request(app.getHttpServer()).post('/api/auth/register').set('Origin', origin)
-          .send(input).expect(400);
+        await request(app.getHttpServer())
+          .post('/api/auth/register')
+          .set('Origin', origin)
+          .send(input)
+          .expect(400);
       }
     });
 

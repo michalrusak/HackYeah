@@ -154,12 +154,17 @@ describe.skipIf(!databaseUrl)('Account authentication with PostgreSQL', () => {
       .get('/api/testers/profile/me')
       .set('Cookie', cookieFrom(fresh.headers))
       .expect(200);
-    const rotated = await request(app.getHttpServer()).post('/api/auth/login')
-      .set('Origin', origin).set('Cookie', cookieFrom(fresh.headers))
-      .send({ login, password }).expect(200);
+    const rotated = await request(app.getHttpServer())
+      .post('/api/auth/login')
+      .set('Origin', origin)
+      .set('Cookie', cookieFrom(fresh.headers))
+      .send({ login, password })
+      .expect(200);
     expect(cookieFrom(rotated.headers)).not.toBe(cookieFrom(fresh.headers));
-    await request(app.getHttpServer()).get('/api/testers/profile/me')
-      .set('Cookie', cookieFrom(fresh.headers)).expect(401);
+    await request(app.getHttpServer())
+      .get('/api/testers/profile/me')
+      .set('Cookie', cookieFrom(fresh.headers))
+      .expect(401);
   });
 
   it('rejects duplicate login and returns identical errors for unknown login and wrong password', async () => {
