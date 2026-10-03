@@ -21,7 +21,11 @@ pnpm --filter api test
 
 - Runner: **Vitest** (`vitest.config.e2e.ts`)
 - Pliki: `test/**/*.e2e-spec.ts`
+<<<<<<< HEAD
 - Setup: `test/setup-e2e.ts` ustawia `NODE_ENV=test` (domyślnie bez połączenia z bazą; zestaw PostgreSQL włącza je jawnie)
+=======
+- Setup: `test/setup-e2e.ts` ustawia `NODE_ENV=test` (bez Prisma — szybkie testy HTTP)
+>>>>>>> c9c4633a9ba83a7e1c91a70aaef98f6821bfa1ed
 - Walidacja odpowiedzi: schematy Zod z `@repo/api-contracts`
 
 ```bash

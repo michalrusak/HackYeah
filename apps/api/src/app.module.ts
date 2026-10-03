@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
-import { getDatabaseConfig } from './config/database.config.js';
 import { HealthModule } from './modules/health/health.module.js';
+import { PrismaModule } from './prisma/prisma.module.js';
 import { MatchmakingModule } from './modules/matchmaking/matchmaking.module.js';
 import { TestersModule } from './modules/testers/testers.module.js';
 
@@ -24,15 +23,7 @@ const isTestEnv = process.env.NODE_ENV === 'test';
         limit: 100,
       },
     ]),
-    ...(isTestEnv
-      ? []
-      : [
-          TypeOrmModule.forRootAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: (config: ConfigService) => getDatabaseConfig(config),
-          }),
-        ]),
+    ...(isTestEnv ? [] : [PrismaModule]),
     HealthModule,
     MatchmakingModule,
     ...(isTestEnv ? [] : [TestersModule]),
