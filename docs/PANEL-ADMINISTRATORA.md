@@ -50,7 +50,7 @@ Przegląd złożonych wniosków: lista per nabór, podgląd, eksport do CSV/Mark
 
 ### 4. Zarządzanie wiedzą (Zasobnik, punkt II)
 
-Katalog innowacji żyje dziś w pliku `apps/api/src/modules/matchmaking/catalog.v1.json` — 15 rekordów wczytywanych przez `CatalogRepository`. Brief wymaga „sprawnej i szybkiej aktualizacji danych", a ROPS ma blisko 200 innowacji, więc katalog musi przejść do bazy.
+Katalog innowacji żyje dziś w pliku `apps/api/src/modules/matchmaking/catalog.v1.json` — 15 rekordów wczytywanych przez `CatalogRepository`. Brief wymaga „sprawnej i szybkiej aktualizacji danych", a ROPS ma Łącznik 200 innowacji, więc katalog musi przejść do bazy.
 
 Migracja: model `Innovation` w Prismie o kształcie zgodnym z `InnovationSchema` z `@repo/api-contracts`, jednorazowy import z JSON-a jako seed, podmiana `CatalogRepository` na odczyt z bazy przy zachowaniu sygnatury `findAll()`. Logika rankingu w `ranking.ts` i jej testy zostają nietknięte. Plik JSON zostaje w repo jako źródło seeda.
 

@@ -1,6 +1,6 @@
 # Matchmaking społeczny
 
-Blisko: opis problemu → interpretacja potrzeb przez Qwen → maksymalnie pięć innowacji ROPS oraz trzy powiązane informacje o problemie. Strona: `/matchmaking` (także po wejściu na `/`). Endpoint zgodny z aktualnym prefiksem projektu: `POST /api/matchmaking`. Zakres zgodności z kryteriami HUBMI: [MATCHMAKING-CRITERIA.md](MATCHMAKING-CRITERIA.md).
+Łącznik: opis problemu → interpretacja potrzeb przez Qwen → maksymalnie pięć innowacji ROPS oraz trzy powiązane informacje o problemie. Strona: `/matchmaking` (także po wejściu na `/`). Endpoint zgodny z aktualnym prefiksem projektu: `POST /api/matchmaking`. Zakres zgodności z kryteriami HUBMI: [MATCHMAKING-CRITERIA.md](MATCHMAKING-CRITERIA.md).
 
 ## Uruchomienie
 

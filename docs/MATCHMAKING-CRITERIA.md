@@ -1,6 +1,6 @@
-# Blisko — matchmaking społeczny dla Małopolskiego Hubu
+# Łącznik — matchmaking społeczny dla Małopolskiego Hubu
 
-Blisko pomaga mieszkańcowi, organizacji lub samorządowi przejść od opisu lokalnego problemu do istniejącego rozwiązania społecznego. Użytkownik opisuje sytuację własnymi słowami, sprawdza interpretację, ogląda innowacje ze źródłami ROPS i poznaje kontekst problemu. Może poprawić opis bez rejestracji.
+Łącznik pomaga mieszkańcowi, organizacji lub samorządowi przejść od opisu lokalnego problemu do istniejącego rozwiązania społecznego. Użytkownik opisuje sytuację własnymi słowami, sprawdza interpretację, ogląda innowacje ze źródłami ROPS i poznaje kontekst problemu. Może poprawić opis bez rejestracji.
 
 Zakres tej iteracji wynika z prośby użytkownika: dopracowanie obligatoryjnego matchmakingu. Dokument `CRITERIA Wojewodztwo Malopolskie HUBMI.pdf` jest materiałem referencyjnym. Zasobnik wiedzy, panel administracyjny, kreator, tester, granty i komunikacja między użytkownikami nie są implementowane w tej iteracji. Nie deklarujemy realizacji wszystkich modułów ani gotowości całej platformy do wdrożenia produkcyjnego.
 
@@ -17,7 +17,7 @@ Zakres tej iteracji wynika z prośby użytkownika: dopracowanie obligatoryjnego 
 | Dostępność docelowo WCAG 2.1 AA                     | Etykiety, semantyczne nagłówki, link pomijający nawigację, widoczny fokus, przenoszenie fokusu do odpowiedzi/błędu, 44 px dla przycisków, kontrast obu motywów, reflow przy 320 px, obsługa preferencji ograniczenia ruchu |
 | Bezpieczeństwo danych                               | Brak kont i trwałego zapisu opisów/wyników; brak ich w logach; klucz AI tylko w backendzie; zamknięte słowniki; walidacja odpowiedzi; źródła tylko z ROPS; limit zapytań                                                   |
 | Skalowalność i integracja                           | NestJS Controller → Service → Repository; kontrakty Zod współdzielone z Angular; katalog wczytany w pamięci; lazy loading; jawne REST API; konfigurowalny adres API                                                        |
-| Nazwa, opis, wizualizacja UX/UI                     | Nazwa Blisko; działający interfejs; skrypt QA zapisuje zrzuty formularza, wyników i stanów błędu                                                                                                                           |
+| Nazwa, opis, wizualizacja UX/UI                     | Nazwa Łącznik; działający interfejs; skrypt QA zapisuje zrzuty formularza, wyników i stanów błędu                                                                                                                           |
 | Koszt i utrzymanie                                  | Założenia i formuły poniżej; czas i tokeny są mierzone przez API                                                                                                                                                           |
 
 ## Sprawdzenie działania
