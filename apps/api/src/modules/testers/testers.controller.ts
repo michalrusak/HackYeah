@@ -8,6 +8,8 @@ import {
   Post,
   Put,
   Res,
+  SetMetadata,
+  UseGuards,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import {
@@ -31,6 +33,7 @@ import {
   TesterValidationPipe,
 } from './testers-validation.pipe.js';
 import { TestersService, type TesterOutcome } from './testers.service.js';
+import { REQUIRE_ACCOUNT, TesterAuthGuard } from '../auth/auth.guard.js';
 
 function respond<T>(
   response: Response,
@@ -54,6 +57,8 @@ export class TestersController {
   }
 
   @Get('profile/me')
+  @UseGuards(TesterAuthGuard)
+  @SetMetadata(REQUIRE_ACCOUNT, true)
   async ownProfile(
     @TesterOwner() ownerHash: string,
     @Res({ passthrough: true }) response: Response,
@@ -62,6 +67,8 @@ export class TestersController {
   }
 
   @Put('profile/me')
+  @UseGuards(TesterAuthGuard)
+  @SetMetadata(REQUIRE_ACCOUNT, true)
   async saveProfile(
     @TesterOwner() ownerHash: string,
     @Body(new TesterValidationPipe(TesterProfileInputSchema))
@@ -72,6 +79,7 @@ export class TestersController {
   }
 
   @Post('search')
+  @UseGuards(TesterAuthGuard)
   @Throttle({ default: { ttl: 60_000, limit: 10 } })
   async search(
     @TesterOwner() ownerHash: string,
@@ -83,6 +91,7 @@ export class TestersController {
   }
 
   @Get('searches')
+  @UseGuards(TesterAuthGuard)
   async history(
     @TesterOwner() ownerHash: string,
     @Res({ passthrough: true }) response: Response,
@@ -91,6 +100,7 @@ export class TestersController {
   }
 
   @Get('searches/:id')
+  @UseGuards(TesterAuthGuard)
   async getSearch(
     @TesterOwner() ownerHash: string,
     @Param('id', new TesterValidationPipe(TesterIdSchema)) id: string,
@@ -100,6 +110,7 @@ export class TestersController {
   }
 
   @Post('searches/:id/assignments')
+  @UseGuards(TesterAuthGuard)
   async assign(
     @TesterOwner() ownerHash: string,
     @Param('id', new TesterValidationPipe(TesterIdSchema)) id: string,
@@ -114,6 +125,7 @@ export class TestersController {
   }
 
   @Delete('searches/:id/assignments/:profileId')
+  @UseGuards(TesterAuthGuard)
   async unassign(
     @TesterOwner() ownerHash: string,
     @Param('id', new TesterValidationPipe(TesterIdSchema)) id: string,

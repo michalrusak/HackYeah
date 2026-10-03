@@ -30,8 +30,6 @@ const profileInput: TesterProfileInput = {
   accessibilityNeeds: 'Korzystam z czytnika ekranu.',
   interests: ['Dostępność cyfrowa'],
   availability: 'remote',
-  consent: true,
-  isActive: true,
 };
 const newOwner = (): string => randomBytes(32).toString('hex');
 
@@ -44,6 +42,27 @@ describe.skipIf(!databaseUrl)(
     const profileIds: string[] = [];
     const searchIds: string[] = [];
     const fetchMock = vi.fn<typeof fetch>();
+    const cookies = new Map<string, string>();
+    const origin = 'http://localhost:4200';
+
+    function ownerHeaders(owner: string): Record<string, string> {
+      const cookie = cookies.get(owner);
+      return cookie ? { Cookie: cookie, Origin: origin } : { 'X-Tester-Key': owner, Origin: origin };
+    }
+
+    async function register(owner: string): Promise<void> {
+      if (cookies.has(owner)) return;
+      const response = await request(app.getHttpServer())
+        .post('/api/auth/register')
+        .set('Origin', origin)
+        .send({ login: `tester_${owner.slice(0, 24)}`, password: 'Test-password-123!', legacyKey: owner })
+        .expect(201);
+      const cookieHeader = response.headers['set-cookie'];
+      if (!Array.isArray(cookieHeader) || typeof cookieHeader[0] !== 'string') throw new Error('Missing session cookie');
+      const cookie = cookieHeader[0].split(';')[0];
+      if (!cookie) throw new Error('Missing session cookie');
+      cookies.set(owner, cookie);
+    }
 
     async function startApp(): Promise<INestApplication> {
       if (!databaseUrl) throw new Error('TEST_DATABASE_URL is required');
@@ -65,17 +84,22 @@ describe.skipIf(!databaseUrl)(
 
     async function saveProfile(
       owner: string,
-      changes: Partial<TesterProfileInput> = {},
+      changes: Partial<TesterProfileInput> & { isActive?: boolean } = {},
     ): Promise<TesterProfile> {
+      await register(owner);
+      const { isActive, ...fields } = changes;
       const response = await request(app.getHttpServer())
         .put('/api/testers/profile/me')
-        .set('X-Tester-Key', owner)
-        .send({ ...profileInput, ...changes })
+        .set(ownerHeaders(owner))
+        .send({ ...profileInput, ...fields })
         .expect(200);
       const { profile } = MyTesterProfileResponseSchema.parse(
         response.body,
       ).data;
       if (!profile) throw new Error('Expected a saved tester profile');
+      if (isActive === false) {
+        await database.testerProfile.update({ where: { id: profile.id }, data: { isActive: false } });
+      }
       profileIds.push(profile.id);
       return profile;
     }
@@ -106,7 +130,7 @@ describe.skipIf(!databaseUrl)(
     ): Promise<TesterSearchData> {
       const response = await request(app.getHttpServer())
         .post('/api/testers/search')
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .send({ query })
         .expect(200);
       const { data } = TesterSearchResponseSchema.parse(response.body);
@@ -150,14 +174,14 @@ describe.skipIf(!databaseUrl)(
       }
     });
 
-    it('requires an owner key while allowing public browsing', async () => {
+    it('requires an account for profiles while allowing public browsing', async () => {
       await request(app.getHttpServer())
         .get('/api/testers/profile/me')
         .expect(401);
       for (const owner of ['', 'invalid-key']) {
         const response = await request(app.getHttpServer())
           .get('/api/testers/profile/me')
-          .set('X-Tester-Key', owner)
+          .set(ownerHeaders(owner))
           .expect(401);
         expect(ApiErrorResponseSchema.parse(response.body).error.code).toBe(
           ErrorCodes.UNAUTHORIZED,
@@ -169,10 +193,12 @@ describe.skipIf(!databaseUrl)(
       TesterProfilesResponseSchema.parse(response.body);
     });
 
-    it('validates consent, fields and search requests before persistence or AI', async () => {
+    it('rejects removed publication controls and validates fields before persistence or AI', async () => {
       const owner = newOwner();
+      await register(owner);
       for (const changes of [
         { consent: false },
+        { isActive: false },
         { displayName: ' ' },
         { availability: 'unknown' },
         { skills: ['x'.repeat(121)] },
@@ -180,7 +206,7 @@ describe.skipIf(!databaseUrl)(
       ]) {
         const response = await request(app.getHttpServer())
           .put('/api/testers/profile/me')
-          .set('X-Tester-Key', owner)
+          .set(ownerHeaders(owner))
           .send({ ...profileInput, ...changes })
           .expect(400);
         expect(ApiErrorResponseSchema.parse(response.body).error.code).toBe(
@@ -190,13 +216,13 @@ describe.skipIf(!databaseUrl)(
       for (const query of ['', '   ', 'short', 'x'.repeat(2001)]) {
         await request(app.getHttpServer())
           .post('/api/testers/search')
-          .set('X-Tester-Key', owner)
+          .set(ownerHeaders(owner))
           .send({ query })
           .expect(400);
       }
       const own = await request(app.getHttpServer())
         .get('/api/testers/profile/me')
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .expect(200);
       expect(
         MyTesterProfileResponseSchema.parse(own.body).data.profile,
@@ -221,9 +247,11 @@ describe.skipIf(!databaseUrl)(
         createHash('sha256').update(owner).digest('hex'),
       );
       expect(stored.ownerHash).not.toBe(owner);
+      const otherOwner = newOwner();
+      await register(otherOwner);
       const other = await request(app.getHttpServer())
         .get('/api/testers/profile/me')
-        .set('X-Tester-Key', newOwner())
+        .set(ownerHeaders(otherOwner))
         .expect(200);
       expect(
         MyTesterProfileResponseSchema.parse(other.body).data.profile,
@@ -296,7 +324,7 @@ describe.skipIf(!databaseUrl)(
         const before = await database.testerSearch.count();
         const response = await request(app.getHttpServer())
           .post('/api/testers/search')
-          .set('X-Tester-Key', owner)
+          .set(ownerHeaders(owner))
           .send({ query: 'Szukam testera z mocnym komputerem.' })
           .expect(502);
         expect(ApiErrorResponseSchema.parse(response.body).error.code).toBe(
@@ -322,7 +350,7 @@ describe.skipIf(!databaseUrl)(
       const path = `/api/testers/searches/${result.id}`;
       await request(app.getHttpServer())
         .post(`${path}/assignments`)
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .send({ profileId: unrelated.id })
         .expect(404);
       await saveProfile(owner, { isActive: false });
@@ -336,14 +364,14 @@ describe.skipIf(!databaseUrl)(
       ).not.toContain(profile.id);
       const history = await request(app.getHttpServer())
         .get(path)
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .expect(200);
       expect(
         TesterSearchResponseSchema.parse(history.body).data.matches,
       ).toEqual([]);
       await request(app.getHttpServer())
         .post(`${path}/assignments`)
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .send({ profileId: profile.id })
         .expect(404);
     });
@@ -363,7 +391,7 @@ describe.skipIf(!databaseUrl)(
       const path = `/api/testers/searches/${result.id}`;
       await request(app.getHttpServer())
         .post(`${path}/assignments`)
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .send({ profileId: profile.id })
         .expect(200);
       await saveProfile(owner, {
@@ -372,7 +400,7 @@ describe.skipIf(!databaseUrl)(
       });
       const reopened = await request(app.getHttpServer())
         .get(path)
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .expect(200);
       expect(
         TesterSearchResponseSchema.parse(reopened.body).data,
@@ -383,7 +411,7 @@ describe.skipIf(!databaseUrl)(
       });
       const history = await request(app.getHttpServer())
         .get('/api/testers/searches')
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .expect(200);
       expect(
         TesterSearchesResponseSchema.parse(history.body).data.searches,
@@ -396,7 +424,7 @@ describe.skipIf(!databaseUrl)(
       ]);
       await request(app.getHttpServer())
         .post(`${path}/assignments`)
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .send({ profileId: profile.id })
         .expect(404);
       aiResponse([
@@ -440,7 +468,7 @@ describe.skipIf(!databaseUrl)(
       });
       await request(app.getHttpServer())
         .post(`/api/testers/searches/${result.id}/assignments`)
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .send({ profileId: profile.id })
         .expect(404);
     });
@@ -465,7 +493,7 @@ describe.skipIf(!databaseUrl)(
       const path = `/api/testers/searches/${result.id}`;
       const restored = await request(app.getHttpServer())
         .get(path)
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .expect(200);
       expect(
         TesterSearchResponseSchema.parse(restored.body).data,
@@ -476,7 +504,7 @@ describe.skipIf(!databaseUrl)(
       });
       await request(app.getHttpServer())
         .post(`${path}/assignments`)
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .send({ profileId: profile.id })
         .expect(404);
     });
@@ -497,16 +525,16 @@ describe.skipIf(!databaseUrl)(
       const path = `/api/testers/searches/${result.id}`;
       await request(app.getHttpServer())
         .get(path)
-        .set('X-Tester-Key', stranger)
+        .set(ownerHeaders(stranger))
         .expect(404);
       await request(app.getHttpServer())
         .post(`${path}/assignments`)
-        .set('X-Tester-Key', stranger)
+        .set(ownerHeaders(stranger))
         .send({ profileId: profile.id })
         .expect(404);
       const otherHistory = await request(app.getHttpServer())
         .get('/api/testers/searches')
-        .set('X-Tester-Key', stranger)
+        .set(ownerHeaders(stranger))
         .expect(200);
       expect(
         TesterSearchesResponseSchema.parse(otherHistory.body).data.searches,
@@ -514,7 +542,7 @@ describe.skipIf(!databaseUrl)(
       for (let attempt = 0; attempt < 2; attempt++) {
         const assigned = await request(app.getHttpServer())
           .post(`${path}/assignments`)
-          .set('X-Tester-Key', owner)
+          .set(ownerHeaders(owner))
           .send({ profileId: profile.id })
           .expect(200);
         expect(
@@ -532,14 +560,14 @@ describe.skipIf(!databaseUrl)(
       app = await startApp();
       const restored = await request(app.getHttpServer())
         .get(path)
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .expect(200);
       expect(
         TesterSearchResponseSchema.parse(restored.body).data.assignedProfileIds,
       ).toEqual([profile.id]);
       const history = await request(app.getHttpServer())
         .get('/api/testers/searches')
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .expect(200);
       expect(
         TesterSearchesResponseSchema.parse(history.body).data.searches,
@@ -552,11 +580,11 @@ describe.skipIf(!databaseUrl)(
       ]);
       await request(app.getHttpServer())
         .delete(`${path}/assignments/${profile.id}`)
-        .set('X-Tester-Key', stranger)
+        .set(ownerHeaders(stranger))
         .expect(404);
       const removed = await request(app.getHttpServer())
         .delete(`${path}/assignments/${profile.id}`)
-        .set('X-Tester-Key', owner)
+        .set(ownerHeaders(owner))
         .expect(200);
       expect(
         TesterSearchResponseSchema.parse(removed.body).data.assignedProfileIds,

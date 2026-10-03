@@ -52,7 +52,7 @@ h3 {
   align-items: center;
   gap: 3px;
   color: var(--tester-muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 .identity mat-icon {
   font-size: 15px;
@@ -65,7 +65,7 @@ h3 {
   border-radius: 5px;
   padding: 4px 6px;
   color: var(--tester-muted);
-  font-size: 10px;
+  font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -75,7 +75,7 @@ h3 {
   gap: 6px;
   margin-top: 18px;
   color: var(--tester-muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 .availability > span {
   width: 6px;
@@ -97,13 +97,13 @@ h3 {
 .traits > span {
   background: var(--tester-soft);
   padding: 6px 9px;
-  font-size: 11px;
+  font-size: 14px;
   border-radius: 6px;
 }
 .accessibility {
   display: flex;
   gap: 6px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--tester-muted);
   line-height: 1.5;
   margin: 0 0 18px;
@@ -123,7 +123,7 @@ h3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
+  font-size: 14px;
 }
 .score-row > span {
   display: flex;
@@ -154,14 +154,14 @@ h3 {
 }
 .match-explanation p {
   color: var(--tester-muted);
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.65;
 }
 .matched-traits {
   display: flex;
   flex-wrap: wrap;
   gap: 6px 10px;
-  font-size: 11px;
+  font-size: 14px;
   margin-bottom: 18px;
   color: var(--tester-accent);
 }

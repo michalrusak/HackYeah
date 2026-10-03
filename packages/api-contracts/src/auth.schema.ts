@@ -30,7 +30,9 @@ export const AuthSessionDataSchema = z.object({
 });
 
 export const AuthLogoutDataSchema = z.object({ loggedOut: z.literal(true) });
-export const AuthSessionResponseSchema = apiSuccessSchema(AuthSessionDataSchema);
+export const AuthSessionResponseSchema = apiSuccessSchema(
+  AuthSessionDataSchema,
+);
 export const AuthLogoutResponseSchema = apiSuccessSchema(AuthLogoutDataSchema);
 
 export type AuthLoginInput = z.infer<typeof AuthLoginInputSchema>;

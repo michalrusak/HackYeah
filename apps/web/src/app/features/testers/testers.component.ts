@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
@@ -21,7 +21,10 @@ import {
   type TesterSearchData,
   type TesterSearchSummary,
 } from '@repo/api-contracts';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of, switchMap } from 'rxjs';
+import { AuthService } from '../../core/services/auth.service';
+import { AuthDialogComponent, type AuthMode } from '../auth/auth-dialog.component';
+import { authErrorKey } from '../auth/auth-error';
 import { TesterCardComponent } from './tester-card.component';
 import { TesterProfileDialogComponent } from './tester-profile-dialog.component';
 import { testerErrorKey } from './testers-error';
@@ -49,6 +52,10 @@ export class TestersComponent {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+  readonly auth = inject(AuthService);
+  readonly signingOut = signal(false);
+  readonly accountError = signal<string | null>(null);
   readonly query = new FormControl('', {
     nonNullable: true,
     validators: [
@@ -91,11 +98,12 @@ export class TestersComponent {
   load(): void {
     this.initialLoading.set(true);
     this.initialError.set(null);
-    forkJoin({
-      profiles: this.service.profiles(),
-      own: this.service.myProfile(),
-      history: this.service.searches(),
-    })
+    this.auth.refresh()
+      .pipe(switchMap(({ user }) => forkJoin({
+        profiles: this.service.profiles(),
+        own: user ? this.service.myProfile() : of({ profile: null }),
+        history: this.service.searches(),
+      })))
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ profiles, own, history }) => {
@@ -127,6 +135,7 @@ export class TestersComponent {
     if (!parsed.success) {
       this.query.setErrors({ invalid: true });
       this.query.markAsTouched();
+      this.element.nativeElement.querySelector<HTMLTextAreaElement>('textarea[formControlName="query"]')?.focus();
       return;
     }
     this.searching.set(true);
@@ -195,11 +204,15 @@ export class TestersComponent {
 
   editProfile(): void {
     if (this.initialLoading() || this.initialError()) return;
+    if (!this.auth.user()) {
+      this.openAuth('register', true);
+      return;
+    }
     this.dialog
       .open<
         TesterProfileDialogComponent,
         TesterProfile | null,
-        'saved' | 'restored'
+        'saved'
       >(TesterProfileDialogComponent, {
         data: this.myProfile(),
         width: '720px',
@@ -214,16 +227,54 @@ export class TestersComponent {
         this.result.set(null);
         this.load();
         this.snackBar.open(
-          this.translate.instant(
-            status === 'saved'
-              ? 'testers.profile.saved'
-              : 'testers.access.restored',
-          ),
+          this.translate.instant('testers.profile.saved'),
           '',
           { duration: 5000 },
         );
-        if (status === 'restored') this.query.reset();
       });
+  }
+
+  openAuth(mode: AuthMode = 'login', editAfterLogin = false): void {
+    this.dialog.open<AuthDialogComponent, AuthMode, 'authenticated'>(AuthDialogComponent, {
+      data: mode,
+      width: '480px',
+      maxWidth: 'calc(100vw - 24px)',
+      maxHeight: '94vh',
+      autoFocus: 'first-tabbable',
+      ariaLabelledBy: 'auth-title',
+      ariaDescribedBy: 'auth-intro',
+    }).afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((status) => {
+      if (!status) return;
+      this.result.set(null);
+      this.service.myProfile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: ({ profile }) => {
+          this.myProfile.set(profile);
+          if (editAfterLogin) this.editProfile();
+          this.load();
+        },
+        error: (error: unknown) => this.accountError.set(testerErrorKey(error)),
+      });
+    });
+  }
+
+  logout(): void {
+    if (this.signingOut() || this.busy() || this.assigning()) return;
+    this.signingOut.set(true);
+    this.accountError.set(null);
+    this.auth.logout().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.signingOut.set(false);
+        this.myProfile.set(null);
+        this.history.set([]);
+        this.result.set(null);
+        this.query.reset();
+        this.load();
+      },
+      error: (error: unknown) => {
+        this.signingOut.set(false);
+        this.accountError.set(authErrorKey(error));
+      },
+    });
   }
 
   showCatalog(): void {

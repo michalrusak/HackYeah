@@ -5,9 +5,10 @@ import { TestersAiService } from './testers-ai.service.js';
 import { TestersController } from './testers.controller.js';
 import { TestersRepository } from './testers.repository.js';
 import { TestersService } from './testers.service.js';
+import { AuthModule } from '../auth/auth.module.js';
 
 @Module({
-  imports: [ConfigModule, PrismaModule],
+  imports: [ConfigModule, PrismaModule, AuthModule],
   controllers: [TestersController],
   providers: [TestersRepository, TestersService, TestersAiService],
 })

@@ -2,8 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ApiErrorResponseSchema } from '@repo/api-contracts';
 
 export function testerErrorKey(error: unknown): string {
-  if (error instanceof Error && error.message === 'TESTER_KEY_NOT_FOUND')
-    return 'testers.access.notFound';
   const response =
     error instanceof HttpErrorResponse
       ? ApiErrorResponseSchema.safeParse(error.error)
@@ -17,6 +15,7 @@ export function testerErrorKey(error: unknown): string {
     RATE_LIMIT: 'rateLimit',
     VALIDATION_ERROR: 'validation',
     NOT_FOUND: 'notFound',
+    UNAUTHORIZED: 'sessionExpired',
   };
   return `testers.errors.${messages[code] ?? (error instanceof HttpErrorResponse && error.status === 429 ? 'rateLimit' : 'generic')}`;
 }

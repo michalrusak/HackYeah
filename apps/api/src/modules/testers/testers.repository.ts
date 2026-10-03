@@ -58,8 +58,8 @@ export class TestersRepository {
   ): Promise<TesterProfile> {
     return this.prisma.testerProfile.upsert({
       where: { ownerHash },
-      create: { ...input, ownerHash },
-      update: input,
+      create: { ...input, ownerHash, consent: true, isActive: true },
+      update: { ...input, consent: true, isActive: true },
     });
   }
 

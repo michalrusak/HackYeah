@@ -7,8 +7,8 @@ import {
   type PipeTransform,
 } from '@nestjs/common';
 import { createHash } from 'node:crypto';
-import type { Request } from 'express';
 import { ErrorCodes, TesterOwnerKeySchema } from '@repo/api-contracts';
+import type { TesterRequest } from '../auth/auth-http.js';
 
 interface InputSchema<T> {
   safeParse(value: unknown): { success: true; data: T } | { success: false };
@@ -48,7 +48,8 @@ export class TesterOwnerKeyPipe implements PipeTransform<unknown, string> {
 
 export const TesterOwner = createParamDecorator(
   (_data: undefined, context: ExecutionContext): string => {
-    const request = context.switchToHttp().getRequest<Request>();
-    return new TesterOwnerKeyPipe().transform(request.headers['x-tester-key']);
+    const request = context.switchToHttp().getRequest<TesterRequest>();
+    if (!request.testerOwnerHash) throw new UnauthorizedException();
+    return request.testerOwnerHash;
   },
 );

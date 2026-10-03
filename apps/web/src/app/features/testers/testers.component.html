@@ -30,11 +30,17 @@
         "
         (click)="editProfile()"
       >
-        <mat-icon>{{ myProfile() ? 'manage_accounts' : 'person_add' }}</mat-icon
+        <mat-icon aria-hidden="true">{{ myProfile() ? 'manage_accounts' : 'person_add' }}</mat-icon
         >{{
           (myProfile() ? 'testers.myProfile' : 'testers.addProfile') | translate
         }}
       </button>
+      @if (auth.user(); as user) {
+        <p class="account-status">{{ 'auth.signedInAs' | translate: { login: user.login } }}</p>
+        <button mat-button type="button" class="account-button" [disabled]="signingOut() || busy() || !!assigning()" (click)="logout()">{{ 'auth.logout' | translate }}</button>
+      } @else {
+        <button mat-button type="button" class="account-button" (click)="openAuth()">{{ 'auth.login' | translate }}</button>
+      }
       @if (!initialLoading() && !initialError()) {
         <span class="community-count">{{
           'testers.communityCount' | translate: { count: total() }
@@ -42,6 +48,7 @@
       }
     </aside>
   </section>
+  @if (accountError(); as error) { <p class="error-state" role="alert">{{ error | translate }}</p> }
 
   <section class="search-panel" aria-labelledby="search-title">
     <div class="panel-heading">
@@ -58,13 +65,15 @@
       >
     </div>
     <form [formGroup]="form" (ngSubmit)="search()">
-      <mat-form-field appearance="outline" class="query-field"
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="query-field"
         ><mat-label>{{ 'testers.queryLabel' | translate }}</mat-label
         ><textarea
           matInput
           formControlName="query"
           rows="3"
           maxlength="2000"
+          required
+          aria-describedby="search-privacy"
           [readonly]="busy() || !!assigning()"
           [placeholder]="'testers.queryPlaceholder' | translate"
         ></textarea
@@ -87,7 +96,7 @@
         }
       </div>
       <div class="search-footer">
-        <p>
+        <p id="search-privacy">
           <mat-icon aria-hidden="true">lock_outline</mat-icon
           >{{ 'testers.searchPrivacy' | translate }}
         </p>
@@ -111,7 +120,7 @@
 
   @if (initialLoading() || busy()) {
     <div class="loading-state" role="status">
-      <mat-progress-bar mode="indeterminate" />
+      <mat-progress-bar mode="indeterminate" [attr.aria-label]="'testers.loading' | translate" />
       <p>
         {{
           (searching() ? 'testers.searchingDetail' : 'testers.loading')
@@ -177,7 +186,7 @@
   }
 
   @if (result(); as searchResult) {
-    <section class="results" aria-labelledby="results-title" aria-live="polite">
+    <section class="results" aria-labelledby="results-title">
       <div class="section-heading">
         <div>
           <span class="eyebrow">{{
@@ -213,7 +222,7 @@
       </div>
       <div class="results-meta">
         <p>{{ 'testers.scoreNote' | translate }}</p>
-        <span
+        <span role="status"
           ><mat-icon aria-hidden="true">group_add</mat-icon
           >{{
             'testers.assignedCount'
@@ -303,6 +312,7 @@
       }
     </section>
   }
+  <p class="visually-hidden" role="status">@if (result(); as currentResult) { {{ 'testers.resultsAnnouncement' | translate: { count: currentResult.matches.length } }} }</p>
   <footer class="page-footer">
     <span
       ><mat-icon aria-hidden="true">diversity_1</mat-icon

@@ -14,19 +14,16 @@ import {
   type TesterSearchData,
   type TesterSearchesData,
 } from '@repo/api-contracts';
-import { forkJoin, map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
+import { AuthService } from '../../core/services/auth.service';
 
 const OWNER_KEY_STORAGE = 'hackyeah.tester-owner-key';
 
 @Injectable({ providedIn: 'root' })
 export class TestersService {
   private readonly api = inject(ApiService);
-  private ownerKey = this.readOrCreateKey();
-
-  getKey(): string {
-    return this.ownerKey;
-  }
+  private readonly auth = inject(AuthService);
 
   profiles(): Observable<TesterProfilesData> {
     return this.api.request(
@@ -97,35 +94,11 @@ export class TestersService {
     );
   }
 
-  restoreKey(value: string): Observable<MyTesterProfileData> {
-    const key = TesterOwnerKeySchema.parse(value.trim());
-    const options = { headers: { 'X-Tester-Key': key } };
-    return forkJoin({
-      own: this.api.request(
-        'GET',
-        '/testers/profile/me',
-        MyTesterProfileDataSchema,
-        options,
-      ),
-      history: this.api.request(
-        'GET',
-        '/testers/searches',
-        TesterSearchesDataSchema,
-        options,
-      ),
-    }).pipe(
-      map(({ own, history }) => {
-        if (!own.profile && !history.searches.length)
-          throw new Error('TESTER_KEY_NOT_FOUND');
-        localStorage.setItem(OWNER_KEY_STORAGE, key);
-        this.ownerKey = key;
-        return own;
-      }),
-    );
-  }
-
-  private options(): { headers: Record<string, string> } {
-    return { headers: { 'X-Tester-Key': this.ownerKey } };
+  private options(): { withCredentials: boolean; headers?: Record<string, string> } {
+    return {
+      withCredentials: true,
+      ...(this.auth.user() ? {} : { headers: { 'X-Tester-Key': this.readOrCreateKey() } }),
+    };
   }
 
   private readOrCreateKey(): string {
