@@ -45,4 +45,5 @@ export function sessionCookieOptions(): CookieOptions {
 
 export interface TesterRequest extends Request {
   testerOwnerHash?: string;
+  testerAccountId?: string;
 }

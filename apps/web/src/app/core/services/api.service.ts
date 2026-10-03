@@ -23,7 +23,7 @@ export class ApiService {
   }
 
   request<T>(
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
     path: string,
     schema: { parse(value: unknown): T },
     options: {

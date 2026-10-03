@@ -67,14 +67,14 @@ function isCurrentMatch(
 
 @Injectable()
 export class TestersService {
-  private readonly candidateLimit = 40;
+  private readonly candidateLimit = 250;
   constructor(
     @Inject(TestersRepository) private readonly repository: TestersRepository,
     @Inject(TestersAiService) private readonly ai: TestersAiService,
   ) {}
 
-  async profiles(): Promise<TesterOutcome<TesterProfilesData>> {
-    const [profiles, total] = await this.repository.listProfiles(60);
+  async profiles(offset = 0): Promise<TesterOutcome<TesterProfilesData>> {
+    const [profiles, total] = await this.repository.listProfiles(60, offset);
     return {
       status: 200,
       body: createApiSuccess({

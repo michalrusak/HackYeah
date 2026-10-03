@@ -15,6 +15,7 @@ import {
 } from './auth-http.js';
 
 export const REQUIRE_ACCOUNT = 'tester-require-account';
+export const OPTIONAL_ACCOUNT = 'tester-optional-account';
 
 @Injectable()
 export class TesterAuthGuard implements CanActivate {
@@ -31,11 +32,13 @@ export class TesterAuthGuard implements CanActivate {
       if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method))
         assertTrustedOrigin(request);
       request.testerOwnerHash = account.ownerHash;
+      request.testerAccountId = account.id;
       return true;
     }
-    const requiresAccount = this.reflector.get<boolean>(
+    if (this.reflector.get<boolean>(OPTIONAL_ACCOUNT, context.getHandler())) return true;
+    const requiresAccount = this.reflector.getAllAndOverride<boolean>(
       REQUIRE_ACCOUNT,
-      context.getHandler(),
+      [context.getHandler(), context.getClass()],
     );
     const guestKey = TesterOwnerKeySchema.safeParse(
       request.headers['x-tester-key'],

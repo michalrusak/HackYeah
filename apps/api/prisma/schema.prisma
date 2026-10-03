@@ -15,6 +15,9 @@ model Account {
   createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions     Session[]
+  testerProjects TesterProject[]
+  testerApplications TesterProjectApplication[]
+  testerFeedback TesterProjectFeedback[]
 
   @@map("accounts")
 }
@@ -48,6 +51,7 @@ model TesterProfile {
   createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt          DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   assignments        TesterAssignment[]
+  projectApplications TesterProjectApplication[]
 
   @@map("tester_profiles")
 }
@@ -78,6 +82,67 @@ model TesterAssignment {
 
   @@unique([searchId, profileId], map: "uq_tester_assignments_search_profile")
   @@map("tester_assignments")
+}
+
+model TesterProject {
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerId       String @map("owner_id") @db.Uuid
+  owner         Account @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  organizerName String @map("organizer_name") @db.VarChar(100)
+  title         String @db.VarChar(160)
+  description   String
+  requirements  String
+  location      String @default("") @db.VarChar(160)
+  mode          String @db.VarChar(10)
+  stage         String @db.VarChar(10)
+  status        String @default("open") @db.VarChar(6)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  applications  TesterProjectApplication[]
+  feedback      TesterProjectFeedback[]
+
+  @@index([status, createdAt])
+  @@index([ownerId, createdAt])
+  @@map("tester_projects")
+}
+
+model TesterProjectApplication {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId String @map("project_id") @db.Uuid
+  accountId String @map("account_id") @db.Uuid
+  profileId String @map("profile_id") @db.Uuid
+  message   String @default("")
+  status    String @default("pending") @db.VarChar(10)
+  project   TesterProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  profile   TesterProfile @relation(fields: [profileId], references: [id], onDelete: Restrict)
+  feedback  TesterProjectFeedback?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@unique([projectId, accountId])
+  @@index([accountId, createdAt])
+  @@map("tester_project_applications")
+}
+
+model TesterProjectFeedback {
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId     String @map("project_id") @db.Uuid
+  accountId     String @map("account_id") @db.Uuid
+  applicationId String @unique @map("application_id") @db.Uuid
+  authorName    String @map("author_name") @db.VarChar(80)
+  rating        Int
+  review        String
+  improvement   String @default("")
+  project       TesterProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  account       Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  application   TesterProjectApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@unique([projectId, accountId])
+  @@index([projectId, createdAt])
+  @@map("tester_project_feedback")
 }
 
 enum IdeaStage {
