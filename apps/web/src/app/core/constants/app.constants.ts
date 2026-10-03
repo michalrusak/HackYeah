@@ -8,6 +8,12 @@ export const NAV_ITEMS: NavItem[] = [
     path: '/dostosuj/mobilne-centrum-pomocy',
     icon: 'tune',
   },
+  { labelKey: 'knowledge.nav', path: '/zasobnik', icon: 'library_books' },
+  {
+    labelKey: 'knowledge.admin.nav',
+    path: '/zasobnik/admin',
+    icon: 'admin_panel_settings',
+  },
   { labelKey: 'nav.testers', path: '/tester-innowacji', icon: 'groups' },
   { labelKey: 'nav.ideas', path: '/pomysly', icon: 'lightbulb' },
   { labelKey: 'nav.calls', path: '/nabory', icon: 'description' },

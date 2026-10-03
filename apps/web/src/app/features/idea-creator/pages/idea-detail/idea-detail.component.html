@@ -19,9 +19,9 @@
         <span class="badge subtle">{{
           "ideaCreator.stages." + item.stage | translate
         }}</span>
-        @if (item.status === "DRAFT") {
+        @if (item.status !== "PUBLISHED") {
           <span class="badge draft">{{
-            "ideaCreator.detail.draft" | translate
+            "ideaCreator.statuses." + item.status | translate
           }}</span>
         }
       </p>
@@ -73,15 +73,22 @@
         </button>
       }
 
-      @if (isOwner() && item.status === "DRAFT") {
+      @if (
+        isOwner() && item.status !== "PUBLISHED" && item.status !== "SUBMITTED"
+      ) {
         <button
           mat-flat-button
           type="button"
           (click)="publish()"
           [disabled]="busyAction() === 'publish'"
         >
-          <mat-icon aria-hidden="true">public</mat-icon>
-          {{ "ideaCreator.detail.publish" | translate }}
+          <mat-icon aria-hidden="true">send</mat-icon>
+          {{
+            (item.status === "DRAFT"
+              ? "ideaCreator.detail.publish"
+              : "ideaCreator.detail.resubmit"
+            ) | translate
+          }}
         </button>
       }
 
@@ -107,6 +114,17 @@
 
     @if (!isOwner()) {
       <p class="hint">{{ "ideaCreator.detail.adoptHint" | translate }}</p>
+    }
+
+    @if (isOwner() && item.status === "DRAFT") {
+      <p class="hint">{{ "ideaCreator.detail.submitHint" | translate }}</p>
+    }
+    @if (isOwner() && item.status !== "DRAFT") {
+      <app-idea-thread
+        [ideaId]="item.id"
+        [token]="token()"
+        [status]="item.status"
+      />
     }
 
     @if (showPlainLanguage() && plainLanguage()) {

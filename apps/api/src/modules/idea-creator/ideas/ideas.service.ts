@@ -13,6 +13,7 @@ import {
 import { OpenRouterClient } from '../../../shared/ai/openrouter.client.js';
 import { createEditToken, matchesEditToken } from '../../../shared/edit-token.js';
 import { DomainError } from '../../../shared/errors/domain.error.js';
+import { MailService } from '../../../shared/mail/mail.service.js';
 import {
   toAreas,
   toAudiences,
@@ -35,12 +36,13 @@ export class IdeasService {
   constructor(
     @Inject(IdeasRepository) private readonly repository: IdeasRepository,
     @Inject(OpenRouterClient) private readonly ai: OpenRouterClient,
+    @Inject(MailService) private readonly mail: MailService,
   ) {}
 
   async create(input: CreateIdeaRequest): Promise<CreatedIdeaData> {
     const { token, hash } = createEditToken();
     const row = await this.repository.create({ ...input, editTokenHash: hash });
-    return { idea: toIdea(row), editToken: token };
+    return { idea: toIdea(row, true), editToken: token };
   }
 
   async list(query: IdeaListQuery): Promise<IdeaListData> {
@@ -59,10 +61,11 @@ export class IdeasService {
    */
   async get(id: string, token: string | undefined): Promise<Idea> {
     const row = await this.findOrFail(id);
-    if (row.status !== 'PUBLISHED' && !matchesEditToken(token, row.editTokenHash)) {
+    const owner = matchesEditToken(token, row.editTokenHash);
+    if (row.status !== 'PUBLISHED' && !owner) {
       throw DomainError.notFound('Nie znaleźliśmy tej fiszki.');
     }
-    return toIdea(row);
+    return toIdea(row, owner);
   }
 
   /** Opis wysyłany do matchmakingu, żeby podpiąć pokrewne innowacje ROPS. */
@@ -89,12 +92,28 @@ export class IdeasService {
     }
     // Zmiana treści unieważnia przepisaną wersję w prostym języku.
     data['plainLanguageSummary'] = null;
-    return toIdea(await this.repository.update(id, data));
+    return toIdea(await this.repository.update(id, data), true);
   }
 
+  /**
+   * Autor nie publikuje sam: fiszka trafia do kolejki ROPS, a publiczna staje
+   * się dopiero po decyzji administratora. Ponowne wysłanie po poprawkach
+   * działa tak samo.
+   */
   async publish(id: string, token: string | undefined): Promise<Idea> {
-    await this.requireOwned(id, token);
-    return toIdea(await this.repository.update(id, { status: 'PUBLISHED' }));
+    const row = await this.requireOwned(id, token);
+    if (row.status === 'PUBLISHED' || row.status === 'SUBMITTED') {
+      return toIdea(row, true);
+    }
+    const updated = await this.repository.update(id, {
+      status: 'SUBMITTED',
+      awaitsRops: true,
+    });
+    this.mail.notifyRops(
+      `Nowy pomysł do weryfikacji: ${row.title}`,
+      'W panelu administratora czeka pomysł do weryfikacji.',
+    );
+    return toIdea(updated, true);
   }
 
   async remove(id: string, token: string | undefined): Promise<void> {

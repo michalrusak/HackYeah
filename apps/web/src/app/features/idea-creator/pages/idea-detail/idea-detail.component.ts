@@ -17,6 +17,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import type { GrantCall, Idea, MatchmakingData } from '@repo/api-contracts';
 import type { Observable } from 'rxjs';
+import { IdeaThreadComponent } from '../../components/idea-thread/idea-thread.component';
 import { toErrorKey } from '../../services/api-error';
 import { AssistantContextService } from '../../services/assistant-context.service';
 import { EditTokenStore } from '../../services/edit-token.store';
@@ -32,6 +33,7 @@ import { IdeaCreatorApiService } from '../../services/idea-creator-api.service';
     MatIconModule,
     MatProgressBarModule,
     TranslatePipe,
+    IdeaThreadComponent,
   ],
   templateUrl: './idea-detail.component.html',
   styleUrl: './idea-detail.component.scss',

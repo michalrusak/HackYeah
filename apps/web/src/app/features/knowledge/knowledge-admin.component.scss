@@ -1,0 +1,116 @@
+.login-panel {
+  max-width: 480px;
+  margin-block: 32px;
+}
+.queue {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-block: 16px;
+}
+.queue-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid var(--mat-sys-outline, #74777f);
+  border-radius: 16px;
+  background: var(--mat-sys-surface, #fff);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.queue-tile strong {
+  font-size: 1.8rem;
+  line-height: 1.1;
+}
+.queue-tile[aria-pressed="true"] {
+  border: 2px solid var(--mat-sys-primary, #005cbb);
+  padding: 15px;
+  background: var(--mat-sys-secondary-container, #d7e3f7);
+  color: var(--mat-sys-on-secondary-container, #101c2b);
+}
+.queue-attention strong {
+  color: var(--mat-sys-error, #ba1a1a);
+}
+.badge-draft {
+  background: var(--mat-sys-tertiary-container, #ffdea6);
+  color: var(--mat-sys-on-tertiary-container, #271900);
+}
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-block: 24px;
+}
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--mat-sys-secondary-container, #d7e3f7);
+  color: var(--mat-sys-on-secondary-container, #101c2b);
+}
+.metric strong {
+  font-size: 2.5rem;
+}
+.table-scroll {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block: 20px;
+}
+caption {
+  text-align: left;
+  font-weight: 600;
+  padding-block: 12px;
+}
+th,
+td {
+  text-align: left;
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant, #c4c6d0);
+  font-size: 0.95rem;
+}
+.trend-bar {
+  height: 6px;
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 6px;
+  background: var(--mat-sys-secondary-container, #d7e3f7);
+}
+.trend-bar span {
+  display: block;
+  height: 100%;
+  background: var(--mat-sys-primary, #005cbb);
+  border-radius: inherit;
+}
+.trend-alert {
+  padding: 8px 24px 16px;
+  margin-block: 24px;
+  border-left: 6px solid var(--mat-sys-tertiary, #7b5800);
+  border-radius: 12px;
+  background: var(--mat-sys-tertiary-container, #ffdea6);
+  color: var(--mat-sys-on-tertiary-container, #271900);
+}
+.rising {
+  display: block;
+}
+.import-panel {
+  margin-block: 32px;
+}
+@media (max-width: 600px) {
+  .queue {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+  .table-scroll table {
+    min-width: 560px;
+  }
+}

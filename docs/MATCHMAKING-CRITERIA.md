@@ -6,6 +6,8 @@ Zakres tej iteracji wynika z prośby użytkownika: dopracowanie obligatoryjnego 
 
 ## Powiązanie z wymaganiami
 
+Aktualizacja po kolejnej iteracji: użytkownik zlecił i zatwierdził dodanie Zasobnika wiedzy, administracji zasobami oraz trendów potrzeb. Ich zakres i weryfikację opisuje [KNOWLEDGE.md](KNOWLEDGE.md). Poniższa tabela i opis granic dokumentują wcześniejszą iterację samego matchmakingu. Obecny katalog produkcyjny znajduje się w PostgreSQL z Prisma; JSON jest materiałem inicjalizacyjnym i służy izolowanym testom. Publiczne opisy i wyniki AI nadal nie są zapisywane.
+
 | Kryterium                                           | Realizacja i dowód                                                                                                                                                                                                         |
 | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Opis problemu własnymi słowami                      | Jedno pole, limit 4000 znaków; przykłady są edytowalne; strona główna otwiera formularz                                                                                                                                    |

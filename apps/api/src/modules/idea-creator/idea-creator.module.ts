@@ -20,6 +20,13 @@ import { IdeasController } from './ideas/ideas.controller.js';
 import { IdeasRepository } from './ideas/ideas.repository.js';
 import { IdeasService } from './ideas/ideas.service.js';
 import { MaterialsController } from './materials/materials.controller.js';
+import { MailService } from '../../shared/mail/mail.service.js';
+import {
+  IdeaModerationController,
+  IdeaThreadController,
+} from './moderation/moderation.controller.js';
+import { ModerationRepository } from './moderation/moderation.repository.js';
+import { ModerationService } from './moderation/moderation.service.js';
 
 @Module({
   imports: [ConfigModule, PrismaModule, AiModule, MatchmakingModule],
@@ -30,6 +37,8 @@ import { MaterialsController } from './materials/materials.controller.js';
     ApplicationsController,
     AssistantController,
     MaterialsController,
+    IdeaThreadController,
+    IdeaModerationController,
   ],
   providers: [
     IdeasService,
@@ -43,6 +52,9 @@ import { MaterialsController } from './materials/materials.controller.js';
     AssistantService,
     AssistantRepository,
     VisualService,
+    MailService,
+    ModerationService,
+    ModerationRepository,
   ],
 })
 export class IdeaCreatorModule {}

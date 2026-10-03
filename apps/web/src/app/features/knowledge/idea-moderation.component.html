@@ -1,0 +1,159 @@
+<section aria-labelledby="ideas-heading">
+  <h2 id="ideas-heading">{{ "knowledge.admin.ideas.title" | translate }}</h2>
+  <p>{{ "knowledge.admin.ideas.intro" | translate }}</p>
+  <p role="status">
+    {{
+      "knowledge.admin.ideas.attention"
+        | translate: { count: queue().attention }
+    }}
+  </p>
+
+  @if (detail(); as data) {
+    <article class="search-section idea-detail">
+      <h3 #heading tabindex="-1">{{ data.idea.title }}</h3>
+      <div class="badges">
+        <span
+          class="badge"
+          [class.badge-attention]="data.idea.status !== 'PUBLISHED'"
+          >{{ "ideaCreator.statuses." + data.idea.status | translate }}</span
+        >
+        <span>{{ "ideaCreator.stages." + data.idea.stage | translate }}</span>
+        @if (data.idea.region) {
+          <span>{{ data.idea.region }}</span>
+        }
+      </div>
+      <dl>
+        <dt>{{ "ideaCreator.fields.essence" | translate }}</dt>
+        <dd>{{ data.idea.essence }}</dd>
+        <dt>{{ "ideaCreator.fields.problem" | translate }}</dt>
+        <dd>{{ data.idea.problem }}</dd>
+        <dt>{{ "ideaCreator.fields.targetAudience" | translate }}</dt>
+        <dd>{{ data.idea.targetAudience }}</dd>
+        @if (data.idea.description) {
+          <dt>{{ "ideaCreator.fields.description" | translate }}</dt>
+          <dd>{{ data.idea.description }}</dd>
+        }
+      </dl>
+      <p class="note">
+        {{
+          (data.idea.hasContact
+            ? "knowledge.admin.ideas.hasContact"
+            : "knowledge.admin.ideas.noContact"
+          ) | translate
+        }}
+      </p>
+
+      <h4>{{ "knowledge.admin.ideas.thread" | translate }}</h4>
+      @if (!data.messages.length) {
+        <p class="note">
+          {{ "knowledge.admin.ideas.threadEmpty" | translate }}
+        </p>
+      }
+      <ol class="messages">
+        @for (item of data.messages; track item.id) {
+          <li [class.rops]="item.author === 'ROPS'">
+            <p class="note">
+              <strong>{{
+                "knowledge.admin.ideas.authors." + item.author | translate
+              }}</strong>
+              · {{ item.createdAt | date: "dd.MM.yyyy HH:mm" }}
+            </p>
+            <p class="content">{{ item.content }}</p>
+          </li>
+        }
+      </ol>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
+        ><mat-label>{{ "knowledge.admin.ideas.message" | translate }}</mat-label
+        ><textarea
+          matInput
+          rows="4"
+          maxlength="2000"
+          [formControl]="message"
+        ></textarea
+        ><mat-hint>{{
+          "knowledge.admin.ideas.messageHint" | translate
+        }}</mat-hint></mat-form-field
+      >
+      @if (errorKey(); as key) {
+        <p class="error" role="alert">{{ key | translate }}</p>
+      }
+      @if (noticeKey(); as key) {
+        <p role="status">{{ key | translate }}</p>
+      }
+      <div class="actions">
+        @if (data.idea.status !== "PUBLISHED") {
+          <button
+            mat-flat-button
+            type="button"
+            [disabled]="busy()"
+            (click)="decide('PUBLISH')"
+          >
+            {{ "knowledge.admin.ideas.publish" | translate }}
+          </button>
+        }
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="busy()"
+          (click)="decide('REQUEST_CHANGES')"
+        >
+          {{ "knowledge.admin.ideas.requestChanges" | translate }}
+        </button>
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="busy()"
+          (click)="decide('REJECT')"
+        >
+          {{ "knowledge.admin.ideas.reject" | translate }}
+        </button>
+        <button mat-button type="button" [disabled]="busy()" (click)="reply()">
+          {{ "knowledge.admin.ideas.reply" | translate }}
+        </button>
+        <button mat-button type="button" (click)="close()">
+          {{ "knowledge.admin.ideas.close" | translate }}
+        </button>
+      </div>
+    </article>
+  } @else if (errorKey()) {
+    <p class="error" role="alert">{{ errorKey() ?? "" | translate }}</p>
+  }
+
+  @if (!queue().items.length) {
+    <p>{{ "knowledge.admin.ideas.empty" | translate }}</p>
+  }
+  <div class="resource-grid">
+    @for (item of queue().items; track item.idea.id) {
+      <article class="resource-card">
+        <div class="badges">
+          @if (item.awaitsRops) {
+            <span class="badge badge-attention">{{
+              "knowledge.admin.ideas.awaits" | translate
+            }}</span>
+          }
+          <span class="badge">{{
+            "ideaCreator.statuses." + item.idea.status | translate
+          }}</span>
+        </div>
+        <h3>{{ item.idea.title }}</h3>
+        <p>{{ item.idea.essence }}</p>
+        <p class="note">
+          {{ "knowledge.admin.ideas.updated" | translate }}:
+          {{ item.idea.updatedAt | date: "dd.MM.yyyy HH:mm" }}
+        </p>
+        <div class="actions card-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="busy()"
+            (click)="open(item.idea.id)"
+          >
+            {{ "knowledge.admin.ideas.open" | translate
+            }}<span class="sr-only"> — {{ item.idea.title }}</span>
+          </button>
+        </div>
+      </article>
+    }
+  </div>
+</section>

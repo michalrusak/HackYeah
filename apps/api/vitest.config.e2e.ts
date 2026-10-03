@@ -11,5 +11,7 @@ export default defineConfig({
     testTimeout: 30_000,
     hookTimeout: 30_000,
     pool: 'forks',
+    // Specyfikacje Zasobnika i moderacji dzielą jedną bazę testową.
+    fileParallelism: false,
   },
 });

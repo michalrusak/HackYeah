@@ -1,0 +1,107 @@
+@let item = resource();
+<article
+  class="resource-card"
+  [class.innovation-card]="item.kind === 'innovation'"
+>
+  @if (videoId(); as id) {
+    <div class="video-frame">
+      @if (playing()) {
+        <iframe
+          #player
+          [src]="embedUrl()"
+          [title]="'knowledge.videoTitle' | translate: { title: item.title }"
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      } @else {
+        <button type="button" class="video-poster" (click)="play()">
+          <img
+            [src]="'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg'"
+            alt=""
+            loading="lazy"
+          />
+          <span class="video-play"
+            ><mat-icon aria-hidden="true">play_circle</mat-icon
+            >{{ "knowledge.playVideo" | translate
+            }}<span class="sr-only"> — {{ item.title }}</span></span
+          >
+        </button>
+      }
+    </div>
+  } @else if (item.videoPageUrl) {
+    <a
+      class="video-banner"
+      [href]="item.videoPageUrl"
+      target="_blank"
+      rel="noopener noreferrer"
+      ><mat-icon aria-hidden="true">play_circle</mat-icon
+      ><span
+        >{{ "knowledge.video" | translate
+        }}<span class="sr-only">
+          — {{ item.title }}. {{ "knowledge.newTab" | translate }}</span
+        ></span
+      ></a
+    >
+  }
+  <div class="badges">
+    <span class="badge">{{ "knowledge.kinds." + item.kind | translate }}</span
+    ><span>{{ "knowledge.scopes." + item.scope | translate }}</span>
+  </div>
+  <h3>{{ item.title }}</h3>
+  <p>{{ item.summary }}</p>
+  @if (item.facts.length) {
+    <ul class="fact-list" [attr.aria-label]="'knowledge.facts' | translate">
+      @for (fact of item.facts; track fact.label) {
+        <li>
+          <strong>{{ fact.value }}</strong> {{ fact.label }}
+        </li>
+      }
+    </ul>
+  }
+  @if (item.kind === "innovation" && item.needs.length) {
+    <p class="chip-label">{{ "knowledge.answersNeeds" | translate }}</p>
+    <ul class="chips">
+      @for (need of item.needs; track need) {
+        <li>{{ need }}</li>
+      }
+    </ul>
+  }
+  <p class="area-label">{{ item.areas.join(" · ") }}</p>
+  <details>
+    <summary>{{ "knowledge.details" | translate }}</summary>
+    <p>{{ "knowledge.source" | translate }}: {{ item.sourceLabel }}</p>
+    @if (item.publicationYear) {
+      <p>
+        {{ "knowledge.publicationYear" | translate }}:
+        {{ item.publicationYear }}
+      </p>
+    }
+    <p>
+      {{ "knowledge.verifiedAt" | translate }}:
+      {{ item.verifiedAt | date: "dd.MM.yyyy" }}
+    </p>
+    @if (item.audiences.length) {
+      <p>
+        {{ "knowledge.audienceFilter" | translate }}:
+        {{ item.audiences.join(", ") }}
+      </p>
+    }
+    @if (item.kind !== "innovation" && item.needs.length) {
+      <p>
+        {{ "knowledge.need.tags" | translate }}: {{ item.needs.join(", ") }}
+      </p>
+    }
+  </details>
+  <div class="actions card-actions">
+    <a
+      mat-flat-button
+      [href]="item.sourceUrl"
+      target="_blank"
+      rel="noopener noreferrer"
+      >{{ "knowledge.openSource" | translate
+      }}<span class="sr-only">
+        — {{ item.title }}. {{ "knowledge.newTab" | translate }}</span
+      ></a
+    >
+  </div>
+</article>

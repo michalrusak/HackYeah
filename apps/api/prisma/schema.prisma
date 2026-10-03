@@ -162,7 +162,15 @@ enum IdeaKind {
 // kolejne wartości bez migracji danych.
 enum IdeaStatus {
   DRAFT
+  SUBMITTED
+  NEEDS_CHANGES
+  REJECTED
   PUBLISHED
+}
+
+enum IdeaMessageAuthor {
+  AUTHOR
+  ROPS
 }
 
 enum ApplicationStatus {
@@ -198,6 +206,9 @@ model Idea {
   needs                String[]
   plainLanguageSummary String?
   editTokenHash        String
+  // Moderacja: pomysł czeka na reakcję ROPS / autor ma nieprzeczytaną odpowiedź.
+  awaitsRops           Boolean    @default(false)
+  unreadReply          Boolean    @default(false)
 
   // Ścieżka JST: samorząd bierze dobrą praktykę jako punkt wyjścia zamiast
   // tylko ją oglądać.
@@ -209,6 +220,7 @@ model Idea {
   visuals      IdeaVisual[]
   messages     AssistantMessage[]
   applications Application[]
+  thread       IdeaMessage[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -287,6 +299,18 @@ model Application {
   @@index([ideaId])
 }
 
+model IdeaMessage {
+  id      String            @id @default(cuid())
+  ideaId  String
+  idea    Idea              @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  author  IdeaMessageAuthor
+  content String
+
+  createdAt DateTime @default(now())
+
+  @@index([ideaId, createdAt])
+}
+
 model AssistantMessage {
   id      String  @id @default(cuid())
   ideaId  String?
@@ -353,4 +377,107 @@ model Message {
   createdAt      DateTime     @default(now()) @map("created_at")
 
   @@map("messages")
+}
+
+model KnowledgeResource {
+  id              String   @id
+  title           String
+  summary         String
+  kind            String
+  scope           String
+  areas           String[]
+  audiences       String[]
+  needs           String[]
+  sourceUrl       String   @map("source_url")
+  sourceLabel     String   @map("source_label")
+  verifiedAt      String   @map("verified_at")
+  publicationYear Int?     @map("publication_year")
+  videoPageUrl    String?  @map("video_page_url")
+  videoUrl        String?  @map("video_url")
+  facts           Json     @default("[]")
+  status          String   @default("draft")
+  revision        Int      @default(1)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([status, kind, verifiedAt])
+  @@map("knowledge_resources")
+}
+
+model KnowledgeAdminSession {
+  id                String   @id
+  csrfToken         String   @map("csrf_token")
+  credentialVersion String   @map("credential_version")
+  expiresAt         DateTime @map("expires_at")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@index([expiresAt])
+  @@map("knowledge_admin_sessions")
+}
+
+model NeedReceipt {
+  id        String   @id
+  createdAt DateTime @map("created_at") @db.Date
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("need_receipts")
+}
+
+model NeedDailyCount {
+  id        String   @id @default(cuid())
+  day       DateTime @unique @db.Date
+  count     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("need_daily_counts")
+}
+
+model NeedAreaCount {
+  id        String   @id @default(cuid())
+  day       DateTime @db.Date
+  area      String
+  count     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([day, area])
+  @@map("need_area_counts")
+}
+
+model NeedTagCount {
+  id        String   @id @default(cuid())
+  day       DateTime @db.Date
+  need      String
+  count     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([day, need])
+  @@map("need_tag_counts")
+}
+
+model NeedSourceCount {
+  id        String   @id @default(cuid())
+  day       DateTime @db.Date
+  source    String
+  count     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([day, source])
+  @@map("need_source_counts")
+}
+
+model SearchPhraseCount {
+  id        String   @id @default(cuid())
+  day       DateTime @db.Date
+  phrase    String
+  count     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([day, phrase])
+  @@map("search_phrase_counts")
 }

@@ -151,7 +151,7 @@ export const MatchmakingDataSchema = z
     catalog: z
       .object({
         version: z.number().int().positive(),
-        innovationCount: z.number().int().positive(),
+        innovationCount: z.number().int().nonnegative(),
       })
       .strict(),
   })

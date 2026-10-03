@@ -414,6 +414,7 @@
         </div>
       }
     </section>
+    <p><a mat-stroked-button routerLink="/zasobnik" [queryParams]="{ area: data.interpretation.areas[0] }">{{ 'knowledge.browseRelated' | translate }}</a></p>
     @if (data.relatedInformation.length) {
       <section class="related-information" aria-labelledby="information-title">
         <h2 id="information-title">

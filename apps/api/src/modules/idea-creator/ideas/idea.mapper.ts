@@ -33,6 +33,8 @@ export interface IdeaRow {
   needs: string[];
   plainLanguageSummary: string | null;
   editTokenHash: string;
+  awaitsRops: boolean;
+  unreadReply: boolean;
   adoptedFromId: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -57,7 +59,7 @@ export function toNeeds(values: string[]): Need[] {
   return values.filter((value): value is Need => NEEDS.has(value));
 }
 
-export function toIdea(row: IdeaRow): Idea {
+export function toIdea(row: IdeaRow, owner = false): Idea {
   const visual = row.visuals?.[0] ?? null;
   return {
     id: row.id,
@@ -80,6 +82,7 @@ export function toIdea(row: IdeaRow): Idea {
     visualId: visual?.id ?? null,
     visualAltText: visual?.altText ?? null,
     hasCanvas: Boolean(row.canvas),
+    unreadReply: owner && row.unreadReply,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };

@@ -1,0 +1,41 @@
+.idea-detail {
+  margin-bottom: 24px;
+}
+dt {
+  margin-top: 12px;
+  font-weight: 600;
+}
+dd {
+  margin: 4px 0 0;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.badge-attention {
+  background: var(--mat-sys-tertiary-container, #ffdea6);
+  color: var(--mat-sys-on-tertiary-container, #271900);
+}
+.messages {
+  list-style: none;
+  margin: 12px 0 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.messages li {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container-high, #e5e6ea);
+}
+.messages li.rops {
+  background: var(--mat-sys-secondary-container, #d7e3f7);
+  color: var(--mat-sys-on-secondary-container, #101c2b);
+}
+.messages p {
+  margin: 0;
+}
+.content {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

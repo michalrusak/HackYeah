@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import {
   createApiSuccess,
   MATCHMAKING_RESULT_LIMIT,
@@ -7,6 +7,8 @@ import {
   type ApiSuccessResponse,
   type MatchmakingData,
 } from '@repo/api-contracts';
+import { KnowledgeRepository } from '../knowledge/knowledge.repository.js';
+import { utcDay } from '../knowledge/knowledge.service.js';
 import { CatalogRepository } from './catalog.repository.js';
 import {
   InterpretationError,
@@ -22,22 +24,39 @@ export interface MatchmakingOutcome {
 
 @Injectable()
 export class MatchmakingService {
+  private readonly logger = new Logger(MatchmakingService.name);
+
   constructor(
     @Inject(OpenRouterService) private readonly interpreter: OpenRouterService,
     @Inject(CatalogRepository) private readonly catalog: CatalogRepository,
+    @Optional()
+    @Inject(KnowledgeRepository)
+    private readonly knowledge?: KnowledgeRepository,
   ) {}
 
   async match(
     description: string,
     answers: ClarificationAnswer[] = [],
+    signal = false,
   ): Promise<MatchmakingOutcome> {
     try {
       const interpretation = answers.length
         ? await this.interpreter.interpret(description, answers)
         : await this.interpreter.interpret(description);
+      if (signal && this.knowledge && interpretation.areas.length)
+        await this.knowledge
+          .recordNeed(
+            { areas: interpretation.areas, needs: interpretation.needs },
+            utcDay(new Date()),
+            'matchmaking',
+          )
+          .catch(() =>
+            this.logger.warn('Nie zapisano sygnału potrzeby z matchmakingu.'),
+          );
+      const catalog = await this.catalog.snapshot();
       const allMatches = rankInnovations(
         interpretation,
-        this.catalog.findAll(),
+        catalog.innovations,
         Infinity,
       );
       const clarification = buildClarification(
@@ -54,9 +73,9 @@ export class MatchmakingService {
           ...(clarification ? { clarification } : {}),
           relatedInformation: matchInformation(
             interpretation,
-            this.catalog.findInformation(),
+            catalog.information,
           ),
-          catalog: this.catalog.metadata(),
+          catalog: catalog.metadata,
         }),
       };
     } catch (error) {
