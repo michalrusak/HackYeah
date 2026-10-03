@@ -462,9 +462,7 @@ textarea {
     gap: 24px;
   }
   .join-card {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    column-gap: 20px;
+    display: block;
   }
   .join-icon {
     display: none;
@@ -473,16 +471,10 @@ textarea {
     margin: 0 0 6px;
   }
   .join-card p {
-    grid-column: 1;
     margin: 0;
   }
   .join-card button {
-    grid-column: 2;
-    grid-row: 1 / 3;
-    align-self: center;
-  }
-  .community-count {
-    grid-column: 1 / -1;
+    margin-top: 16px;
   }
   .search-footer {
     flex-direction: column-reverse;
@@ -565,12 +557,4 @@ textarea {
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
-}
-@media (max-width: 720px) {
-  .join-card {
-    display: block;
-  }
-  .join-card button {
-    margin-top: 16px;
-  }
 }

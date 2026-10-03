@@ -1,48 +1,71 @@
-# Tester innowacji
+# Tester innowacji — konta i dostępność
 
-Zakładka `/tester-innowacji` łączy organizatorów testów innowacji społecznych z osobami, które dobrowolnie opisują swoje doświadczenia, umiejętności i zasoby. Profile, wyniki wyszukiwań i przypisania są przechowywane w PostgreSQL. OpenRouter ocenia zgodność zapytania z deklaracjami zapisanymi w profilach.
+Zakładka `/tester-innowacji` łączy organizatorów testów innowacji społecznych z osobami opisującymi swoje doświadczenia, umiejętności i zasoby. Profile, wyszukiwania i przypisania są zapisywane w PostgreSQL. OpenRouter porównuje zapytanie z deklaracjami zapisanymi w profilach.
 
 ## Wymagania funkcjonalne
 
-1. **Wyszukiwanie osób.** Organizator wpisuje wymaganie własnymi słowami, np. „Szukamy osoby z mocnym komputerem do przetestowania aplikacji edukacyjnej” albo „Szukamy testerów korzystających z czytnika ekranu”. Wysłanie formularza uruchamia analizę AI rzeczywistych profili z bazy.
-2. **Wyjaśnione dopasowania.** Wynik zawiera profil, ocenę zgodności 1–100, uzasadnienie oraz pasujące deklaracje. Ocena nie jest statystycznym prawdopodobieństwem ani potwierdzeniem kwalifikacji. Brak dopasowania daje pustą listę, a awaria AI jawny błąd.
-3. **Dodanie profilu.** Przycisk na tej samej stronie otwiera formularz z nazwą publiczną, miejscowością, opisem, umiejętnościami, zasobami, zainteresowaniami, trybem udziału i opcjonalnym opisem potrzeb dostępnościowych. Wymagana jest zgoda na publikację i analizę tych informacji przez AI.
-4. **Edycja i widoczność.** Właściciel może edytować swój profil i wyłączyć jego widoczność. Nieaktywne profile nie uczestniczą w nowych wyszukiwaniach. Pozostali użytkownicy nie mogą edytować cudzego profilu.
-5. **Zachowanie dostępu.** Ponieważ projekt nie ma kont, przeglądarka generuje prywatny klucz dostępu. Klucz można skopiować i przywrócić na innym urządzeniu. Utrata klucza oznacza utratę dostępu; znajomość klucza daje dostęp do profilu i własnych wyszukiwań. Serwer zapisuje wyłącznie SHA-256 klucza.
-6. **Historia testów.** Zapytanie i wyniki zostają zapisane dla właściciela klucza. Użytkownik może ponownie otworzyć zapisane wyszukiwanie po odświeżeniu strony. Ocena jest związana z wersją profilu poddaną analizie. Jeśli profil zmieni się podczas lub po analizie, stary wynik zostaje ukryty z komunikatem o potrzebie ponownego wyszukania.
-7. **Przypisanie testerów.** Osobę z wyników można przypisać do danego zapytania testowego lub usunąć przypisanie. Powtórzenie przypisania nie tworzy duplikatu. Jest to lista uczestników wybranych przez organizatora, nie wysyłka zaproszenia ani potwierdzenie udziału testera.
-8. **Dane demonstracyjne.** Seed dodaje fikcyjne, jednoznacznie oznaczone profile do PostgreSQL. Kolejne uruchomienie nie duplikuje rekordów i nie nadpisuje profili użytkowników. Interfejs pobiera dane z API; nie zawiera zastępczej listy wyników.
+1. **Konto.** Rejestracja wymaga unikalnego loginu i hasła. Login ma 3–40 znaków: litery bez polskich znaków, cyfry, kropkę, podkreślenie lub myślnik; zaczyna się literą lub cyfrą. Wielkość liter nie ma znaczenia. Hasło ma 12–128 znaków i nie jest przycinane.
+2. **Dodawanie i edycja profilu.** „Dołącz jako tester” prowadzi przez rejestrację lub logowanie do formularza profilu. Zalogowany właściciel może edytować ten sam profil na innym urządzeniu. Inne konta nie uzyskują dostępu do jego edycji.
+3. **Publikacja.** Zapisany profil jest publiczny i może być analizowany przez AI. Formularz zawiera krótką informację o publikacji, bez checkboxa zgody i bez przełącznika wycofania udostępniania. Dane o dostępności pozostają opcjonalne. API nie przyjmuje w formularzu pól `consent` ani `isActive`; historyczne flagi pozostają w bazie.
+4. **Dotychczasowe profile.** Rejestracja może przypisać istniejący profil i historię z bieżącej przeglądarki na podstawie jej starego prywatnego klucza. Klucz powiązany już z kontem nie daje anonimowego dostępu ani nie może zostać przypisany do drugiego konta.
+5. **Wyszukiwanie.** Użytkownik opisuje wymagania własnymi słowami. AI analizuje rzeczywiste aktywne profile z bazy; wynik zawiera ocenę 1–100, uzasadnienie i pasujące deklaracje. Ocena opisuje dopasowanie, nie potwierdza kwalifikacji ani sukcesu testu. Awaria AI jest jawnym błędem.
+6. **Gość i historia.** Katalog i wyszukiwanie są dostępne bez konta. Historia gościa jest związana z anonimowym kluczem przeglądarki; zalogowany użytkownik korzysta z historii konta. Dane konta nie są dostępne po wylogowaniu.
+7. **Przypisania.** Wybrane osoby można przypisać do zapisanego wyszukiwania lub usunąć przypisanie. Unikalność pary wyszukiwanie/profil zapobiega duplikatom. Przypisanie nie wysyła zaproszenia.
+8. **Aktualność.** Dopasowanie jest związane z wersją profilu. Edycja lub niedostępność profilu unieważnia poprzednią ocenę i wymaga nowego wyszukiwania.
+9. **Dane demonstracyjne.** Seed dodaje oznaczone fikcyjne profile do PostgreSQL. Nie zastępuje API listą mocków i nie nadpisuje profili użytkowników.
 
-## Model danych i dostęp
+## Dane i zabezpieczenia
 
-| Zasób          | Zawartość i relacje                                                                                                        |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Profil testera | UUID, hash klucza właściciela, deklarowane cechy, zgoda, aktywność, oznaczenie demonstracyjne, daty utworzenia i zmiany    |
-| Wyszukiwanie   | UUID, hash klucza właściciela, zapytanie, podsumowanie, dopasowania wraz z wersjami profili i liczba analizowanych profili |
-| Przypisanie    | Wyszukiwanie i profil połączone kluczami obcymi; unikalność pary zapobiega duplikatom                                      |
+| Zasób | Zawartość |
+| --- | --- |
+| Konto | UUID, unikalny login i identyfikator właściciela, hash hasła scrypt z indywidualną solą |
+| Sesja | Hash losowego tokenu, konto, czas wygaśnięcia |
+| Profil | UUID, identyfikator właściciela, deklarowane cechy, historyczne flagi publikacji, daty, oznaczenie demo |
+| Wyszukiwanie | Właściciel, zapytanie, wyniki z wersjami profili, statystyki |
+| Przypisanie | Klucze obce wyszukiwania i profilu; unikalna para |
 
-Publiczny katalog zawiera wyłącznie aktywne profile. Profil właściciela, historia i przypisania wymagają nagłówka `X-Tester-Key` z losowym kluczem 32-bajtowym zapisanym jako 64 znaki szesnastkowe. Wdrożenie publiczne wymaga HTTPS. Klucz nie jest wysyłany do modelu AI.
+Sesja trwa 7 dni. Token jest przekazywany wyłącznie przez cookie HttpOnly, SameSite=Lax, Path=/api; NODE_ENV=production włącza Secure. Baza przechowuje SHA-256 tokenu. Wylogowanie unieważnia bieżącą sesję. Hasła i tokeny sesji nie trafiają do localStorage ani do AI.
 
-AI otrzymuje zapytanie i deklarowane informacje potrzebne do dopasowania. Nie otrzymuje kluczy właścicieli. Nie ma zgadywać stanu zdrowia, niepełnosprawności ani innych niepodanych cech. Odpowiedź jest walidowana schematem Zod, a identyfikatory muszą należeć do przekazanego zestawu kandydatów. Liczba profili analizowanych w jednym zapytaniu jest ograniczona i jawna w odpowiedzi API oraz interfejsie.
+Profil wymaga sesji konta. Wyszukiwania gości używają nagłówka X-Tester-Key; uwierzytelnienie konta ma pierwszeństwo. Operacje sesji oraz zapis z konta sprawdzają Origin. WEB_ORIGIN określa dozwolone adresy frontendu (lista oddzielona przecinkami). CORS dopuszcza credentials tylko dla tych adresów. Produkcja wymaga HTTPS oraz frontendu i API w tej samej witrynie, zgodnie z SameSite=Lax.
 
-## Interfejs API
+AI otrzymuje wyłącznie zapytanie i publiczne deklaracje potrzebne do dopasowania. Nie ma zgadywać zdrowia, niepełnosprawności ani cech niepodanych przez użytkownika. Odpowiedź jest walidowana przez Zod, a identyfikatory muszą należeć do przekazanego zestawu kandydatów.
 
-Wspólne schematy i typy: `packages/api-contracts/src/testers.schema.ts`.
+## API
 
-| Metoda i ścieżka                                          | Działanie                                       |
-| --------------------------------------------------------- | ----------------------------------------------- |
-| `GET /api/testers/profiles`                               | Publiczne aktywne profile i liczebność katalogu |
-| `GET /api/testers/profile/me`                             | Własny profil albo `null`                       |
-| `PUT /api/testers/profile/me`                             | Utworzenie lub edycja własnego profilu          |
-| `POST /api/testers/search`                                | Analiza AI i zapis wyszukiwania                 |
-| `GET /api/testers/searches`                               | Własna historia                                 |
-| `GET /api/testers/searches/:id`                           | Zapisany wynik i przypisane osoby               |
-| `POST /api/testers/searches/:id/assignments`              | Przypisanie osoby z wyników                     |
-| `DELETE /api/testers/searches/:id/assignments/:profileId` | Usunięcie własnego przypisania                  |
+Kontrakty: `packages/api-contracts/src/auth.schema.ts` i `testers.schema.ts`.
 
-## Uruchomienie
+| Metoda i ścieżka | Działanie |
+| --- | --- |
+| POST /api/auth/register | Rejestracja, opcjonalne powiązanie starego profilu, sesja |
+| POST /api/auth/login | Logowanie i nowa sesja |
+| GET /api/auth/me | Bieżący użytkownik lub null |
+| POST /api/auth/logout | Unieważnienie sesji |
+| GET /api/testers/profiles | Publiczny katalog |
+| GET /api/testers/profile/me | Własny profil lub null; wymaga konta |
+| PUT /api/testers/profile/me | Zapis własnego profilu; wymaga konta |
+| POST /api/testers/search | Analiza AI i zapis wyniku |
+| GET /api/testers/searches | Własna historia |
+| GET /api/testers/searches/:id | Własny wynik |
+| POST /api/testers/searches/:id/assignments | Przypisanie osoby z wyniku |
+| DELETE /api/testers/searches/:id/assignments/:profileId | Usunięcie przypisania |
 
-Wymagane są Node.js 22 lub nowszy, pnpm i PostgreSQL. Konfiguracja bazy i `OPENROUTER_API_KEY` oraz `OPENROUTER_MODEL` są odczytywane z głównego `.env`; sekretów nie umieszcza się w Angularze.
+## Dostępność i intuicyjność — kryterium konkursowe 20%
+
+Projekt kieruje się [WCAG 2.1 na poziomie AA](https://www.w3.org/TR/WCAG21/).
+
+- Czytelne nazwy i etykiety pól, rozdzielenie danych wymaganych i opcjonalnych, wskazówki przed wysłaniem formularza.
+- Tekstowe komunikaty błędów i fokus na pierwszym nieprawidłowym polu (3.3.1, 3.3.2).
+- Obsługa klawiatury, widoczny fokus, pomijanie nawigacji, logiczny fokus po zmianie strony i zamknięciu okna (2.1.1, 2.1.2, 2.4.1, 2.4.3, 2.4.7).
+- Semantyczne etykiety i autocomplete; możliwość wklejenia hasła oraz jego pokazania (1.3.1, 1.3.5).
+- Kontrast jasnego i ciemnego motywu, układ przy 320 px, powiększeniu i zwiększonych odstępach tekstu (1.4.3, 1.4.4, 1.4.10, 1.4.12).
+- Menu rozwijane na hover i fokus można zwinąć klawiszem Escape bez ukrycia całej nawigacji; na telefonie otwiera się przyciskiem (1.4.13).
+- Dynamiczne błędy i statusy używają komunikatów dostępnych dla czytnika ekranu (4.1.3).
+
+Automatyczny skan nie jest potwierdzeniem pełnej zgodności. Odbiór wymaga również prób z czytnikiem ekranu i przedstawicielami docelowych grup, w tym osobami starszymi i o mniejszych umiejętnościach cyfrowych.
+
+## Uruchomienie i testy
+
+Projekt używa Node 22 przypiętego przez pnpm, PostgreSQL i Prisma 7.
 
 ```bash
 pnpm install
@@ -50,21 +73,11 @@ pnpm setup
 pnpm docker:up
 pnpm db:migrate
 pnpm db:seed
-pnpm dev
+pnpm start
 ```
 
-Migracja dodaje wyłącznie tabele funkcji i nie resetuje istniejącej bazy. Seed jest operacją jawną, oddzieloną od startu aplikacji. Przy wdrożeniu produkcyjnym migrację uruchamia się przed API; profile demonstracyjne nie są wymagane do działania.
+Migracje dodają tabele bez resetowania danych; migracja kont to `20261003000200_tester_accounts`. Seed jest opcjonalny. Sekrety są czytane z głównego .env i pozostają na backendzie.
 
-Warstwa danych korzysta z Prisma 7: `apps/api/prisma/schema.prisma` i addytywnej migracji `20261003180000_create_testers`. Polecenie `pnpm db:migrate` stosuje istniejące migracje przez `prisma migrate deploy`, bez tworzenia migracji ani resetowania schematu.
+Testy opisano w [TESTING.md](TESTING.md). Sprawdzamy m.in. rejestrację, ponowne logowanie, izolację kont, wygaśnięcie i wylogowanie sesji, przejęcie własnego wcześniejszego profilu oraz rzeczywisty zapis w PostgreSQL.
 
-## Kryteria odbioru
-
-- Dodany profil jest widoczny po ponownym pobraniu danych; edycja zmienia ten sam rekord.
-- Inny klucz nie uzyskuje dostępu do cudzej historii i przypisań.
-- Wyłączenie profilu usuwa go z publicznego katalogu i nowych analiz.
-- Wyszukiwanie pokazuje tylko osoby istniejące w bazie; niepoprawna odpowiedź AI nie tworzy pozornych wyników.
-- Przypisania są odczytywane z bazy po ponownym otwarciu wyszukiwania.
-- Błędy walidacji, połączenia, limitu zapytań i AI są widoczne w interfejsie.
-- Testy integracyjne używają prawdziwego PostgreSQL w osobnym schemacie; zastępowany jest wyłącznie transport AI, aby wynik testu był powtarzalny.
-
-Poza zakresem tej wersji pozostają konta z odzyskiwaniem hasła, weryfikacja deklaracji, komunikator oraz automatyczne wysyłanie zaproszeń.
+Poza zakresem pozostają odzyskiwanie hasła, weryfikacja deklaracji, komunikator i wysyłanie zaproszeń. Zmiana obejmuje konta profili Testera; Kreator pomysłów zachowuje własny istniejący mechanizm dostępu.
