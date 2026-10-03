@@ -4,8 +4,10 @@ import {
   DestroyRef,
   ElementRef,
   computed,
+  effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -21,14 +23,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import {
   TesterSearchRequestSchema,
   type TesterProfile,
   type TesterSearchData,
   type TesterSearchSummary,
+  type TesterProject,
 } from '@repo/api-contracts';
-import { forkJoin, of, switchMap } from 'rxjs';
+import { forkJoin, of, Subscription, switchMap } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import {
   AuthDialogComponent,
@@ -39,6 +43,11 @@ import { TesterCardComponent } from './tester-card.component';
 import { TesterProfileDialogComponent } from './tester-profile-dialog.component';
 import { testerErrorKey } from './testers-error';
 import { TestersService } from './testers.service';
+import { TesterProjectsComponent } from './projects/tester-projects.component';
+import {
+  ProjectFormDialogComponent,
+  type ProjectFormData,
+} from './projects/project-form-dialog.component';
 
 @Component({
   selector: 'app-testers',
@@ -52,6 +61,8 @@ import { TestersService } from './testers.service';
     MatProgressBarModule,
     TranslatePipe,
     TesterCardComponent,
+    MatTabsModule,
+    TesterProjectsComponent,
   ],
   templateUrl: './testers.component.html',
   styleUrl: './testers.component.scss',
@@ -70,7 +81,7 @@ export class TestersComponent {
     nonNullable: true,
     validators: [
       Validators.required,
-      Validators.minLength(8),
+      Validators.minLength(2),
       Validators.maxLength(2000),
     ],
   });
@@ -78,6 +89,11 @@ export class TestersComponent {
   readonly profiles = signal<TesterProfile[]>([]);
   readonly myProfile = signal<TesterProfile | null>(null);
   readonly total = signal(0);
+  readonly catalogOffset = signal(0);
+  readonly moreProfiles = signal(false);
+  readonly catalogLoading = signal(false);
+  readonly catalogError = signal<string | null>(null);
+  readonly selectedTab = signal(0);
   readonly history = signal<TesterSearchSummary[]>([]);
   readonly result = signal<TesterSearchData | null>(null);
   readonly initialLoading = signal(true);
@@ -93,8 +109,27 @@ export class TestersComponent {
     { key: 'computer', icon: 'computer' },
     { key: 'community', icon: 'groups' },
   ];
+  private observedAccountId: string | null | undefined;
+  private accountRequest: Subscription | null = null;
 
   constructor() {
+    this.service.profileChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((profile) => this.myProfile.set(profile));
+    effect(() => {
+      const accountId = this.auth.user()?.id ?? null;
+      if (this.observedAccountId === accountId) return;
+      const previous = this.observedAccountId;
+      this.observedAccountId = accountId;
+      if (previous === undefined) return;
+      untracked(() => {
+        if (previous || this.result()?.matches.length) this.result.set(null);
+        this.myProfile.set(null);
+        this.history.set([]);
+        this.refreshAccount(accountId);
+      });
+    });
+    this.destroyRef.onDestroy(() => this.accountRequest?.unsubscribe());
     this.query.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
@@ -122,8 +157,14 @@ export class TestersComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ profiles, own, history }) => {
+          this.observedAccountId = this.auth.user()?.id ?? null;
           this.profiles.set(profiles.profiles);
           this.total.set(profiles.total);
+          this.catalogOffset.set(profiles.profiles.length);
+          this.moreProfiles.set(
+            profiles.profiles.length > 0 &&
+              profiles.profiles.length < profiles.total,
+          );
           this.myProfile.set(own.profile);
           this.history.set(history.searches);
           this.initialLoading.set(false);
@@ -310,6 +351,74 @@ export class TestersComponent {
 
   showCatalog(): void {
     this.query.reset();
+  }
+
+  private refreshAccount(accountId: string | null): void {
+    this.accountRequest?.unsubscribe();
+    this.accountRequest = forkJoin({
+      own: accountId ? this.service.myProfile() : of({ profile: null }),
+      history: this.service.searches(),
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ({ own, history }) => {
+          if ((this.auth.user()?.id ?? null) === accountId) {
+            this.myProfile.set(own.profile);
+            this.history.set(history.searches);
+          }
+        },
+        error: (error: unknown) => this.accountError.set(testerErrorKey(error)),
+      });
+  }
+
+  loadMoreProfiles(): void {
+    if (this.catalogLoading()) return;
+    this.catalogLoading.set(true);
+    this.catalogError.set(null);
+    const offset = this.catalogOffset();
+    this.service
+      .profiles(offset)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.profiles.update((old) => [
+            ...old,
+            ...data.profiles.filter(
+              (profile) => !old.some((entry) => entry.id === profile.id),
+            ),
+          ]);
+          this.catalogOffset.set(offset + data.profiles.length);
+          this.moreProfiles.set(
+            data.profiles.length > 0 &&
+              offset + data.profiles.length < data.total,
+          );
+          this.total.set(data.total);
+          this.catalogLoading.set(false);
+        },
+        error: (error: unknown) => {
+          this.catalogError.set(testerErrorKey(error));
+          this.catalogLoading.set(false);
+        },
+      });
+  }
+
+  newProject(): void {
+    this.dialog
+      .open<ProjectFormDialogComponent, ProjectFormData, TesterProject>(
+        ProjectFormDialogComponent,
+        {
+          data: { requirements: this.query.value },
+          width: '720px',
+          maxWidth: 'calc(100vw - 24px)',
+          maxHeight: '94vh',
+          autoFocus: 'dialog',
+        },
+      )
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((project) => {
+        if (project) this.selectedTab.set(2);
+      });
   }
 
   private acceptResult(result: TesterSearchData): void {

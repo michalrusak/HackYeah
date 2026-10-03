@@ -175,4 +175,20 @@ describe('OpenRouterService', () => {
     await assertion;
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+  it('passes clarification history as user data and keeps it out of logs', async () => {
+    fetchMock.mockResolvedValue(Response.json(responseBody()));
+    const answers = [
+      { question: 'Kto?', answer: 'Prywatna odpowiedź seniorów' },
+    ];
+    await service.interpret('Pierwotny opis', answers);
+    const body = fetchMock.mock.calls[0][1]?.body;
+    if (typeof body !== 'string') throw new Error('Expected JSON');
+    const payload = JSON.parse(body);
+    expect(JSON.parse(payload.messages[1].content)).toEqual({
+      description: 'Pierwotny opis',
+      answers,
+    });
+    expect(payload.messages[0].content).toContain('Nie pytaj ponownie');
+    expect(JSON.stringify(telemetry)).not.toContain(answers[0].answer);
+  });
 });

@@ -99,7 +99,7 @@
     @if (errorKey(); as error) {
       <div class="error-state" role="alert" #errorPanel tabindex="-1">
         <p>{{ error | translate }}</p>
-        <button mat-stroked-button (click)="submit()">
+        <button mat-stroked-button (click)="retry()">
           {{ "matchmaking.retry" | translate }}
         </button>
       </div>
@@ -107,6 +107,106 @@
   </div>
 
   @if (result(); as data) {
+    @if (data.clarification; as clarification) {
+      @if (!clarificationDismissed()) {
+        <section
+          class="clarification-card"
+          aria-labelledby="clarification-heading"
+          [attr.aria-busy]="loading()"
+        >
+          <p class="clarification-eyebrow">
+            {{ "matchmaking.assistant.label" | translate }}
+          </p>
+          <h2 id="clarification-heading" #clarificationHeading tabindex="-1">
+            {{
+              "matchmaking.assistant." +
+                (clarification.question
+                  ? clarification.reason
+                  : "exhaustedTitle") | translate
+            }}
+          </h2>
+          @if (clarification.question; as question) {
+            <p>{{ "matchmaking.assistant.intro" | translate }}</p>
+            <p class="clarification-progress">
+              {{
+                "matchmaking.assistant.progress"
+                  | translate
+                    : {
+                        round: clarification.round,
+                        max: clarification.maxRounds,
+                      }
+              }}
+            </p>
+            <form [formGroup]="answerForm" (ngSubmit)="submitAnswer()">
+              <p id="clarification-question" class="clarification-question">
+                {{ question }}
+              </p>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{
+                  "matchmaking.assistant.answer" | translate
+                }}</mat-label>
+                <textarea
+                  #answerInput
+                  matInput
+                  [formControl]="answer"
+                  rows="3"
+                  maxlength="1000"
+                  aria-describedby="clarification-question"
+                ></textarea>
+                <mat-hint align="end"
+                  >{{ answer.value.length }} / 1000</mat-hint
+                >
+                <mat-error>{{
+                  "matchmaking.assistant.validation" | translate
+                }}</mat-error>
+              </mat-form-field>
+              <div class="clarification-actions">
+                <button mat-flat-button type="submit" [disabled]="loading()">
+                  {{ "matchmaking.assistant.submit" | translate }}
+                </button>
+                <button
+                  mat-button
+                  type="button"
+                  [disabled]="loading()"
+                  (click)="dismissClarification()"
+                >
+                  {{ "matchmaking.assistant.skip" | translate }}
+                </button>
+              </div>
+            </form>
+          } @else {
+            <p>
+              {{ "matchmaking.assistant.exhaustedDescription" | translate }}
+            </p>
+            <a mat-stroked-button routerLink="/rops-contact">{{
+              "matchmaking.assistant.contact" | translate
+            }}</a>
+          }
+          @if (answers().length) {
+            <details class="clarification-history">
+              <summary>
+                {{ "matchmaking.assistant.history" | translate }}
+              </summary>
+              @for (turn of answers(); track $index) {
+                <p>
+                  <strong>{{ turn.question }}</strong
+                  ><br />{{ turn.answer }}
+                </p>
+              }
+            </details>
+          }
+        </section>
+      } @else {
+        <button
+          class="clarification-resume"
+          mat-stroked-button
+          type="button"
+          (click)="clarificationDismissed.set(false)"
+        >
+          {{ "matchmaking.assistant.resume" | translate }}
+        </button>
+      }
+    }
     <section class="interpretation" aria-labelledby="interpretation-title">
       <h2 id="interpretation-title" #responseHeading tabindex="-1">
         {{ "matchmaking.interpretationTitle" | translate }}
@@ -145,7 +245,9 @@
           </dd>
         </div>
       </dl>
-      @if (data.interpretation.missingInformation.length) {
+      @if (
+        !data.clarification && data.interpretation.missingInformation.length
+      ) {
         <p class="clarification-title">
           {{ "matchmaking.clarification" | translate }}
         </p>

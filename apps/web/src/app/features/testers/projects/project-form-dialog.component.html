@@ -1,0 +1,146 @@
+<div class="dialog-heading">
+  <h2 mat-dialog-title>
+    {{
+      (data.project ? "projects.editTitle" : "projects.createTitle") | translate
+    }}
+  </h2>
+  <button
+    mat-icon-button
+    mat-dialog-close
+    type="button"
+    [disabled]="saving()"
+    [aria-label]="'testers.close' | translate"
+  >
+    <mat-icon aria-hidden="true">close</mat-icon>
+  </button>
+</div>
+<mat-dialog-content>
+  <p>{{ "projects.formIntro" | translate }}</p>
+  @if (!auth.user()) {
+    <p class="notice">{{ "projects.loginDraft" | translate }}</p>
+  }
+  <form
+    id="project-form"
+    [formGroup]="form"
+    (ngSubmit)="save()"
+    [attr.aria-busy]="saving()"
+  >
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"
+      ><mat-label>{{ "projects.fields.organizerName" | translate }}</mat-label
+      ><input
+        matInput
+        formControlName="organizerName"
+        maxlength="100"
+        required
+      /><mat-hint>{{ "projects.organizerHint" | translate }}</mat-hint
+      ><mat-error>{{
+        "projects.errors.organizerName" | translate
+      }}</mat-error></mat-form-field
+    >
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"
+      ><mat-label>{{ "projects.fields.title" | translate }}</mat-label
+      ><input
+        matInput
+        formControlName="title"
+        maxlength="160"
+        required
+      /><mat-error>{{
+        "projects.errors.title" | translate
+      }}</mat-error></mat-form-field
+    >
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"
+      ><mat-label>{{ "projects.fields.description" | translate }}</mat-label
+      ><textarea
+        matInput
+        formControlName="description"
+        maxlength="4000"
+        rows="4"
+        required
+      ></textarea
+      ><mat-hint>{{ "projects.descriptionHint" | translate }}</mat-hint
+      ><mat-error>{{
+        "projects.errors.description" | translate
+      }}</mat-error></mat-form-field
+    >
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"
+      ><mat-label>{{ "projects.fields.requirements" | translate }}</mat-label
+      ><textarea
+        matInput
+        formControlName="requirements"
+        maxlength="2000"
+        rows="3"
+        required
+      ></textarea
+      ><mat-error>{{
+        "projects.errors.requirements" | translate
+      }}</mat-error></mat-form-field
+    >
+    <div class="two-columns">
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "projects.fields.stage" | translate }}</mat-label
+        ><mat-select formControlName="stage">
+          @for (stage of ["idea", "prototype", "solution"]; track stage) {
+            <mat-option [value]="stage">{{
+              "projects.stages." + stage | translate
+            }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "projects.fields.mode" | translate }}</mat-label
+        ><mat-select formControlName="mode">
+          @for (mode of ["remote", "onsite", "hybrid"]; track mode) {
+            <mat-option [value]="mode">{{
+              "testers.availability." + mode | translate
+            }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+    </div>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"
+      ><mat-label>{{ "projects.fields.location" | translate }}</mat-label
+      ><input
+        matInput
+        formControlName="location"
+        maxlength="160"
+      /><mat-error>{{
+        "projects.errors.location" | translate
+      }}</mat-error></mat-form-field
+    >
+    @if (data.project) {
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "projects.fields.status" | translate }}</mat-label
+        ><mat-select formControlName="status"
+          ><mat-option value="open">{{
+            "projects.status.open" | translate
+          }}</mat-option
+          ><mat-option value="closed">{{
+            "projects.status.closed" | translate
+          }}</mat-option></mat-select
+        ></mat-form-field
+      >
+    }
+    @if (error(); as errorKey) {
+      <p class="error" role="alert">{{ errorKey | translate }}</p>
+    }
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end"
+  ><button mat-button mat-dialog-close type="button" [disabled]="saving()">
+    {{ "testers.cancel" | translate }}</button
+  ><button
+    mat-flat-button
+    type="submit"
+    form="project-form"
+    [disabled]="saving()"
+  >
+    {{
+      (saving()
+        ? "projects.saving"
+        : data.project
+          ? "projects.save"
+          : "projects.publish"
+      ) | translate
+    }}
+  </button></mat-dialog-actions
+>

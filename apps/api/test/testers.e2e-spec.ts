@@ -276,7 +276,7 @@ describe.skipIf(!databaseUrl)(
           ErrorCodes.VALIDATION_ERROR,
         );
       }
-      for (const query of ['', '   ', 'short', 'x'.repeat(2001)]) {
+      for (const query of ['', '   ', 'x', 'x'.repeat(2001)]) {
         await request(app.getHttpServer())
           .post('/api/testers/search')
           .set(ownerHeaders(owner))
@@ -291,6 +291,48 @@ describe.skipIf(!databaseUrl)(
         MyTesterProfileResponseSchema.parse(own.body).data.profile,
       ).toBeNull();
       expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('paginates persisted profiles without losing people beyond the first page', async () => {
+      const fixtures = Array.from({ length: 65 }, () => ({
+        ...profileInput,
+        id: randomUUID(),
+        ownerHash: newOwner(),
+        consent: true,
+        isActive: true,
+      }));
+      await database.testerProfile.createMany({ data: fixtures });
+      profileIds.push(...fixtures.map((item) => item.id));
+      const firstResponse = await request(app.getHttpServer())
+        .get('/api/testers/profiles')
+        .expect(200);
+      const first = TesterProfilesResponseSchema.parse(firstResponse.body).data;
+      expect(first.profiles).toHaveLength(60);
+      const ids = first.profiles.map((item) => item.id);
+      for (
+        let offset = first.limit;
+        offset < first.total;
+        offset += first.limit
+      ) {
+        const response = await request(app.getHttpServer())
+          .get(`/api/testers/profiles?offset=${offset}`)
+          .expect(200);
+        ids.push(
+          ...TesterProfilesResponseSchema.parse(
+            response.body,
+          ).data.profiles.map((item) => item.id),
+        );
+      }
+      expect(new Set(ids).size).toBe(first.total);
+      expect(ids).toEqual(
+        expect.arrayContaining(fixtures.map((item) => item.id)),
+      );
+      for (const offset of ['-1', '1.5', 'bad', '100001']) {
+        await request(app.getHttpServer())
+          .get(`/api/testers/profiles?offset=${offset}`)
+          .expect(400);
+      }
+      await search(newOwner(), 'GPU');
     });
 
     it('creates and edits the same persistent profile without exposing the owner credential', async () => {

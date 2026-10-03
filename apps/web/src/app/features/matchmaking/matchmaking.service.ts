@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import type { MatchmakingData } from '@repo/api-contracts';
+import type { ClarificationAnswer, MatchmakingData } from '@repo/api-contracts';
 import type { Observable } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
 
@@ -7,7 +7,10 @@ import { ApiService } from '../../core/services/api.service';
 export class MatchmakingService {
   private readonly api = inject(ApiService);
 
-  match(description: string): Observable<MatchmakingData> {
-    return this.api.matchInnovations(description);
+  match(
+    description: string,
+    answers: ClarificationAnswer[] = [],
+  ): Observable<MatchmakingData> {
+    return this.api.matchInnovations(description, answers);
   }
 }

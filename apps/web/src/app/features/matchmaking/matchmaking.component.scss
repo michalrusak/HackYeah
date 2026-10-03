@@ -309,3 +309,47 @@ mat-card-actions a {
   font-size: 13px;
   font-weight: 600;
 }
+
+.clarification-card {
+  margin-top: 24px;
+  padding: clamp(20px, 4vw, 32px);
+  border: 1px solid var(--hub-border);
+  border-left: 4px solid var(--hub-brand);
+  border-radius: 16px;
+  background: var(--hub-surface);
+  overflow-wrap: anywhere;
+}
+.clarification-eyebrow {
+  color: var(--hub-brand);
+  font-size: 14px;
+  font-weight: 600;
+}
+.clarification-progress {
+  font-size: 14px;
+  color: var(--hub-muted);
+}
+.clarification-question {
+  font-weight: 600;
+}
+.clarification-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+.clarification-actions button {
+  min-height: 48px;
+}
+.clarification-history {
+  margin-top: 24px;
+}
+.clarification-history summary {
+  cursor: pointer;
+  padding-block: 12px;
+}
+.clarification-history p {
+  white-space: pre-wrap;
+}
+.clarification-resume {
+  margin-top: 24px;
+}

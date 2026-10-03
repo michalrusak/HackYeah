@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Res,
   SetMetadata,
   UseGuards,
@@ -16,6 +17,7 @@ import {
   TesterAssignmentInputSchema,
   TesterIdSchema,
   TesterProfileInputSchema,
+  TesterProfilesQuerySchema,
   TesterSearchRequestSchema,
   type ApiErrorResponse,
   type ApiSuccessResponse,
@@ -23,6 +25,7 @@ import {
   type TesterAssignmentInput,
   type TesterProfileInput,
   type TesterProfilesData,
+  type TesterProfilesQuery,
   type TesterSearchData,
   type TesterSearchRequest,
   type TesterSearchesData,
@@ -52,9 +55,11 @@ export class TestersController {
 
   @Get('profiles')
   async profiles(
+    @Query(new TesterValidationPipe(TesterProfilesQuerySchema))
+    query: TesterProfilesQuery,
     @Res({ passthrough: true }) response: Response,
   ): Promise<ApiSuccessResponse<TesterProfilesData> | ApiErrorResponse> {
-    return respond(response, await this.service.profiles());
+    return respond(response, await this.service.profiles(query.offset));
   }
 
   @Get('profile/me')

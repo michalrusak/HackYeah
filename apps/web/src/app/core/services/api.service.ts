@@ -8,6 +8,7 @@ import {
   MatchmakingDataSchema,
   MatchmakingRequestSchema,
   type MatchmakingData,
+  type ClarificationAnswer,
 } from '@repo/api-contracts';
 import { map, Observable } from 'rxjs';
 import { z } from 'zod';
@@ -23,7 +24,7 @@ export class ApiService {
   }
 
   request<T>(
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
     path: string,
     schema: { parse(value: unknown): T },
     options: {
@@ -44,8 +45,14 @@ export class ApiService {
       );
   }
 
-  matchInnovations(description: string): Observable<MatchmakingData> {
-    const input = MatchmakingRequestSchema.parse({ description });
+  matchInnovations(
+    description: string,
+    answers: ClarificationAnswer[] = [],
+  ): Observable<MatchmakingData> {
+    const input = MatchmakingRequestSchema.parse({
+      description,
+      ...(answers.length ? { answers } : {}),
+    });
     return this.http
       .post<unknown>(`${this.baseUrl}/matchmaking`, input)
       .pipe(

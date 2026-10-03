@@ -30,12 +30,17 @@ export const TesterProfilesDataSchema = z.object({
   total: z.number().int().nonnegative(),
   limit: z.number().int().positive(),
 });
+export const TesterProfilesQuerySchema = z
+  .object({
+    offset: z.coerce.number().int().min(0).max(100000).default(0),
+  })
+  .strict();
 export const MyTesterProfileDataSchema = z.object({
   profile: TesterProfileSchema.nullable(),
 });
 export const TesterSearchRequestSchema = z
   .object({
-    query: z.string().trim().min(8).max(2000),
+    query: z.string().trim().min(2).max(2000),
   })
   .strict();
 export const TesterMatchSchema = z.object({
@@ -106,6 +111,7 @@ export const TesterSearchesResponseSchema = apiSuccessSchema(
 export type TesterProfileInput = z.infer<typeof TesterProfileInputSchema>;
 export type TesterProfile = z.infer<typeof TesterProfileSchema>;
 export type TesterProfilesData = z.infer<typeof TesterProfilesDataSchema>;
+export type TesterProfilesQuery = z.infer<typeof TesterProfilesQuerySchema>;
 export type MyTesterProfileData = z.infer<typeof MyTesterProfileDataSchema>;
 export type TesterSearchRequest = z.infer<typeof TesterSearchRequestSchema>;
 export type TesterMatch = z.infer<typeof TesterMatchSchema>;

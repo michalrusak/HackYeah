@@ -21,7 +21,8 @@ export class MatchmakingValidationPipe implements PipeTransform<
         success: false,
         error: {
           code: ErrorCodes.VALIDATION_ERROR,
-          message: 'Opis musi zawierać od 1 do 4000 znaków.',
+          message:
+            'Podaj opis (1–4000 znaków) oraz maksymalnie 3 odpowiedzi (1–1000 znaków każda).',
         },
       });
     }

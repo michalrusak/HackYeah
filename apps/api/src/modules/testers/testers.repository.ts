@@ -35,12 +35,13 @@ function toStoredSearch(search: TesterSearch): StoredTesterSearch {
 export class TestersRepository {
   constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
-  listProfiles(limit: number): Promise<[TesterProfile[], number]> {
+  listProfiles(limit: number, offset = 0): Promise<[TesterProfile[], number]> {
     return this.prisma.$transaction([
       this.prisma.testerProfile.findMany({
         where: { isActive: true, consent: true },
         orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }],
         take: limit,
+        skip: offset,
       }),
       this.prisma.testerProfile.count({
         where: { isActive: true, consent: true },

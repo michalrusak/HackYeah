@@ -1,4 +1,5 @@
 import { Test } from '@nestjs/testing';
+import { randomUUID } from 'node:crypto';
 import { ErrorCodes, type TesterAiResult } from '@repo/api-contracts';
 import type { TesterProfile } from '../../generated/prisma/client.js';
 import { TestersAiService } from './testers-ai.service.js';
@@ -99,13 +100,13 @@ describe('TestersService', () => {
 
   it('stores the real candidate limit and total independently of result count', async () => {
     const outcome = await service.search('hashed-key', search.query);
-    expect(repository.listProfiles).toHaveBeenCalledWith(40);
+    expect(repository.listProfiles).toHaveBeenCalledWith(250);
     expect(repository.saveSearch).toHaveBeenCalledWith(
       expect.objectContaining({
         ownerHash: 'hashed-key',
         candidateCount: 1,
         totalProfiles: 80,
-        candidateLimit: 40,
+        candidateLimit: 250,
         matches: [
           expect.objectContaining({
             profileUpdatedAt: profile.updatedAt.toISOString(),
@@ -118,6 +119,32 @@ describe('TestersService', () => {
       data: { candidateCount: 1, totalProfiles: 80, candidateLimit: 40 },
     });
     expect(JSON.stringify(match.mock.calls)).not.toContain('ownerHash');
+  });
+
+  it('includes a matching person beyond the former first forty candidates', async () => {
+    const profiles = Array.from({ length: 210 }, () => ({
+      ...profile,
+      id: randomUUID(),
+    }));
+    const last = profiles.at(-1);
+    if (!last) throw new Error('Missing fixture');
+    repository.listProfiles.mockImplementation(async (limit) => [
+      profiles.slice(0, limit),
+      profiles.length,
+    ]);
+    match.mockResolvedValue({
+      ...interpretation,
+      matches: [{ ...interpretation.matches[0], profileId: last.id }],
+    });
+    const outcome = await service.search('hashed-key', 'GPU');
+    expect(outcome.status).toBe(200);
+    expect(match.mock.calls[0]?.[1]).toHaveLength(210);
+    expect(repository.saveSearch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        candidateCount: 210,
+        matches: [expect.objectContaining({ profileId: last.id })],
+      }),
+    );
   });
 
   it('rejects fabricated matches before saving a search', async () => {

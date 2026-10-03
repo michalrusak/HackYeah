@@ -1,0 +1,228 @@
+<div class="dialog-heading">
+  <h2 mat-dialog-title>
+    {{ data()?.project?.title || ("projects.details" | translate) }}
+  </h2>
+  <button
+    mat-icon-button
+    mat-dialog-close
+    type="button"
+    [disabled]="busy()"
+    [aria-label]="'testers.close' | translate"
+  >
+    <mat-icon aria-hidden="true">close</mat-icon>
+  </button>
+</div>
+<mat-dialog-content>
+  @if (loading()) {
+    <p role="status">{{ "projects.loading" | translate }}</p>
+  }
+  @if (error(); as key) {
+    <p class="error" role="alert">{{ key | translate }}</p>
+  }
+  <p role="status">
+    @if (announcement(); as key) {
+      {{ key | translate }}
+    }
+  </p>
+  @if (data(); as detail) {
+    <div class="meta">
+      <span>{{
+        "projects.organizer" | translate: { name: detail.project.organizerName }
+      }}</span
+      ><span>{{ "projects.stages." + detail.project.stage | translate }}</span
+      ><span>{{ "projects.status." + detail.project.status | translate }}</span
+      ><span
+        >{{ "testers.availability." + detail.project.mode | translate }}
+        @if (detail.project.location) {
+          · {{ detail.project.location }}
+        }
+      </span>
+    </div>
+    <h3>{{ "projects.fields.description" | translate }}</h3>
+    <p class="description">{{ detail.project.description }}</p>
+    <h3>{{ "projects.fields.requirements" | translate }}</h3>
+    <p class="description">{{ detail.project.requirements }}</p>
+    @if (detail.project.isOwner) {
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="busy()"
+        (click)="edit()"
+      >
+        {{ "projects.editAndClose" | translate }}
+      </button>
+      <section class="section">
+        <h3>{{ "projects.applicants" | translate }}</h3>
+        <p>{{ "projects.applicantsHint" | translate }}</p>
+        <div class="grid">
+          @for (item of applicants(); track item.application.id) {
+            <article>
+              <app-tester-card [profile]="item.profile" />
+              <p>
+                {{
+                  "projects.applicationStatus." + item.application.status
+                    | translate
+                }}
+              </p>
+              @if (item.application.message) {
+                <p class="description">{{ item.application.message }}</p>
+              }
+              <div class="actions">
+                @if (item.application.status === "pending") {
+                  <button
+                    mat-flat-button
+                    type="button"
+                    [disabled]="busy()"
+                    (click)="decide(item.application.id, 'accepted')"
+                  >
+                    {{ "projects.accept" | translate }}</button
+                  ><button
+                    mat-stroked-button
+                    type="button"
+                    [disabled]="busy()"
+                    (click)="decide(item.application.id, 'declined')"
+                  >
+                    {{ "projects.decline" | translate }}
+                  </button>
+                }
+              </div>
+            </article>
+          } @empty {
+            <p class="empty">{{ "projects.noApplications" | translate }}</p>
+          }
+        </div>
+      </section>
+    } @else {
+      @if (detail.myApplication; as application) {
+        <p class="notice">
+          {{ "projects.applicationStatus." + application.status | translate }}
+        </p>
+        @if (
+          (application.status === "pending" ||
+            application.status === "accepted") &&
+          !detail.myFeedback
+        ) {
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="busy()"
+            (click)="withdraw()"
+          >
+            {{ "projects.withdraw" | translate }}
+          </button>
+        }
+      }
+      @if (
+        detail.project.status === "open" &&
+        (!detail.myApplication || detail.myApplication.status === "withdrawn")
+      ) {
+        <section class="section">
+          <h3>{{ "projects.applyTitle" | translate }}</h3>
+          <p>{{ "projects.applyHint" | translate }}</p>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic"
+            ><mat-label>{{ "projects.message" | translate }}</mat-label
+            ><textarea
+              matInput
+              [formControl]="message"
+              rows="3"
+              maxlength="1000"
+            ></textarea
+            ><mat-error>{{
+              "projects.messageError" | translate
+            }}</mat-error></mat-form-field
+          ><button
+            mat-flat-button
+            type="button"
+            [disabled]="busy()"
+            (click)="apply()"
+          >
+            {{
+              (auth.user() ? "projects.apply" : "projects.loginToApply")
+                | translate
+            }}
+          </button>
+        </section>
+      }
+      @if (detail.myApplication?.status === "accepted") {
+        <section class="section">
+          <h3>{{ "projects.feedbackTitle" | translate }}</h3>
+          <p>{{ "projects.feedbackHint" | translate }}</p>
+          <form [formGroup]="feedbackForm" (ngSubmit)="saveFeedback()">
+            <mat-form-field appearance="outline"
+              ><mat-label>{{ "projects.rating" | translate }}</mat-label
+              ><mat-select formControlName="rating" required>
+                @for (rating of [1, 2, 3, 4, 5]; track rating) {
+                  <mat-option [value]="rating">{{
+                    "projects.ratings." + rating | translate
+                  }}</mat-option>
+                }</mat-select
+              ><mat-error>{{
+                "projects.ratingError" | translate
+              }}</mat-error></mat-form-field
+            ><mat-form-field appearance="outline" subscriptSizing="dynamic"
+              ><mat-label>{{ "projects.review" | translate }}</mat-label
+              ><textarea
+                matInput
+                formControlName="review"
+                rows="4"
+                maxlength="3000"
+                required
+              ></textarea
+              ><mat-error>{{
+                "projects.reviewError" | translate
+              }}</mat-error></mat-form-field
+            ><mat-form-field appearance="outline" subscriptSizing="dynamic"
+              ><mat-label>{{ "projects.improvement" | translate }}</mat-label
+              ><textarea
+                matInput
+                formControlName="improvement"
+                rows="3"
+                maxlength="2000"
+              ></textarea
+              ><mat-error>{{
+                "projects.improvementError" | translate
+              }}</mat-error></mat-form-field
+            ><button mat-flat-button type="submit" [disabled]="busy()">
+              {{ "projects.saveFeedback" | translate }}
+            </button>
+          </form>
+        </section>
+      }
+    }
+    <section class="section">
+      <h3>{{ "projects.opinions" | translate }}</h3>
+      @if (detail.project.averageRating !== null) {
+        <p>
+          {{
+            "projects.averageRating"
+              | translate
+                : {
+                    rating: detail.project.averageRating,
+                    count: detail.project.feedbackCount,
+                  }
+          }}
+        </p>
+      }
+      @for (item of detail.feedback; track item.id) {
+        <article class="feedback">
+          <h4>{{ item.authorName }}</h4>
+          <p>
+            {{ "projects.ratingValue" | translate: { rating: item.rating } }}
+          </p>
+          <p class="description">{{ item.review }}</p>
+          @if (item.improvement) {
+            <h4>{{ "projects.improvementTitle" | translate }}</h4>
+            <p class="description">{{ item.improvement }}</p>
+          }
+        </article>
+      } @empty {
+        <p>{{ "projects.noOpinions" | translate }}</p>
+      }
+    </section>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end"
+  ><button mat-button mat-dialog-close type="button" [disabled]="busy()">
+    {{ "testers.close" | translate }}
+  </button></mat-dialog-actions
+>

@@ -5,9 +5,12 @@ import type {
   RelatedInformation,
 } from '@repo/api-contracts';
 
+import { MATCHMAKING_RESULT_LIMIT } from '@repo/api-contracts';
+
 export function rankInnovations(
   interpretation: Interpretation,
   catalog: readonly Innovation[],
+  limit = MATCHMAKING_RESULT_LIMIT,
 ): InnovationMatch[] {
   const needs = [...new Set(interpretation.needs)];
   const audiences = [...new Set(interpretation.audiences)];
@@ -56,7 +59,7 @@ export function rankInnovations(
     .sort(
       (a, b) => b.score - a.score || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
     )
-    .slice(0, 5);
+    .slice(0, limit);
 }
 
 export function matchInformation(

@@ -144,4 +144,78 @@ describe('POST /api/matchmaking', () => {
     expect(response.body).toMatchObject({ success: false, error: { code } });
     expect(response.body).not.toHaveProperty('stack');
   });
+  it('uses the original description and answers to find an innovation', async () => {
+    const answers = [
+      {
+        question: 'Komu i w czym pomagamy?',
+        answer: 'Uczniom wracającym do szkoły po terapii.',
+      },
+    ];
+    const response = await request(app.getHttpServer())
+      .post('/api/matchmaking')
+      .send({ description: 'Chcemy pomóc.', answers })
+      .expect(200);
+    const { data } = MatchmakingResponseSchema.parse(response.body);
+    expect(interpret).toHaveBeenCalledWith('Chcemy pomóc.', answers);
+    expect(data.matches[0].id).toBe('bez-presji-z-depresji');
+    expect(data.clarification).toBeUndefined();
+  });
+
+  it('returns a question for a broad result set before truncating cards', async () => {
+    interpret.mockResolvedValue({
+      ...interpretation,
+      audiences: [],
+      areas: [],
+      needs: [
+        'Relacje społeczne',
+        'Dostęp do usług',
+        'Aktywizacja społeczna',
+        'Wsparcie emocjonalne',
+      ],
+      missingInformation: ['Która potrzeba jest najważniejsza?'],
+    });
+    const response = await request(app.getHttpServer())
+      .post('/api/matchmaking')
+      .send({ description: 'Pomoc w wielu obszarach.' })
+      .expect(200);
+    const { data } = MatchmakingResponseSchema.parse(response.body);
+    expect(data.matches).toHaveLength(5);
+    expect(data.clarification?.reason).toBe('too_many_matches');
+    expect(data.clarification?.totalMatches).toBeGreaterThan(5);
+  });
+
+  it('ends unsuccessful clarification after three answers', async () => {
+    interpret.mockResolvedValue({
+      ...interpretation,
+      needs: [],
+      missingInformation: [],
+    });
+    const response = await request(app.getHttpServer())
+      .post('/api/matchmaking')
+      .send({
+        description: 'Chcemy pomóc.',
+        answers: Array.from({ length: 3 }, () => ({
+          question: 'Co?',
+          answer: 'Nie wiem.',
+        })),
+      })
+      .expect(200);
+    expect(
+      MatchmakingResponseSchema.parse(response.body).data.clarification
+        ?.question,
+    ).toBeNull();
+  });
+
+  it.each([
+    [{ question: 'Co?', answer: '  ' }],
+    [{ question: 'Co?', answer: 'a'.repeat(1001) }],
+    [{ question: 'x'.repeat(301), answer: 'Tak' }],
+    Array.from({ length: 4 }, () => ({ question: 'Co?', answer: 'Tak' })),
+  ])('rejects invalid clarification history before AI', async (...answers) => {
+    await request(app.getHttpServer())
+      .post('/api/matchmaking')
+      .send({ description: 'Pomoc', answers })
+      .expect(400);
+    expect(interpret).not.toHaveBeenCalled();
+  });
 });

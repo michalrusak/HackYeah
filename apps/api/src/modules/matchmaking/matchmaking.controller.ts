@@ -22,7 +22,7 @@ export class MatchmakingController {
     @Body(new MatchmakingValidationPipe()) body: MatchmakingRequest,
     @Res({ passthrough: true }) response: Response,
   ): Promise<ApiSuccessResponse<MatchmakingData> | ApiErrorResponse> {
-    const outcome = await this.service.match(body.description);
+    const outcome = await this.service.match(body.description, body.answers);
     response.status(outcome.status);
     return outcome.body;
   }

@@ -1,4 +1,4 @@
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AdaptationService } from '../adaptation/adaptation.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
@@ -28,6 +28,8 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import {
   ApiErrorResponseSchema,
   MatchmakingRequestSchema,
+  ClarificationAnswerSchema,
+  type ClarificationAnswer,
   type MatchmakingData,
 } from '@repo/api-contracts';
 import { MatchmakingService } from './matchmaking.service';
@@ -36,6 +38,7 @@ import { MatchmakingService } from './matchmaking.service';
   selector: 'app-matchmaking',
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     MatButtonModule,
     MatCardModule,
     MatFormFieldModule,
@@ -75,6 +78,47 @@ export class MatchmakingComponent {
   readonly loading = signal(false);
   readonly result = signal<MatchmakingData | null>(null);
   readonly errorKey = signal<string | null>(null);
+  readonly answers = signal<ClarificationAnswer[]>([]);
+  readonly clarificationDismissed = signal(false);
+  readonly answer = new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.maxLength(1000),
+      Validators.pattern(/\S/),
+    ],
+  });
+  readonly answerForm = new FormGroup({ answer: this.answer });
+  private readonly clarificationHeading = viewChild<ElementRef<HTMLElement>>(
+    'clarificationHeading',
+  );
+  private readonly answerInput =
+    viewChild<ElementRef<HTMLTextAreaElement>>('answerInput');
+  private failedAnswers: ClarificationAnswer[] | null = null;
+
+  submitAnswer(): void {
+    if (this.loading()) return;
+    const question = this.result()?.clarification?.question;
+    const parsed = ClarificationAnswerSchema.safeParse({
+      question,
+      answer: this.answer.value,
+    });
+    if (!parsed.success) {
+      this.answer.markAsTouched();
+      this.answerInput()?.nativeElement.focus();
+      return;
+    }
+    this.search([...this.answers(), parsed.data]);
+  }
+
+  retry(): void {
+    this.search(this.failedAnswers ?? this.answers());
+  }
+
+  dismissClarification(): void {
+    this.clarificationDismissed.set(true);
+    this.responseHeading()?.nativeElement.focus();
+  }
 
   constructor() {
     this.description.valueChanges
@@ -82,6 +126,10 @@ export class MatchmakingComponent {
       .subscribe(() => {
         this.result.set(null);
         this.errorKey.set(null);
+        this.answers.set([]);
+        this.answer.reset();
+        this.clarificationDismissed.set(false);
+        this.failedAnswers = null;
       });
   }
 
@@ -97,9 +145,14 @@ export class MatchmakingComponent {
   }
 
   submit(): void {
+    this.search(this.answers());
+  }
+
+  private search(answers: ClarificationAnswer[]): void {
     if (this.loading()) return;
     const parsed = MatchmakingRequestSchema.safeParse({
       description: this.description.value,
+      answers,
     });
     if (!parsed.success) {
       this.description.setErrors({ invalidDescription: true });
@@ -108,21 +161,32 @@ export class MatchmakingComponent {
       return;
     }
     this.loading.set(true);
-    this.result.set(null);
     this.errorKey.set(null);
+    this.failedAnswers = null;
+    this.answer.disable({ emitEvent: false });
     this.description.disable({ emitEvent: false });
     this.service
-      .match(parsed.data.description)
+      .match(parsed.data.description, answers)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
           this.result.set(data);
+          this.answers.set(answers);
+          this.answer.reset('', { emitEvent: false });
+          this.clarificationDismissed.set(false);
           this.finish();
-          afterNextRender(() => this.responseHeading()?.nativeElement.focus(), {
-            injector: this.injector,
-          });
+          afterNextRender(
+            () => {
+              const heading = data.clarification
+                ? this.clarificationHeading()
+                : this.responseHeading();
+              heading?.nativeElement.focus();
+            },
+            { injector: this.injector },
+          );
         },
         error: (error: unknown) => {
+          this.failedAnswers = answers;
           const parsedError =
             error instanceof HttpErrorResponse
               ? ApiErrorResponseSchema.safeParse(error.error)
@@ -151,6 +215,7 @@ export class MatchmakingComponent {
 
   private finish(): void {
     this.loading.set(false);
+    this.answer.enable({ emitEvent: false });
     this.description.enable({ emitEvent: false });
   }
 }

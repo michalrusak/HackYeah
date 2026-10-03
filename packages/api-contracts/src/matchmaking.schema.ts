@@ -45,9 +45,35 @@ export const NeedSchema = z.enum([
   "Dostępna komunikacja",
   "Dostęp do czytelnictwa",
 ]);
+export const MAX_CLARIFICATION_ROUNDS = 3;
+export const MATCHMAKING_RESULT_LIMIT = 5;
+export const ClarificationAnswerSchema = z
+  .object({
+    question: z.string().trim().min(1).max(300),
+    answer: z.string().trim().min(1).max(1000),
+  })
+  .strict();
+export type ClarificationAnswer = z.infer<typeof ClarificationAnswerSchema>;
+export const MatchmakingClarificationSchema = z
+  .object({
+    reason: z.enum(["no_matches", "too_many_matches"]),
+    question: z.string().trim().min(1).max(300).nullable(),
+    round: z.number().int().min(1).max(MAX_CLARIFICATION_ROUNDS),
+    maxRounds: z.literal(MAX_CLARIFICATION_ROUNDS),
+    totalMatches: z.number().int().nonnegative(),
+  })
+  .strict();
+export type MatchmakingClarification = z.infer<
+  typeof MatchmakingClarificationSchema
+>;
+
 export const MatchmakingRequestSchema = z
   .object({
     description: z.string().max(4000).trim().min(1),
+    answers: z
+      .array(ClarificationAnswerSchema)
+      .max(MAX_CLARIFICATION_ROUNDS)
+      .optional(),
   })
   .strict();
 
@@ -119,7 +145,8 @@ export const InformationCatalogSchema = z
 export const MatchmakingDataSchema = z
   .object({
     interpretation: InterpretationSchema,
-    matches: z.array(InnovationMatchSchema).max(5),
+    matches: z.array(InnovationMatchSchema).max(MATCHMAKING_RESULT_LIMIT),
+    clarification: MatchmakingClarificationSchema.optional(),
     relatedInformation: z.array(RelatedInformationSchema).max(3),
     catalog: z
       .object({

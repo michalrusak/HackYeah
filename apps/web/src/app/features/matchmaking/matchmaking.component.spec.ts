@@ -256,4 +256,109 @@ describe('MatchmakingComponent', () => {
     );
     http.expectNone('/api/matchmaking');
   });
+  function showClarification(): void {
+    submitDescription('Chcemy pomóc.');
+    http.expectOne('/api/matchmaking').flush(
+      createApiSuccess({
+        ...result,
+        matches: [],
+        clarification: {
+          reason: 'no_matches',
+          question: 'Komu pomagamy?',
+          round: 1,
+          maxRounds: 3,
+          totalMatches: 0,
+        },
+      }),
+    );
+    fixture.detectChanges();
+  }
+
+  it('asks one question, validates the answer and searches using the conversation', async () => {
+    showClarification();
+    await fixture.whenStable();
+    expect(document.activeElement?.id).toBe('clarification-heading');
+    expect(root.querySelectorAll('.clarification-card textarea').length).toBe(
+      1,
+    );
+    fixture.componentInstance.answer.setValue('   ');
+    fixture.componentInstance.submitAnswer();
+    http.expectNone('/api/matchmaking');
+    fixture.componentInstance.answer.setValue('Seniorom brakuje spotkań.');
+    root
+      .querySelector('.clarification-card form')
+      ?.dispatchEvent(new Event('submit', { cancelable: true }));
+    fixture.detectChanges();
+    const req = http.expectOne('/api/matchmaking');
+    expect(req.request.body).toEqual({
+      description: 'Chcemy pomóc.',
+      answers: [
+        { question: 'Komu pomagamy?', answer: 'Seniorom brakuje spotkań.' },
+      ],
+    });
+    fixture.componentInstance.submitAnswer();
+    http.expectNone('/api/matchmaking');
+    req.flush(createApiSuccess(result));
+    fixture.detectChanges();
+    expect(root.querySelector('.clarification-card')).toBeNull();
+    expect(root.querySelector('.innovation-card')).not.toBeNull();
+  });
+
+  it('preserves the answer and previous result on failure and retries without duplicating history', () => {
+    showClarification();
+    fixture.componentInstance.answer.setValue('Seniorom.');
+    fixture.componentInstance.submitAnswer();
+    const req = http.expectOne('/api/matchmaking');
+    const body = req.request.body;
+    req.flush(
+      { success: false, error: { code: 'AI_TIMEOUT', message: 'timeout' } },
+      { status: 504, statusText: 'Timeout' },
+    );
+    fixture.detectChanges();
+    expect(fixture.componentInstance.answer.value).toBe('Seniorom.');
+    expect(fixture.componentInstance.answers()).toEqual([]);
+    expect(root.querySelector('.clarification-card')).not.toBeNull();
+    root.querySelector<HTMLButtonElement>('.error-state button')?.click();
+    const retry = http.expectOne('/api/matchmaking');
+    expect(retry.request.body).toEqual(body);
+    retry.flush(createApiSuccess(result));
+    expect(fixture.componentInstance.answers().length).toBe(1);
+    fixture.componentInstance.description.setValue('Nowy problem.');
+    expect(fixture.componentInstance.answers()).toEqual([]);
+    expect(fixture.componentInstance.answer.value).toBe('');
+  });
+
+  it('allows skipping questions without discarding results', () => {
+    showClarification();
+    fixture.componentInstance.dismissClarification();
+    fixture.detectChanges();
+    expect(root.querySelector('.clarification-card')).toBeNull();
+    expect(root.querySelector('.results')).not.toBeNull();
+    expect(root.querySelector('.clarification-resume')).not.toBeNull();
+    http.expectNone('/api/matchmaking');
+  });
+
+  it('offers contact instead of more questions when the round limit is reached', () => {
+    submitDescription();
+    http
+      .expectOne('/api/matchmaking')
+      .flush(
+        createApiSuccess({
+          ...result,
+          clarification: {
+            reason: 'too_many_matches',
+            question: null,
+            round: 3,
+            maxRounds: 3,
+            totalMatches: 8,
+          },
+        }),
+      );
+    fixture.detectChanges();
+    expect(root.querySelector('.clarification-card textarea')).toBeNull();
+    expect(
+      root.querySelector('.clarification-card a')?.getAttribute('href'),
+    ).toBe('/rops-contact');
+    expect(root.querySelector('.innovation-card')).not.toBeNull();
+  });
 });

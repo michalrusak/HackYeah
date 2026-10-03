@@ -1,6 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
   createApiSuccess,
+  MATCHMAKING_RESULT_LIMIT,
+  type ClarificationAnswer,
   type ApiErrorResponse,
   type ApiSuccessResponse,
   type MatchmakingData,
@@ -11,6 +13,7 @@ import {
   OpenRouterService,
 } from './openrouter.service.js';
 import { rankInnovations, matchInformation } from './ranking.js';
+import { buildClarification } from './clarification.js';
 
 export interface MatchmakingOutcome {
   status: number;
@@ -24,15 +27,31 @@ export class MatchmakingService {
     @Inject(CatalogRepository) private readonly catalog: CatalogRepository,
   ) {}
 
-  async match(description: string): Promise<MatchmakingOutcome> {
+  async match(
+    description: string,
+    answers: ClarificationAnswer[] = [],
+  ): Promise<MatchmakingOutcome> {
     try {
-      const interpretation = await this.interpreter.interpret(description);
-      const matches = rankInnovations(interpretation, this.catalog.findAll());
+      const interpretation = answers.length
+        ? await this.interpreter.interpret(description, answers)
+        : await this.interpreter.interpret(description);
+      const allMatches = rankInnovations(
+        interpretation,
+        this.catalog.findAll(),
+        Infinity,
+      );
+      const clarification = buildClarification(
+        interpretation,
+        allMatches.length,
+        answers,
+      );
+      const matches = allMatches.slice(0, MATCHMAKING_RESULT_LIMIT);
       return {
         status: 200,
         body: createApiSuccess({
           interpretation,
           matches,
+          ...(clarification ? { clarification } : {}),
           relatedInformation: matchInformation(
             interpretation,
             this.catalog.findInformation(),
