@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,6 +11,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { NAV_ITEMS } from '../../constants/app.constants';
 import { NavItem } from '../../models/nav-item.model';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -31,6 +32,8 @@ import { NavItem } from '../../models/nav-item.model';
   styleUrl: './app-header.component.scss',
 })
 export class AppHeaderComponent {
+  readonly theme = inject(ThemeService);
+
   readonly navItems = input<NavItem[]>(NAV_ITEMS);
   readonly isLoggedIn = input(false);
   readonly notificationCount = input(0);

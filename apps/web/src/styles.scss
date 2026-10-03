@@ -1,4 +1,27 @@
-/* You can add global styles to this file, and also import other style files */
+html,
+body {
+  height: 100%;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+html.dark-theme {
+  color-scheme: dark;
+
+  body {
+    background: #121212;
+    color: rgb(255 255 255 / 87%);
+  }
+
+  .mat-mdc-card {
+    background: #1e1e1e;
+    color: inherit;
+  }
+
+  .footer-toolbar {
+    background: #1a1a1a;
+  }
+}

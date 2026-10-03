@@ -5,6 +5,8 @@ import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { NAV_ITEMS } from '../../constants/app.constants';
+import { AppBreadcrumbComponent } from '../app-breadcrumb/app-breadcrumb.component';
+import { AppFooterComponent } from '../app-footer/app-footer.component';
 import { AppHeaderComponent } from '../app-header/app-header.component';
 
 @Component({
@@ -18,6 +20,8 @@ import { AppHeaderComponent } from '../app-header/app-header.component';
     MatListModule,
     MatIconModule,
     AppHeaderComponent,
+    AppBreadcrumbComponent,
+    AppFooterComponent,
   ],
   templateUrl: './app-layout.component.html',
   styleUrl: './app-layout.component.scss',

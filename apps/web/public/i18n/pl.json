@@ -20,13 +20,21 @@
     "profile": "Profil",
     "settings": "Ustawienia",
     "logout": "Wyloguj",
-    "defaultUser": "Użytkownik"
+    "defaultUser": "Użytkownik",
+    "themeDark": "Włącz tryb ciemny",
+    "themeLight": "Włącz tryb jasny"
+  },
+  "footer": {
+    "copyright": "© {{year}} HackYeah"
   },
   "home": {
     "title": "Witaj w {{name}}",
     "subtitle": "Layout z headerem jest gotowy",
     "description": "Header zawiera nawigację, wyszukiwarkę, powiadomienia i menu użytkownika. Na mobile działa boczne menu.",
-    "cta": "Zacznij budować"
+    "cta": "Zacznij budować",
+    "apiLabel": "API",
+    "dbLabel": "Baza danych",
+    "apiError": "Nie udało się połączyć z API. Uruchom pnpm dev i pnpm docker:up."
   },
   "about": {
     "title": "O projekcie",

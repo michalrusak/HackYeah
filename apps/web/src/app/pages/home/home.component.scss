@@ -3,3 +3,15 @@ mat-card-actions button {
   align-items: center;
   gap: 8px;
 }
+
+.api-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.api-error {
+  color: #c62828;
+  margin-top: 12px;
+}

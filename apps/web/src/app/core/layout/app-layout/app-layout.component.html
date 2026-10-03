@@ -16,7 +16,7 @@
     </mat-nav-list>
   </mat-sidenav>
 
-  <mat-sidenav-content>
+  <mat-sidenav-content class="layout-content">
     <app-header
       [isLoggedIn]="isLoggedIn()"
       [notificationCount]="notificationCount()"
@@ -28,7 +28,10 @@
     />
 
     <main class="page-content">
+      <app-breadcrumb />
       <router-outlet />
     </main>
+
+    <app-footer />
   </mat-sidenav-content>
 </mat-sidenav-container>

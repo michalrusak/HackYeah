@@ -1,0 +1,10 @@
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  @for (item of breadcrumbs(); track item.url; let last = $last) {
+    @if (!last) {
+      <a [routerLink]="item.url">{{ item.labelKey | translate }}</a>
+      <mat-icon aria-hidden="true">chevron_right</mat-icon>
+    } @else {
+      <span class="current">{{ item.labelKey | translate }}</span>
+    }
+  }
+</nav>

@@ -11,7 +11,7 @@ Living document. AI agents: read before choosing patterns.
 | Lint / format | oxlint (apps) + Prettier (root) |
 | Containers | Docker Compose (PostgreSQL 17) |
 | ORM | **TypeORM** (NestJS) |
-| Validation | class-validator / Zod at boundaries (docelowo `@repo/api-contracts`) |
+| Validation | Zod w `@repo/api-contracts` (envelope, hello, health) |
 | API shape | `{ success, data }` / `{ success, error }` — see `playbooks/03-api.md` |
 | API layers | Controller → Service → Repository → TypeORM |
 | Frontend UI | **Angular Material** + CDK |
@@ -33,7 +33,7 @@ Living document. AI agents: read before choosing patterns.
 |---------|---------|
 | `@repo/eslint-config` | Shared ESLint |
 | `@repo/typescript-config` | Shared tsconfig |
-| `@repo/api-contracts` | *(planned)* Zod schemas, types, error codes |
+| `@repo/api-contracts` | Zod schemas, typy envelope, error codes (hello, health) |
 | `@repo/api-client` | *(planned)* typed HTTP dla Angular |
 
 ## Nie używamy
@@ -47,7 +47,7 @@ Living document. AI agents: read before choosing patterns.
 
 ## Open decisions
 
-- [ ] `@repo/api-contracts` — kiedy wydzielić wspólne Zod/types
+- [x] `@repo/api-contracts` — wspólne Zod/types (hello, health, envelope)
 - [ ] Auth: JWT vs session
 - [ ] Angular tests: Karma (default) vs Vitest
 - [ ] PR / comment language: English vs Polish

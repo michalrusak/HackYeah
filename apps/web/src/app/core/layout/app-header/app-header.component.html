@@ -55,6 +55,17 @@
   <button
     mat-icon-button
     type="button"
+    [attr.aria-label]="
+      (theme.isDark() ? 'header.themeLight' : 'header.themeDark') | translate
+    "
+    (click)="theme.toggle()"
+  >
+    <mat-icon>{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+
+  <button
+    mat-icon-button
+    type="button"
     [attr.aria-label]="'header.notifications' | translate"
     [matMenuTriggerFor]="notificationsMenu"
   >

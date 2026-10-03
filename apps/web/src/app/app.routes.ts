@@ -9,9 +9,17 @@ export const routes: Routes = [
     path: '',
     component: AppLayoutComponent,
     children: [
-      { path: '', component: HomeComponent },
-      { path: 'about', component: AboutComponent },
-      { path: 'contact', component: ContactComponent },
+      { path: '', component: HomeComponent, data: { breadcrumb: 'nav.home' } },
+      {
+        path: 'about',
+        component: AboutComponent,
+        data: { breadcrumb: 'nav.about' },
+      },
+      {
+        path: 'contact',
+        component: ContactComponent,
+        data: { breadcrumb: 'nav.contact' },
+      },
     ],
   },
 ];

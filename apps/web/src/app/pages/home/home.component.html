@@ -7,6 +7,25 @@
   </mat-card-header>
   <mat-card-content>
     <p>{{ 'home.description' | translate }}</p>
+
+    @if (apiError()) {
+      <p class="api-error">{{ 'home.apiError' | translate }}</p>
+    } @else {
+      <div class="api-status">
+        @if (apiMessage()) {
+          <mat-chip-set>
+            <mat-chip>{{ 'home.apiLabel' | translate }}: {{ apiMessage() }}</mat-chip>
+          </mat-chip-set>
+        }
+        @if (dbStatus()) {
+          <mat-chip-set>
+            <mat-chip [highlighted]="dbStatus() === 'up'">
+              {{ 'home.dbLabel' | translate }}: {{ dbStatus() }}
+            </mat-chip>
+          </mat-chip-set>
+        }
+      </div>
+    }
   </mat-card-content>
   <mat-card-actions align="end">
     <button mat-raised-button color="primary">

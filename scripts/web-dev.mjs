@@ -9,5 +9,9 @@ const webRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../a
 const port = process.env.WEB_PORT ?? '4200';
 
 await waitForExit(
-  execLocal('ng', ['serve', '--port', port], { cwd: webRoot }),
+  execLocal(
+    'ng',
+    ['serve', '--port', port, '--proxy-config', 'proxy.conf.json'],
+    { cwd: webRoot },
+  ),
 );

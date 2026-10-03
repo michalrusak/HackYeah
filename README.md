@@ -199,6 +199,15 @@ corepack prepare pnpm@11.25.0 --activate
 6. `pnpm dev`
 7. Otwórz http://localhost:4200
 
+## Testy
+
+Szczegóły: [`docs/TESTING.md`](docs/TESTING.md)
+
+```bash
+pnpm test          # unit
+pnpm test:e2e      # API E2E
+```
+
 ## Reguły AI
 
 Szczegóły dla agentów i zespołu: [`ai-rules/README.md`](ai-rules/README.md)  
