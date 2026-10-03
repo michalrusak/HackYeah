@@ -1,3 +1,4 @@
+export * from "./adaptation.schema.js";
 export * from "./error-codes.js";
 export * from "./health.schema.js";
 export * from "./hello.schema.js";

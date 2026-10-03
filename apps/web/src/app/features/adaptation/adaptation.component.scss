@@ -1,0 +1,260 @@
+:host {
+  display: block;
+  color: var(--hub-ink);
+}
+.intro {
+  margin: 24px 0;
+  max-width: 760px;
+}
+h1 {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  margin: 10px 0 16px;
+  text-wrap: balance;
+}
+h2 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+h3 {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 24px 0 8px;
+}
+p,
+li {
+  line-height: 1.55;
+}
+p {
+  margin: 8px 0 16px;
+}
+.intro p,
+.muted,
+.session-note {
+  color: var(--hub-muted);
+}
+.eyebrow {
+  color: var(--hub-brand);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.innovation {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 20px 24px;
+  background: var(--hub-soft);
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+.innovation > mat-icon {
+  flex-shrink: 0;
+  color: var(--hub-brand);
+}
+.innovation strong,
+.innovation div > span {
+  display: block;
+}
+.innovation div > span {
+  font-size: 0.82rem;
+  color: var(--hub-muted);
+  margin-bottom: 4px;
+}
+.badge {
+  margin-left: auto;
+  border: 1px solid var(--hub-border);
+  border-radius: 24px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  background: var(--hub-surface);
+}
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.panel {
+  background: var(--hub-surface);
+  border: 1px solid var(--hub-border);
+  border-radius: 20px;
+  padding: 28px;
+  min-width: 0;
+}
+.panel-heading {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.panel-heading > mat-icon {
+  color: var(--hub-brand);
+  flex-shrink: 0;
+}
+.panel-heading p {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: var(--hub-muted);
+}
+.agent-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--hub-soft);
+  color: var(--hub-brand);
+  flex-shrink: 0;
+}
+mat-form-field {
+  width: 100%;
+  margin: 12px 0;
+}
+textarea {
+  line-height: 1.55;
+}
+.reply {
+  margin-top: 24px;
+}
+.reply h3 {
+  font-size: 1.15rem;
+  margin: 16px 0;
+}
+.suggestions,
+.actions,
+.plan-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0 8px;
+}
+.suggestions button {
+  height: auto;
+  min-height: 44px;
+  padding-block: 10px;
+  text-align: left;
+  white-space: normal;
+}
+.session-note,
+.muted,
+.sources,
+.history {
+  font-size: 0.82rem;
+}
+.session-note {
+  margin: 24px 0 0;
+}
+.notice,
+.changes {
+  background: var(--hub-soft);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 0.85rem;
+}
+.changes {
+  background: var(--hub-green-soft);
+}
+.changes h3 {
+  margin-top: 0;
+}
+.resource {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--hub-border);
+}
+.resource > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+.resource p {
+  font-size: 0.9rem;
+  margin: 8px 0 0;
+}
+.status {
+  font-size: 0.72rem;
+  border-radius: 5px;
+  padding: 4px 7px;
+  background: var(--hub-bg);
+  color: var(--hub-muted);
+}
+.status.available {
+  background: var(--hub-green-soft);
+  color: var(--hub-green);
+}
+.proposal {
+  border-left: 3px solid var(--hub-brand);
+  padding: 4px 0 4px 14px;
+  margin: 18px 0;
+  font-size: 0.9rem;
+}
+.source-refs {
+  display: grid;
+  gap: 6px;
+  font-size: 0.75rem;
+}
+.source-refs a,
+.sources a {
+  color: var(--hub-brand);
+  overflow-wrap: anywhere;
+}
+li {
+  margin: 8px 0;
+}
+ul,
+ol {
+  padding-left: 22px;
+}
+summary {
+  cursor: pointer;
+  padding: 12px 0;
+  text-decoration: underline;
+}
+.history p {
+  padding: 10px;
+  background: var(--hub-bg);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.loading {
+  margin-top: 24px;
+  color: var(--hub-brand);
+  font-size: 0.85rem;
+}
+.error {
+  background: var(--hub-error-soft);
+  color: var(--hub-error);
+  padding: 16px;
+  border-radius: 10px;
+  margin-top: 16px;
+}
+.error p:last-child {
+  margin-bottom: 0;
+}
+.empty-plan {
+  padding: 24px 0;
+  color: var(--hub-muted);
+}
+.empty-plan > mat-icon {
+  color: var(--hub-brand);
+}
+@media (max-width: 800px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+  .panel {
+    padding: 20px;
+  }
+  .innovation {
+    padding: 16px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    margin-left: 40px;
+  }
+}

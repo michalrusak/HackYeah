@@ -1,0 +1,290 @@
+<section aria-labelledby="adaptation-title">
+  <a mat-button routerLink="/matchmaking"
+    ><mat-icon aria-hidden="true">arrow_back</mat-icon
+    >{{ "adaptation.back" | translate }}</a
+  >
+  <header class="intro">
+    <span class="eyebrow">{{ "adaptation.eyebrow" | translate }}</span>
+    <h1 id="adaptation-title">{{ "adaptation.title" | translate }}</h1>
+    <p>{{ "adaptation.subtitle" | translate }}</p>
+  </header>
+  <div class="innovation">
+    <mat-icon aria-hidden="true">local_shipping</mat-icon>
+    <div>
+      <span>{{ "adaptation.selected" | translate }}</span
+      ><strong>{{ "adaptation.innovation" | translate }}</strong>
+    </div>
+    <span class="badge">{{ "adaptation.draft" | translate }}</span>
+  </div>
+  <div class="workspace">
+    <section
+      class="conversation panel"
+      aria-labelledby="conversation-title"
+      [attr.aria-busy]="loading()"
+    >
+      <div class="panel-heading">
+        <span class="agent-icon"
+          ><mat-icon aria-hidden="true">forum</mat-icon></span
+        >
+        <div>
+          <h2 id="conversation-title">
+            {{ "adaptation.assistant" | translate }}
+          </h2>
+          <p>{{ "adaptation.assistantHint" | translate }}</p>
+        </div>
+      </div>
+      @if (!session.result()) {
+        <form [formGroup]="needForm" (ngSubmit)="start()">
+          <p>{{ "adaptation.startHint" | translate }}</p>
+          <mat-form-field appearance="outline"
+            ><mat-label>{{ "adaptation.need" | translate }}</mat-label
+            ><textarea
+              matInput
+              [formControl]="need"
+              rows="4"
+              maxlength="4000"
+              [readonly]="loading()"
+            ></textarea>
+          </mat-form-field>
+          <button
+            mat-flat-button
+            type="submit"
+            [disabled]="loading() || !need.value.trim()"
+          >
+            {{ "adaptation.start" | translate
+            }}<mat-icon aria-hidden="true">arrow_forward</mat-icon>
+          </button>
+        </form>
+      }
+      @if (session.result(); as result) {
+        <details class="history">
+          <summary>
+            {{ "adaptation.history" | translate }} ({{
+              session.turns().length
+            }})
+          </summary>
+          <p>
+            <strong>{{ "adaptation.need" | translate }}</strong
+            ><br />{{ session.need() }}
+          </p>
+          @for (turn of session.turns(); track $index) {
+            <p>
+              <strong>{{ turn.question }}</strong
+              ><br />{{ turn.answer }}
+            </p>
+          }
+        </details>
+        <div class="reply">
+          <span class="eyebrow">{{ "adaptation.aiProposal" | translate }}</span>
+          <p>{{ result.advice.message }}</p>
+          <h3 #responseHeading tabindex="-1">
+            {{
+              result.advice.question || ("adaptation.correction" | translate)
+            }}
+          </h3>
+        </div>
+        @if (session.turns().length < 16) {
+          @if (result.advice.question) {
+            <div class="suggestions">
+              @for (
+                suggestion of result.advice.suggestedAnswers;
+                track $index
+              ) {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [disabled]="loading()"
+                  (click)="send(suggestion)"
+                >
+                  {{ suggestion }}
+                </button>
+              }
+            </div>
+          }
+          <form [formGroup]="answerForm" (ngSubmit)="send()">
+            <mat-form-field appearance="outline"
+              ><mat-label>{{ "adaptation.answer" | translate }}</mat-label
+              ><textarea
+                matInput
+                [formControl]="answer"
+                rows="3"
+                maxlength="2000"
+                [readonly]="loading()"
+                aria-describedby="answer-hint"
+              ></textarea
+              ><mat-hint id="answer-hint">{{
+                "adaptation.privacy" | translate
+              }}</mat-hint></mat-form-field
+            >
+            <div class="actions">
+              <button
+                mat-flat-button
+                type="submit"
+                [disabled]="loading() || !answer.value.trim()"
+              >
+                {{ "adaptation.update" | translate
+                }}<mat-icon aria-hidden="true">arrow_forward</mat-icon>
+              </button>
+              @if (result.advice.question) {
+                <button
+                  mat-button
+                  type="button"
+                  [disabled]="loading()"
+                  (click)="skip()"
+                >
+                  {{ "adaptation.unknown" | translate }}
+                </button>
+              }
+            </div>
+          </form>
+        } @else {
+          <p>{{ "adaptation.limit" | translate }}</p>
+        }
+      }
+      @if (loading()) {
+        <div role="status" class="loading">
+          <mat-progress-bar mode="indeterminate" />
+          <p>{{ "adaptation.loading" | translate }}</p>
+        </div>
+      }
+      @if (errorKey()) {
+        <div class="error" role="alert">
+          <p>{{ errorKey() | translate }}</p>
+          <p>{{ "adaptation.retryHint" | translate }}</p>
+        </div>
+      }
+      <p class="session-note">{{ "adaptation.sessionNote" | translate }}</p>
+    </section>
+    <aside class="plan panel" aria-labelledby="plan-title">
+      <div class="panel-heading">
+        <mat-icon aria-hidden="true">assignment</mat-icon>
+        <div>
+          <h2 id="plan-title">{{ "adaptation.plan" | translate }}</h2>
+          <p>{{ "adaptation.planHint" | translate }}</p>
+        </div>
+      </div>
+      <p class="notice">{{ "adaptation.disclaimer" | translate }}</p>
+      <h3>{{ "adaptation.coreTitle" | translate }}</h3>
+      <p>{{ "adaptation.core" | translate }}</p>
+      @if (session.result(); as result) {
+        @if (result.advice.changes.length) {
+          <div class="changes">
+            <h3>{{ "adaptation.changes" | translate }}</h3>
+            <ul>
+              @for (change of result.advice.changes; track $index) {
+                <li>{{ change }}</li>
+              }
+            </ul>
+          </div>
+        }
+        <h3>{{ "adaptation.objective" | translate }}</h3>
+        <p>{{ result.advice.objective }}</p>
+        <h3>{{ "adaptation.resources" | translate }}</h3>
+        @for (resource of result.advice.resources; track $index) {
+          <div class="resource">
+            <div>
+              <strong>{{ resource.name }}</strong
+              ><span
+                class="status"
+                [class.available]="resource.status === 'declared'"
+                >{{
+                  "adaptation.statuses." + resource.status | translate
+                }}</span
+              >
+            </div>
+            <p>{{ resource.detail }}</p>
+          </div>
+        } @empty {
+          <p class="muted">{{ "adaptation.noResources" | translate }}</p>
+        }
+        <h3>{{ "adaptation.proposals" | translate }}</h3>
+        <p class="muted">{{ "adaptation.proposalHint" | translate }}</p>
+        @for (proposal of result.advice.proposals; track $index) {
+          <article class="proposal">
+            <strong>{{ proposal.change }}</strong>
+            <p>
+              <span>{{ "adaptation.tradeoff" | translate }}:</span>
+              {{ proposal.tradeoff }}
+            </p>
+            <div class="source-refs">
+              <span>{{ "adaptation.sourceBasis" | translate }}:</span>
+              @for (id of proposal.sourceIds; track id) {
+                @for (source of result.sources; track source.id) {
+                  @if (source.id === id) {
+                    <a
+                      [href]="source.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >{{ source.label
+                      }}<span class="sr-only">{{
+                        "matchmaking.newTab" | translate
+                      }}</span></a
+                    >
+                  }
+                }
+              }
+            </div>
+          </article>
+        }
+        <h3>{{ "adaptation.gaps" | translate }}</h3>
+        <ul>
+          @for (gap of result.advice.gaps; track $index) {
+            <li>{{ gap }}</li>
+          } @empty {
+            <li>{{ "adaptation.verify" | translate }}</li>
+          }
+        </ul>
+        <h3>{{ "adaptation.budget" | translate }}</h3>
+        <p>{{ result.advice.budget }}</p>
+        <h3>{{ "adaptation.nextSteps" | translate }}</h3>
+        <ol>
+          @for (step of result.advice.nextSteps; track $index) {
+            <li>{{ step }}</li>
+          }
+        </ol>
+        <div class="plan-actions">
+          <button
+            mat-stroked-button
+            [disabled]="loading()"
+            (click)="exportPlan()"
+          >
+            <mat-icon aria-hidden="true">download</mat-icon
+            >{{ "adaptation.download" | translate }}</button
+          ><button
+            mat-flat-button
+            [disabled]="loading()"
+            (click)="prepareContact()"
+          >
+            {{ "adaptation.handoff" | translate }}
+          </button>
+        </div>
+        <p class="muted">{{ "adaptation.handoffHint" | translate }}</p>
+        <details class="sources">
+          <summary>{{ "adaptation.sources" | translate }}</summary>
+          @for (source of result.sources; track source.id) {
+            <p>
+              <a [href]="source.url" target="_blank" rel="noopener noreferrer"
+                >{{ source.label
+                }}<span class="sr-only">{{
+                  "matchmaking.newTab" | translate
+                }}</span></a
+              >
+            </p>
+          }
+          <p>{{ "adaptation.attribution" | translate }}</p>
+        </details>
+      } @else {
+        <div class="empty-plan">
+          <mat-icon aria-hidden="true">playlist_add_check</mat-icon>
+          <h3>{{ "adaptation.emptyTitle" | translate }}</h3>
+          <p>{{ "adaptation.emptyHint" | translate }}</p>
+          <ul>
+            <li>{{ "adaptation.resources" | translate }}</li>
+            <li>{{ "adaptation.proposals" | translate }}</li>
+            <li>{{ "adaptation.gaps" | translate }}</li>
+          </ul>
+        </div>
+      }
+    </aside>
+  </div>
+</section>

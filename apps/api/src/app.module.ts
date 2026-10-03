@@ -11,6 +11,8 @@ import { TestersModule } from './modules/testers/testers.module.js';
 import { IdeaCreatorModule } from './modules/idea-creator/idea-creator.module.js';
 import { ContactModule } from './modules/contact/contact.module.js';
 
+import { AdaptationModule } from './modules/adaptation/adaptation.module.js';
+
 const isTestEnv = process.env.NODE_ENV === 'test';
 
 @Module({
@@ -29,6 +31,7 @@ const isTestEnv = process.env.NODE_ENV === 'test';
     ...(isTestEnv ? [] : [PrismaModule, IdeaCreatorModule, ContactModule]),
     HealthModule,
     MatchmakingModule,
+    AdaptationModule,
     ...(isTestEnv ? [] : [TestersModule]),
   ],
   controllers: [AppController],

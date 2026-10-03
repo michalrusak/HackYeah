@@ -1,3 +1,4 @@
+import { ContactDraftService } from '../../core/services/contact-draft.service';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -62,7 +63,15 @@ export class RopsContactComponent implements OnInit {
     this.isCreatingNew = false;
   }
 
+  private readonly contactDraft = inject(ContactDraftService);
+
   ngOnInit() {
+    const draft = this.contactDraft.take();
+    if (draft) {
+      this.createNewConversation();
+      this.newSubject = draft.subject;
+      this.newMessage = draft.body;
+    }
     this.loadConversations();
   }
 
@@ -96,7 +105,12 @@ export class RopsContactComponent implements OnInit {
   sendMessage() {
     if (!this.newMessage.trim()) return;
 
-    if (this.isCreatingNew && this.newSubject.trim() && this.newFirstName.trim() && this.newLastName.trim()) {
+    if (
+      this.isCreatingNew &&
+      this.newSubject.trim() &&
+      this.newFirstName.trim() &&
+      this.newLastName.trim()
+    ) {
       this.contactService
         .createConversation({
           firstName: this.newFirstName,

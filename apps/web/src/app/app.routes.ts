@@ -18,6 +18,14 @@ export const routes: Routes = [
         data: { breadcrumb: 'nav.matchmaking' },
       },
       {
+        path: 'dostosuj/mobilne-centrum-pomocy',
+        loadComponent: () =>
+          import('./features/adaptation/adaptation.component').then(
+            (m) => m.AdaptationComponent,
+          ),
+        data: { breadcrumb: 'adaptation.cta' },
+      },
+      {
         path: 'tester-innowacji',
         loadComponent: () =>
           import('./features/testers/testers.component').then(

@@ -1,3 +1,4 @@
+import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
@@ -61,6 +62,7 @@ describe('MatchmakingComponent', () => {
     await TestBed.configureTestingModule({
       imports: [MatchmakingComponent],
       providers: [
+        provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideNoopAnimations(),

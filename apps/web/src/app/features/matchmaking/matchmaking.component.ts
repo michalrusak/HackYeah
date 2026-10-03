@@ -1,3 +1,5 @@
+import { Router } from '@angular/router';
+import { AdaptationService } from '../adaptation/adaptation.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   afterNextRender,
@@ -46,6 +48,14 @@ import { MatchmakingService } from './matchmaking.service';
   styleUrl: './matchmaking.component.scss',
 })
 export class MatchmakingComponent {
+  private readonly router = inject(Router);
+  private readonly adaptation = inject(AdaptationService);
+
+  adapt(): void {
+    this.adaptation.begin(this.description.value);
+    void this.router.navigate(['/dostosuj/mobilne-centrum-pomocy']);
+  }
+
   private readonly service = inject(MatchmakingService);
   private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);

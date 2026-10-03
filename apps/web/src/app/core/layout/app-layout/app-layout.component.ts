@@ -1,3 +1,4 @@
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { FocusMonitor } from '@angular/cdk/a11y';
 import {
   afterNextRender,
@@ -5,10 +6,14 @@ import {
   ElementRef,
   inject,
   Injector,
+  signal,
   ViewChild,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import {
   Router,
   NavigationEnd,
@@ -22,13 +27,32 @@ import { NAV_ITEMS } from '../../constants/app.constants';
 
 @Component({
   selector: 'app-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe],
+  host: { '(document:keydown.escape)': 'dismissSidebar()' },
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    TranslatePipe,
+    MatButtonModule,
+    MatIconModule,
+    MatSidenavModule,
+  ],
   templateUrl: './app-layout.component.html',
   styleUrl: './app-layout.component.scss',
 })
 export class AppLayoutComponent {
   readonly router = inject(Router);
   readonly navItems = NAV_ITEMS;
+  readonly sidebarPinned = signal(false);
+  readonly sidebarDismissed = signal(false);
+  readonly mobileNavOpen = signal(false);
+  readonly isMobile = toSignal(
+    inject(BreakpointObserver)
+      .observe('(max-width: 767px)')
+      .pipe(map((state) => state.matches)),
+    { initialValue: false },
+  );
+
   @ViewChild('mainContent', { read: ElementRef })
   private mainContent?: ElementRef<HTMLElement>;
   private readonly focusMonitor = inject(FocusMonitor);
@@ -78,6 +102,11 @@ export class AppLayoutComponent {
   }
 
   onNavigationClick(): void {
+    this.mobileNavOpen.set(false);
     this.pendingNavigationFocus = true;
+  }
+
+  dismissSidebar(): void {
+    if (!this.isMobile()) this.sidebarDismissed.set(true);
   }
 }

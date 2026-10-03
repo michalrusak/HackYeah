@@ -224,6 +224,11 @@
                 </div>
               </mat-card-content>
               <mat-card-actions>
+                @if (match.id === "mobilne-centrum-pomocy") {
+                  <button mat-flat-button type="button" (click)="adapt()">
+                    {{ "adaptation.cta" | translate }}
+                  </button>
+                }
                 <a
                   mat-stroked-button
                   [href]="match.sourceUrl"
