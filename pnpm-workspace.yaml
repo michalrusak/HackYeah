@@ -1,7 +1,6 @@
 packages:
   - "apps/*"
   - "packages/*"
-
 # pnpm 11: bez tego install/start pada z ERR_PNPM_IGNORED_BUILDS.
 # Nie uruchamiaj ręcznie `pnpm approve-builds` — lista jest w repo.
 allowBuilds:

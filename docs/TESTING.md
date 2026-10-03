@@ -21,12 +21,53 @@ pnpm --filter api test
 
 - Runner: **Vitest** (`vitest.config.e2e.ts`)
 - Pliki: `test/**/*.e2e-spec.ts`
-- Setup: `test/setup-e2e.ts` ustawia `NODE_ENV=test` (bez Prisma — szybkie testy HTTP)
+- Setup: `test/setup-e2e.ts` ustawia `NODE_ENV=test` (domyślnie bez połączenia z bazą; zestaw PostgreSQL włącza je jawnie)
 - Walidacja odpowiedzi: schematy Zod z `@repo/api-contracts`
 
 ```bash
 pnpm --filter api test:e2e
 ```
+
+### Tester innowacji — prawdziwy PostgreSQL
+
+`apps/api/test/testers.e2e-spec.ts` uruchamia pełny moduł NestJS z repozytorium
+Prisma i produkcyjnymi migracjami SQL. Zastąpiony jest jedynie transport HTTP do modelu
+AI, dzięki czemu testy są deterministyczne i nie zużywają płatnych tokenów.
+Bez `TEST_DATABASE_URL` ten zestaw jest pomijany; pozostałe E2E nadal działają.
+
+Wymagania: uruchomiony PostgreSQL, Node.js 22 lub nowszy obsługiwany przez projekt
+oraz zbudowane kontrakty: `pnpm --filter @repo/api-contracts build`.
+Po zmianie modeli wygeneruj klienta: `pnpm --filter api db:generate`.
+Zalecana jest osobna baza testowa. Rola w połączeniu musi móc tworzyć schematy.
+Adres ustaw w środowisku procesu, nie zapisuj danych dostępowych w repozytorium.
+
+PowerShell:
+
+```powershell
+$env:TEST_DATABASE_URL = 'postgresql://user:password@localhost:5432/hackyeah_test'
+pnpm --filter api test:e2e
+Remove-Item Env:TEST_DATABASE_URL
+```
+
+macOS / Linux:
+
+```bash
+TEST_DATABASE_URL='postgresql://user:password@localhost:5432/hackyeah_test' pnpm --filter api test:e2e
+```
+
+Każdy przebieg tworzy własny schemat `testers_e2e_<UUID>`, ustawia `search_path`
+i wykonuje pliki SQL z `apps/api/prisma/migrations`. Klient Prisma z adapterem
+PostgreSQL używa wyłącznie tego schematu. Możliwe jest wskazanie istniejącej
+bazy: tabele aplikacji w `public` nie są używane ani czyszczone. Po testach usuwane
+są wyłącznie rekordy utworzone w danym przebiegu. Schemat i tabele pozostają;
+testy nie wykonują `DROP`, `TRUNCATE` ani resetu bazy.
+
+Zakres: walidacja zgody i formularza, tworzenie oraz edycja profilu, izolacja
+kluczy właścicieli, ukrywanie kluczy w API i danych AI, wyszukiwanie wyłącznie
+aktywnych profili, odrzucanie nieistniejących / nieaktywnych / powtórzonych ID
+modelu, cofnięcie publikacji, unieważnianie wyników po edycji profilu (także
+podczas trwającego zapytania AI), kontrola przypisań oraz ich trwałość po
+restarcie aplikacji.
 
 ## Web — unit (`apps/web`)
 
@@ -48,4 +89,5 @@ pnpm test
 pnpm test:e2e
 ```
 
-E2E API z prawdziwą bazą (opcjonalnie): uruchom `pnpm docker:up` i testuj bez `NODE_ENV=test` w osobnym pliku spec.
+W CI zestaw PostgreSQL można włączyć przez `TEST_DATABASE_URL`; nie wymaga zmiany
+`NODE_ENV=test`. Bez tej zmiennej przebiegi pozostają niezależne od bazy.

@@ -35,7 +35,7 @@ Attach at the start of **every** session.
 | Skrypty cross-platform | root `scripts/` | `scripts/setup.mjs`, `scripts/web-dev.mjs` |
 | Nest module structure | `00-scaffold`, `03-api` | `examples/nest-users.module.ts` |
 | Repository / Service layers | `03-api` | `examples/users.repository.ts` |
-| TypeORM + Postgres | `02-infra`, `03-api` | `apps/api/src/config/database.config.ts` |
+| Prisma + Postgres | `02-infra`, `03-api` | `apps/api/prisma/schema.prisma`, `apps/api/src/prisma/prisma.service.ts` |
 | Angular layout, Material, i18n | `05-web-angular` | `apps/web/public/i18n/pl.json` |
 | i18n pl.json | `05-web-angular` | `examples/pl.json` |
 
@@ -47,7 +47,7 @@ Attach at the start of **every** session.
 | Git | No commit / push / merge by agent |
 | Database | No DROP, no destructive reset bez zgody |
 | TypeScript | No `any`, no `eslint-disable` |
-| API | Controller → Service → Repository → TypeORM |
+| API | Controller → Service → Repository → Prisma |
 | Nest modules | `src/modules/<feature>/` (docelowo) lub flat w małych feature |
 | Web HTTP | HttpClient przez serwisy w `core/` / `features/` — nie w komponentach |
 | UI text | `apps/web/public/i18n/pl.json` — ngx-translate, pipe `translate` |

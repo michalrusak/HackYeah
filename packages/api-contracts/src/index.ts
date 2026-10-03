@@ -4,6 +4,8 @@ export * from "./hello.schema.js";
 export * from "./response.types.js";
 export * from "./matchmaking.schema.js";
 export * from "./api-config.schema.js";
+export * from "./testers.schema.js";
+export * from "./auth.schema.js";
 export * from "./idea.schema.js";
 export * from "./canvas.schema.js";
 export * from "./grant-call.schema.js";

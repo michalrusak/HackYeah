@@ -22,6 +22,28 @@ export class ApiService {
     return this.config.apiUrl;
   }
 
+  request<T>(
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    path: string,
+    schema: { parse(value: unknown): T },
+    options: {
+      body?: unknown;
+      headers?: Record<string, string>;
+      withCredentials?: boolean;
+    } = {},
+  ): Observable<T> {
+    return this.http
+      .request<unknown>(method, `${this.baseUrl}${path}`, options)
+      .pipe(
+        map((body) => {
+          const envelope = z
+            .object({ success: z.literal(true), data: z.unknown() })
+            .parse(body);
+          return schema.parse(envelope.data);
+        }),
+      );
+  }
+
   matchInnovations(description: string): Observable<MatchmakingData> {
     const input = MatchmakingRequestSchema.parse({ description });
     return this.http

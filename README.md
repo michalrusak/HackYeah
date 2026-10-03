@@ -10,9 +10,13 @@ Komendy działają tak samo na **Windows (PowerShell)**, **macOS** i **Linux (ba
 
 | Narzędzie | Wersja |
 |-----------|--------|
-| Node.js | ≥ 22 |
+| Node.js | 22.23.3 (pnpm pobiera wersję projektu przy `pnpm install`) |
 | pnpm | 11.x (`corepack enable` → wersja z `package.json`) |
 | Docker | do bazy PostgreSQL |
+
+Wersja Node.js do uruchamiania skryptów jest przypięta w `package.json` (`devEngines.runtime`). Po zmianie konfiguracji uruchom `pnpm install`; nie trzeba zmieniać systemowej wersji Node.js.
+
+Skrypty Turbo przekazują jawnie `--ui=tui`. W Turbo 2.11.7 omija to błąd obsługi Ctrl+C w terminalu Windows, powodujący kod `3221226505` przy uruchamianiu przez pnpm. Samo `"ui": "tui"` w `turbo.json` nie wystarcza — launcher sprawdza argument CLI.
 
 ### `ERR_PNPM_IGNORED_BUILDS` (esbuild / workerd / prisma)
 
@@ -34,6 +38,8 @@ pnpm install
 pnpm install
 pnpm setup        # tworzy .env z .env.example (tylko pierwszy raz)
 pnpm docker:up    # uruchamia PostgreSQL
+pnpm db:migrate   # tworzy tabele Testera innowacji bez resetowania danych
+pnpm db:seed      # opcjonalnie: fikcyjne profile demonstracyjne w PostgreSQL
 pnpm dev          # API + frontend w trybie developerskim
 ```
 
@@ -80,6 +86,8 @@ Wszystkie uruchamiasz z **katalogu głównego** repozytorium.
 | `pnpm docker:up` | Start PostgreSQL |
 | `pnpm docker:down` | Stop PostgreSQL |
 | `pnpm docker:logs` | Logi bazy |
+| `pnpm db:migrate` | Addytywna migracja tabel Testera innowacji |
+| `pnpm db:seed` | Idempotentne zasilenie bazy fikcyjnymi profilami |
 
 ### Pojedyncza aplikacja
 
@@ -219,8 +227,15 @@ corepack prepare pnpm@11.25.0 --activate
 3. `pnpm install`
 4. `pnpm setup`
 5. `pnpm docker:up`
-6. `pnpm dev`
-7. Otwórz http://localhost:4200
+6. `pnpm db:migrate` i opcjonalnie `pnpm db:seed`
+7. `pnpm dev`
+8. Otwórz http://localhost:4200
+
+## Tester innowacji
+
+Zakładka `/tester-innowacji` udostępnia wyszukiwanie testerów przez AI, tworzenie i edycję własnego profilu oraz zapisywanie przypisań osób do testów w PostgreSQL. Wymagania, model dostępu i API opisano w [dokumentacji funkcji](docs/TESTER-INNOWACJI.md).
+
+Przed pierwszym użyciem uruchom `pnpm db:migrate` i opcjonalnie `pnpm db:seed`, aby dodać fikcyjne profile demonstracyjne do bazy. Ponowne seedowanie nie duplikuje danych. AI korzysta z `OPENROUTER_API_KEY` i `OPENROUTER_MODEL` w `.env`.
 
 ## Testy
 

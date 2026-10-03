@@ -1,33 +1,32 @@
-<a class="skip-link" href="#main-content">{{
-  "layout.skipToContent" | translate
-}}</a>
-
 <div class="layout">
+  <a class="skip-link" [href]="router.url.split('#')[0] + '#main-content'">
+    {{ "header.skipToContent" | translate }}
+  </a>
   <mat-toolbar class="header">
-    <a class="brand" routerLink="/">
-      <mat-icon aria-hidden="true">hub</mat-icon>
+    <button
+      class="mobile-menu-button"
+      mat-icon-button
+      type="button"
+      [attr.aria-label]="
+        (mobileNavOpen() ? 'header.closeMenu' : 'header.openMenu') | translate
+      "
+      [attr.aria-expanded]="mobileNavOpen()"
+      aria-controls="app-sidebar"
+      (click)="mobileNavOpen.set(!mobileNavOpen())"
+    >
+      <mat-icon aria-hidden="true">{{
+        mobileNavOpen() ? "close" : "menu"
+      }}</mat-icon>
+    </button>
+    <a class="brand" routerLink="/matchmaking" (click)="onNavigationClick()">
+      <span class="brand-icon"
+        ><mat-icon aria-hidden="true">travel_explore</mat-icon></span
+      >
       <span>{{ "matchmaking.productName" | translate }}</span>
     </a>
 
-    <nav class="main-nav" [attr.aria-label]="'header.mainNav' | translate">
-      <ul>
-        @for (item of navItems; track item.path) {
-          <li>
-            <a
-              [routerLink]="item.path"
-              routerLinkActive="active"
-              [routerLinkActiveOptions]="{ exact: item.path === '/' }"
-              #link="routerLinkActive"
-              [attr.aria-current]="link.isActive ? 'page' : null"
-            >
-              {{ item.labelKey | translate }}
-            </a>
-          </li>
-        }
-      </ul>
-    </nav>
-
     <button
+      class="theme-toggle"
       mat-icon-button
       type="button"
       [attr.aria-label]="
@@ -35,11 +34,79 @@
       "
       (click)="theme.toggle()"
     >
-      <mat-icon>{{ theme.isDark() ? "light_mode" : "dark_mode" }}</mat-icon>
+      <mat-icon aria-hidden="true">{{
+        theme.isDark() ? "light_mode" : "dark_mode"
+      }}</mat-icon>
     </button>
   </mat-toolbar>
 
-  <main id="main-content" class="page-content" tabindex="-1">
-    <router-outlet />
-  </main>
+  <mat-sidenav-container
+    class="workspace"
+    [class.sidebar-pinned]="sidebarPinned()"
+    [class.sidebar-dismissed]="sidebarDismissed()"
+  >
+    <mat-sidenav
+      id="app-sidebar"
+      class="sidebar"
+      [mode]="isMobile() ? 'over' : 'side'"
+      [opened]="!isMobile() || mobileNavOpen()"
+      [autoFocus]="isMobile()"
+      [disableClose]="!isMobile()"
+      (closedStart)="mobileNavOpen.set(false)"
+      (mouseenter)="sidebarDismissed.set(false)"
+      (focusin)="sidebarDismissed.set(false)"
+    >
+      <div class="sidebar-body">
+        <div class="sidebar-heading">
+          <mat-icon aria-hidden="true">apps</mat-icon>
+          <span class="nav-label">{{ "header.mainNav" | translate }}</span>
+        </div>
+        <nav class="side-nav" [attr.aria-label]="'header.mainNav' | translate">
+          @for (item of navItems; track item.path) {
+            <a
+              class="nav-link"
+              [routerLink]="item.path"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+              ariaCurrentWhenActive="page"
+              [attr.aria-label]="item.labelKey | translate"
+              (click)="onNavigationClick()"
+            >
+              <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
+              <span class="nav-label" aria-hidden="true">{{
+                item.labelKey | translate
+              }}</span>
+            </a>
+          }
+        </nav>
+        <div class="sidebar-footer">
+          <button
+            mat-icon-button
+            type="button"
+            [attr.aria-label]="
+              (sidebarPinned() ? 'header.unpinMenu' : 'header.pinMenu')
+                | translate
+            "
+            [attr.aria-pressed]="sidebarPinned()"
+            (click)="sidebarPinned.set(!sidebarPinned())"
+          >
+            <mat-icon aria-hidden="true">{{
+              sidebarPinned() ? "push_pin" : "chevron_right"
+            }}</mat-icon>
+          </button>
+          <span class="nav-label" aria-hidden="true">
+            {{
+              (sidebarPinned() ? "header.unpinMenu" : "header.pinMenu")
+                | translate
+            }}
+          </span>
+        </div>
+      </div>
+    </mat-sidenav>
+    <mat-sidenav-content class="workspace-content">
+      <main #mainContent class="page-content" id="main-content" tabindex="-1">
+        <router-outlet />
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 </div>

@@ -18,6 +18,14 @@ export const routes: Routes = [
         data: { breadcrumb: 'nav.matchmaking' },
       },
       {
+        path: 'tester-innowacji',
+        loadComponent: () =>
+          import('./features/testers/testers.component').then(
+            (m) => m.TestersComponent,
+          ),
+        data: { breadcrumb: 'nav.testers' },
+      },
+      {
         path: 'pomysly',
         loadChildren: () =>
           import('./features/idea-creator/idea-creator.routes').then(
@@ -36,9 +44,9 @@ export const routes: Routes = [
       {
         path: 'materialy',
         loadComponent: () =>
-          import(
-            './features/idea-creator/pages/materials/materials.component'
-          ).then((m) => m.MaterialsComponent),
+          import('./features/idea-creator/pages/materials/materials.component').then(
+            (m) => m.MaterialsComponent,
+          ),
         data: { breadcrumb: 'nav.materials' },
       },
       {
