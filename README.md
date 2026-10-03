@@ -199,4 +199,11 @@ corepack prepare pnpm@11.25.0 --activate
 6. `pnpm dev`
 7. Otwórz http://localhost:4200
 
+## Reguły AI
+
+Szczegóły dla agentów i zespołu: [`ai-rules/README.md`](ai-rules/README.md)  
+Szybki kontekst: [`ai-rules/CONTEXT.md`](ai-rules/CONTEXT.md)
+
+Stack w regułach: **NestJS + Angular** (bez React/Next).
+
 Powodzenia na hackathonie!

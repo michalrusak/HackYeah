@@ -1,0 +1,46 @@
+{
+  "common": {
+    "loading": "Ładowanie...",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "back": "Wróć",
+    "delete": "Usuń",
+    "confirm": "Potwierdź"
+  },
+  "errors": {
+    "generic": "Coś poszło nie tak. Spróbuj ponownie.",
+    "emailTaken": "Ten adres e-mail jest już zajęty.",
+    "userNotFound": "Nie znaleziono użytkownika.",
+    "validation": "Formularz zawiera błędy.",
+    "rateLimited": "Zbyt wiele prób. Spróbuj za chwilę.",
+    "unauthorized": "Musisz się zalogować.",
+    "forbidden": "Brak uprawnień.",
+    "notFound": "Nie znaleziono zasobu."
+  },
+  "validation": {
+    "required": "To pole jest wymagane.",
+    "email": "Podaj poprawny adres e-mail.",
+    "maxLength": "Maksymalna długość to {{max}} znaków."
+  },
+  "users": {
+    "title": "Użytkownicy",
+    "form": {
+      "emailLabel": "Adres e-mail",
+      "nameLabel": "Imię i nazwisko",
+      "submit": "Utwórz użytkownika",
+      "submitting": "Tworzenie...",
+      "success": "Użytkownik utworzony."
+    },
+    "list": {
+      "empty": "Brak użytkowników.",
+      "columns": {
+        "email": "E-mail",
+        "name": "Nazwa",
+        "createdAt": "Data utworzenia"
+      }
+    },
+    "detail": {
+      "title": "Szczegóły użytkownika"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "hackyeah",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint:fix": "turbo lint:fix",
+    "test": "turbo test",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "db:up": "docker compose up -d",
+    "db:migrate": "pnpm --filter api-nest exec prisma migrate dev",
+    "db:seed": "pnpm --filter api-nest exec prisma db seed",
+    "db:studio": "pnpm --filter api-nest exec prisma studio"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.0",
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
