@@ -79,7 +79,7 @@ Projekt kieruje się [WCAG 2.1 na poziomie AA](https://www.w3.org/TR/WCAG21/).
 - Obsługa klawiatury, widoczny fokus, pomijanie nawigacji, logiczny fokus po zmianie strony i zamknięciu okna (2.1.1, 2.1.2, 2.4.1, 2.4.3, 2.4.7).
 - Semantyczne etykiety i autocomplete; możliwość wklejenia hasła oraz jego pokazania (1.3.1, 1.3.5).
 - Kontrast jasnego i ciemnego motywu, układ przy 320 px, powiększeniu i zwiększonych odstępach tekstu (1.4.3, 1.4.4, 1.4.10, 1.4.12).
-- Menu rozwijane na hover i fokus można zwinąć klawiszem Escape bez ukrycia całej nawigacji; na telefonie otwiera się przyciskiem (1.4.13).
+- Trzy zakładki Testera mają nazwy, stan wyboru i obsługę klawiatury; okna formularzy utrzymują fokus i można je zamknąć klawiszem Escape, gdy zapis nie trwa (2.1.1, 4.1.2).
 - Dynamiczne błędy i statusy używają komunikatów dostępnych dla czytnika ekranu (4.1.3).
 
 Automatyczny skan nie jest potwierdzeniem pełnej zgodności. Odbiór wymaga również prób z czytnikiem ekranu i przedstawicielami docelowych grup, w tym osobami starszymi i o mniejszych umiejętnościach cyfrowych.

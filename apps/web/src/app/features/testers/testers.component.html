@@ -381,10 +381,14 @@
         }
       </p> </mat-tab
     ><mat-tab [label]="'projects.tabs.announcements' | translate"
-      ><ng-template matTabContent><app-tester-projects /></ng-template></mat-tab
+      ><ng-template matTabContent
+        ><app-tester-projects
+          [active]="selectedTab() === 1" /></ng-template></mat-tab
     ><mat-tab [label]="'projects.tabs.activity' | translate"
       ><ng-template matTabContent
-        ><app-tester-projects mode="activity" /></ng-template></mat-tab
+        ><app-tester-projects
+          mode="activity"
+          [active]="selectedTab() === 2" /></ng-template></mat-tab
   ></mat-tab-group>
   <footer class="page-footer">
     <span

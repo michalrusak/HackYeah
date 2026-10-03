@@ -19,6 +19,7 @@ import {
 import { AuthService } from '../../../core/services/auth.service';
 import { ProjectDetailDialogComponent } from './project-detail-dialog.component';
 import { ProjectFormDialogComponent } from './project-form-dialog.component';
+import { TesterProjectsComponent } from './tester-projects.component';
 
 const project: TesterProject = {
   id: '12345678-1234-4123-8123-123456789011',
@@ -187,24 +188,88 @@ describe('Tester project participation', () => {
 
   it('never offers participant withdrawal for a declined application', () => {
     const fixture = TestBed.createComponent(ProjectDetailDialogComponent);
-    http
-      .expectOne(`/api/testers/projects/${project.id}`)
-      .flush(
-        createApiSuccess({
-          ...detail,
-          myApplication: {
-            id: '12345678-1234-4123-8123-123456789012',
-            projectId: project.id,
-            message: '',
-            status: 'declined',
-            createdAt: project.createdAt,
-            updatedAt: project.updatedAt,
-          },
-        }),
-      );
+    http.expectOne(`/api/testers/projects/${project.id}`).flush(
+      createApiSuccess({
+        ...detail,
+        myApplication: {
+          id: '12345678-1234-4123-8123-123456789012',
+          projectId: project.id,
+          message: '',
+          status: 'declined',
+          createdAt: project.createdAt,
+          updatedAt: project.updatedAt,
+        },
+      }),
+    );
     fixture.detectChanges();
     const root: HTMLElement = fixture.nativeElement;
     expect(root.textContent).not.toContain('projects.withdraw');
     expect(root.querySelector('form')).toBeNull();
+  });
+});
+
+describe('Tester project tab state', () => {
+  let http: HttpTestingController;
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [TesterProjectsComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideNoopAnimations(),
+        provideTranslateService(),
+      ],
+    }).compileComponents();
+    http = TestBed.inject(HttpTestingController);
+    TestBed.inject(AuthService).refresh().subscribe();
+    http
+      .expectOne('/api/auth/me')
+      .flush(createApiSuccess({ user: { id: project.id, login: 'tester' } }));
+  });
+  afterEach(() => http.verify());
+
+  it('cancels activity loading and clears private data and spinner on logout', () => {
+    const fixture = TestBed.createComponent(TesterProjectsComponent);
+    fixture.componentRef.setInput('mode', 'activity');
+    fixture.detectChanges();
+    const pending = http.expectOne('/api/testers/activity');
+    expect(fixture.componentInstance.loading()).toBeTrue();
+    TestBed.inject(AuthService).logout().subscribe();
+    http
+      .expectOne('/api/auth/logout')
+      .flush(createApiSuccess({ loggedOut: true }));
+    fixture.detectChanges();
+    expect(pending.cancelled).toBeTrue();
+    expect(fixture.componentInstance.activity()).toBeNull();
+    expect(fixture.componentInstance.loading()).toBeFalse();
+    http.expectNone('/api/testers/activity');
+  });
+
+  it('reloads a previously visited activity tab when it becomes active again', () => {
+    const fixture = TestBed.createComponent(TesterProjectsComponent);
+    fixture.componentRef.setInput('mode', 'activity');
+    fixture.detectChanges();
+    http
+      .expectOne('/api/testers/activity')
+      .flush(
+        createApiSuccess({ projects: [], applications: [], feedback: [] }),
+      );
+    fixture.componentRef.setInput('active', false);
+    fixture.detectChanges();
+    http.expectNone('/api/testers/activity');
+    fixture.componentRef.setInput('active', true);
+    fixture.detectChanges();
+    http
+      .expectOne('/api/testers/activity')
+      .flush(
+        createApiSuccess({
+          projects: [project],
+          applications: [],
+          feedback: [],
+        }),
+      );
+    expect(fixture.componentInstance.activity()?.projects[0]?.id).toBe(
+      project.id,
+    );
   });
 });

@@ -30,8 +30,10 @@ pnpm --filter api test:e2e
 
 ### Tester innowacji — prawdziwy PostgreSQL
 
-`apps/api/test/testers.e2e-spec.ts` i `auth.e2e-spec.ts` uruchamiają pełne moduły NestJS z repozytorium
-Prisma i produkcyjnymi migracjami SQL. Zastąpiony jest jedynie transport HTTP do modelu
+`apps/api/test/testers.e2e-spec.ts`, `auth.e2e-spec.ts`, `tester-projects.e2e-spec.ts`
+i `testers-seed.e2e-spec.ts` korzystają z rzeczywistego PostgreSQL, repozytoriów
+Prisma i produkcyjnych migracji SQL. Testy API uruchamiają pełne moduły NestJS.
+Zastąpiony jest jedynie transport HTTP do modelu
 AI, dzięki czemu testy są deterministyczne i nie zużywają płatnych tokenów.
 Bez `TEST_DATABASE_URL` ten zestaw jest pomijany; pozostałe E2E nadal działają.
 
@@ -73,6 +75,16 @@ Konta: rejestracja, hashowanie hasła i tokenu sesji, błędne logowanie, wylogo
 wygaśnięcie sesji, sprawdzanie Origin, izolacja profili i historii, powiązanie
 dotychczasowego profilu z kontem oraz odrzucanie późniejszych prób dostępu starym kluczem.
 
+Ogłoszenia: izolacja kont organizatora i uczestnika, prywatność listy zgłoszeń,
+przyjęcie/odrzucenie oczekującego zgłoszenia, wycofanie i ponowienie udziału,
+zamknięcie naboru, jedna edytowalna opinia na uczestnika i poprawna średnia ocen.
+Test współbieżności sprawdza zamknięcie naboru podczas zgłoszenia i równoległe
+ponowienia żądania, także z inną wielkością liter w UUID.
+
+Dane przykładowe: walidacja 210 profili oraz ponowny seed bez duplikatów,
+nadpisania istniejących profili ani tworzenia fikcyjnych kont. Katalog i wyszukiwanie
+mają regresje obejmujące dalsze strony danych oraz zapytanie jednowyrazowe.
+
 ## Web — unit (`apps/web`)
 
 - Runner: **Karma + Jasmine** (domyślnie Angular CLI)
@@ -92,12 +104,18 @@ Sprawdź w przeglądarce następujący przebieg z tymczasowym kontem:
 3. Brak checkboxa zgody oraz przełącznika udostępniania w formularzu.
 4. Obsługa samą klawiaturą: pominięcie nawigacji, zmiana strony, otwieranie okien,
    fokus na błędnym polu, zamknięcie przez Escape i powrót fokusu.
-5. Rozwinięcie menu przez hover/fokus oraz jego zwinięcie klawiszem Escape;
-   na telefonie otwarcie przyciskiem i zatrzymanie fokusu w otwartym menu.
-6. Katalog, logowanie, rejestracja i profil w jasnym oraz ciemnym motywie,
+5. Przechodzenie klawiaturą między zakładkami Testera i odświeżenie własnej
+   aktywności po powrocie do zakładki.
+6. Katalog, logowanie, rejestracja, profil i ogłoszenia w dostępnych motywach,
    przy szerokości 320 px i zwiększonych odstępach tekstu. Sprawdź także samą
    powierzchnię okna dialogowego: brak przewijania poziomego strony nie wyklucza
    przycięcia jego zawartości.
+7. Wyszukanie wymagania bez dopasowania → ogłoszenie z przeniesionym wymaganiem
+   → publikacja. Sprawdź zachowanie formularza po logowaniu oraz jego anulowaniu.
+8. Drugie konto → zgłoszenie udziału → utworzenie brakującego profilu → przyjęcie
+   przez organizatora → ocena, opinia i usprawnienie → edycja tej samej opinii.
+9. Zamknięcie naboru blokuje nowe zgłoszenia, zachowuje opinie i pozwala uczestnikowi
+   poprawić własną ocenę. Wylogowanie usuwa z widoku prywatną aktywność.
 
 Do kontroli automatycznej użyj axe-core z regułami `wcag2a`, `wcag2aa`,
 `wcag21a`, `wcag21aa` po zakończeniu animacji interfejsu. Dla odstępów tekstu

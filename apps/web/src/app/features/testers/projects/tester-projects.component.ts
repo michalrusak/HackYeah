@@ -34,6 +34,7 @@ import { Subscription } from 'rxjs';
 })
 export class TesterProjectsComponent {
   readonly mode = input<'catalog' | 'activity'>('catalog');
+  readonly active = input(true);
   readonly auth = inject(AuthService);
   private readonly service = inject(TesterProjectsService);
   private readonly dialog = inject(MatDialog);
@@ -51,9 +52,14 @@ export class TesterProjectsComponent {
     effect(() => {
       this.mode();
       this.auth.user();
+      const active = this.active();
       this.activity.set(null);
       this.projects.set([]);
-      untracked(() => this.load());
+      untracked(() => {
+        this.request?.unsubscribe();
+        this.loading.set(false);
+        if (active) this.load();
+      });
     });
     this.destroyRef.onDestroy(() => this.request?.unsubscribe());
   }
@@ -62,6 +68,7 @@ export class TesterProjectsComponent {
     this.error.set(null);
     if (this.mode() === 'activity' && !this.auth.user()) {
       this.activity.set(null);
+      this.loading.set(false);
       return;
     }
     this.loading.set(true);
