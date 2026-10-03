@@ -1,24 +1,61 @@
 <div class="layout">
-  <a class="skip-link" [href]="router.url + '#main-content'">{{
-    "matchmaking.skipToForm" | translate
+  <a class="skip" [href]="router.url + '#main-content'">{{
+    "hub.skip" | translate
   }}</a>
-  <mat-toolbar class="header">
+  <header class="header">
     <a class="brand" routerLink="/matchmaking">
-      <mat-icon aria-hidden="true">travel_explore</mat-icon>
-      <span>{{ "matchmaking.productName" | translate }}</span>
+      <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
+        <rect
+          x="3"
+          y="5"
+          width="20"
+          height="15"
+          rx="7.5"
+          fill="none"
+          stroke="var(--hub-brand)"
+          stroke-width="4"
+        />
+        <rect
+          x="13"
+          y="16"
+          width="20"
+          height="15"
+          rx="7.5"
+          fill="none"
+          stroke="var(--hub-green)"
+          stroke-width="4"
+        />
+      </svg>
+      <span
+        ><strong>{{ "app.name" | translate }}</strong
+        ><small>{{ "hub.subtitle" | translate }}</small></span
+      >
     </a>
-    <button
-      mat-icon-button
-      type="button"
-      [attr.aria-label]="
-        (theme.isDark() ? 'header.themeLight' : 'header.themeDark') | translate
-      "
-      (click)="theme.toggle()"
-    >
-      <mat-icon>{{ theme.isDark() ? "light_mode" : "dark_mode" }}</mat-icon>
-    </button>
-  </mat-toolbar>
-  <main class="page-content" id="main-content" tabindex="-1">
+    <div class="header-actions">
+      <details class="help">
+        <summary>{{ "hub.help" | translate }}</summary>
+        <div class="help-panel">
+          <h2>{{ "hub.helpTitle" | translate }}</h2>
+          <ol>
+            <li>{{ "hub.helpNeed" | translate }}</li>
+            <li>{{ "hub.helpResults" | translate }}</li>
+            <li>{{ "hub.helpAction" | translate }}</li>
+          </ol>
+          <p>{{ "matchmaking.privacy" | translate }}</p>
+        </div>
+      </details>
+    </div>
+  </header>
+  <main id="main-content" class="page-content" tabindex="-1">
     <router-outlet />
   </main>
+  <footer class="footer">
+    <span>{{ "hub.sourceNote" | translate }}</span>
+    <a
+      href="https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/kategorie"
+      target="_blank"
+      rel="noopener noreferrer"
+      >{{ "hub.library" | translate }}</a
+    >
+  </footer>
 </div>

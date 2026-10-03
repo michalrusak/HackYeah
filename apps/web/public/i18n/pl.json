@@ -1,7 +1,7 @@
 {
   "app": {
-    "name": "HackYeah",
-    "title": "HackYeah"
+    "name": "Łącznik",
+    "title": "Łącznik — Małopolski Hub Innowacji Społecznych"
   },
   "nav": {
     "home": "Start",
@@ -55,17 +55,17 @@
       "malopolska": "Dane o Małopolsce"
     },
     "eyebrow": "Biblioteka innowacji społecznych ROPS",
-    "title": "Znajdź rozwiązanie dla swojej społeczności",
-    "subtitle": "Opisz wyzwanie własnymi słowami. Rozpoznamy potrzeby i pokażemy innowacje społeczne, od których możesz zacząć.",
-    "descriptionLabel": "Opisz problem własnymi słowami",
-    "placeholder": "Działamy z osobami starszymi w małej gminie. Chcemy pomóc im nawiązywać znajomości i częściej uczestniczyć we wspólnych spotkaniach…",
-    "hint": "Podaj odbiorców, główną trudność i oczekiwaną zmianę.",
+    "title": "Dobry pomysł zaczyna się od Twojej potrzeby.",
+    "subtitle": "Opisz, z czym mierzy się Twoja społeczność. Znajdziemy propozycje z biblioteki innowacji ROPS Kraków.",
+    "descriptionLabel": "Twoja potrzeba",
+    "placeholder": "Prowadzimy klub seniora. Uczestnicy przychodzą na zajęcia, ale mało ze sobą rozmawiają. Chcemy pomóc im lepiej się poznać…",
+    "hint": "Napisz, kogo dotyczy problem i co jest trudne. Nie musisz znać gotowego rozwiązania.",
     "privacy": "Opis trafia do AI przez OpenRouter. Nie wpisuj danych osobowych. Nie zapisujemy opisów ani wyników w aplikacji.",
-    "submit": "Znajdź innowacje",
+    "submit": "Pokaż propozycje",
     "loading": "Szukamy innowacji…",
     "loadingDetail": "Interpretujemy potrzeby i porównujemy je z katalogiem. Może to potrwać do 30 sekund.",
     "retry": "Spróbuj ponownie",
-    "examplesLabel": "Wypróbuj przykład:",
+    "examplesLabel": "Potrzebujesz inspiracji?",
     "examples": {
       "seniors": {
         "label": "Wsparcie seniorów",
@@ -89,8 +89,8 @@
     "resultsTitle": "Dopasowane innowacje",
     "resultsCount": "Liczba wyników: {{count}}",
     "scoreNote": "Poziom dopasowania oznacza zgodność z opisanymi potrzebami. Nie jest oceną skuteczności innowacji. Sprawdź w źródle grupę docelową i warunki wykorzystania.",
-    "source": "Zobacz w ROPS",
-    "emptyTitle": "Nie mamy jeszcze odpowiedniej innowacji",
+    "source": "Opis i materiały w ROPS",
+    "emptyTitle": "Nie znaleźliśmy trafnej propozycji",
     "emptyDescription": "W katalogu {{count}} innowacji nie znaleźliśmy rozwiązania pasującego do potrzeb i odbiorców. To nie znaczy, że rozwiązanie nie istnieje. Uzupełnij opis: kto potrzebuje wsparcia, co jest trudne i co chcesz zmienić.",
     "levels": {
       "high": "Wysokie dopasowanie",
@@ -110,5 +110,27 @@
   "contact": {
     "title": "Kontakt",
     "description": "Placeholder — email, social media, formularz kontaktowy."
+  },
+  "hub": {
+    "skip": "Przejdź do treści",
+    "subtitle": "Małopolski Hub Innowacji Społecznych",
+    "help": "Pomoc",
+    "helpTitle": "Jak działa Łącznik?",
+    "helpNeed": "Opisz problem własnymi słowami.",
+    "helpResults": "Sprawdź, które innowacje mogą pomóc.",
+    "helpAction": "Otwórz opis i materiały w bibliotece ROPS.",
+    "sourceNote": "Rozwiązania z biblioteki innowacji ROPS Kraków",
+    "library": "Przeglądaj bibliotekę",
+    "stepsLabel": "Etapy wyszukiwania",
+    "stepNeed": "1 Opisz potrzebę",
+    "stepResults": "2 Poznaj propozycje",
+    "stepAction": "3 Zacznij działać",
+    "stepNeedShort": "Potrzeba",
+    "stepResultsShort": "Propozycje",
+    "stepActionShort": "Działanie",
+    "formTitle": "Co chcesz zmienić?",
+    "examplesHint": "Wybierz przykład i dopasuj go do swojej sytuacji.",
+    "noAccount": "Możesz zacząć bez zakładania konta.",
+    "whyMatch": "Dlaczego ta propozycja?"
   }
 }

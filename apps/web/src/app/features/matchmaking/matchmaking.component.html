@@ -1,65 +1,90 @@
 <section class="matchmaking" aria-labelledby="matchmaking-title">
+  <ol class="steps" [attr.aria-label]="'hub.stepsLabel' | translate">
+    <li
+      [attr.aria-current]="!result() ? 'step' : null"
+      [class.passed]="result()"
+    >
+      <span class="desktop-label">{{ "hub.stepNeed" | translate }}</span
+      ><span class="mobile-label">{{ "hub.stepNeedShort" | translate }}</span>
+    </li>
+    <li [attr.aria-current]="result() ? 'step' : null">
+      <span class="desktop-label">{{ "hub.stepResults" | translate }}</span
+      ><span class="mobile-label">{{
+        "hub.stepResultsShort" | translate
+      }}</span>
+    </li>
+    <li>
+      <span class="desktop-label">{{ "hub.stepAction" | translate }}</span
+      ><span class="mobile-label">{{ "hub.stepActionShort" | translate }}</span>
+    </li>
+  </ol>
   <header class="intro">
-    <span class="eyebrow">{{ "matchmaking.eyebrow" | translate }}</span>
     <h1 id="matchmaking-title">{{ "matchmaking.title" | translate }}</h1>
     <p>{{ "matchmaking.subtitle" | translate }}</p>
   </header>
 
-  <mat-card class="description-card">
-    <mat-card-content>
-      <form
-        [formGroup]="form"
-        (ngSubmit)="submit()"
-        [attr.aria-busy]="loading()"
-      >
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>{{
-            "matchmaking.descriptionLabel" | translate
-          }}</mat-label>
-          <textarea
-            #descriptionInput
-            id="problem-description"
-            matInput
-            [formControl]="description"
-            rows="6"
-            maxlength="4000"
-            [attr.aria-label]="'matchmaking.descriptionLabel' | translate"
-            [placeholder]="'matchmaking.placeholder' | translate"
-          ></textarea>
-          <mat-hint>{{ "matchmaking.hint" | translate }}</mat-hint>
-          <mat-hint align="end" class="character-count"
-            >{{ description.value.length }} / 4000</mat-hint
-          >
-          <mat-error>{{
-            "matchmaking.errors.validation" | translate
-          }}</mat-error>
-        </mat-form-field>
-        <div class="examples">
-          <span>{{ "matchmaking.examplesLabel" | translate }}</span>
-          @for (example of examples; track example) {
-            <button
-              mat-stroked-button
-              type="button"
-              [disabled]="loading()"
-              (click)="useExample(example)"
+  <div class="search-layout">
+    <mat-card class="description-card">
+      <mat-card-content>
+        <form
+          [formGroup]="form"
+          (ngSubmit)="submit()"
+          [attr.aria-busy]="loading()"
+        >
+          <h2>{{ "hub.formTitle" | translate }}</h2>
+          <p class="field-guidance" id="description-guidance">
+            {{ "matchmaking.hint" | translate }}
+          </p>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>{{
+              "matchmaking.descriptionLabel" | translate
+            }}</mat-label>
+            <textarea
+              #descriptionInput
+              id="problem-description"
+              [attr.aria-label]="'matchmaking.descriptionLabel' | translate"
+              matInput
+              [formControl]="description"
+              rows="6"
+              maxlength="4000"
+              aria-describedby="description-guidance"
+              [placeholder]="'matchmaking.placeholder' | translate"
+            ></textarea>
+            <mat-hint align="end" class="character-count"
+              >{{ description.value.length }} / 4000</mat-hint
             >
-              {{ "matchmaking.examples." + example + ".label" | translate }}
+            <mat-error>{{
+              "matchmaking.errors.validation" | translate
+            }}</mat-error>
+          </mat-form-field>
+          <div class="submit-row">
+            <button mat-flat-button type="submit" [disabled]="loading()">
+              {{
+                (loading() ? "matchmaking.loading" : "matchmaking.submit")
+                  | translate
+              }}
             </button>
-          }
-        </div>
-        <div class="submit-row">
-          <button mat-flat-button type="submit" [disabled]="loading()">
-            <mat-icon>travel_explore</mat-icon>
-            {{
-              (loading() ? "matchmaking.loading" : "matchmaking.submit")
-                | translate
-            }}
-          </button>
-          <span>{{ "matchmaking.privacy" | translate }}</span>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
+            <p>{{ "matchmaking.privacy" | translate }}</p>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+    <aside class="examples" aria-labelledby="examples-title">
+      <h2 id="examples-title">{{ "matchmaking.examplesLabel" | translate }}</h2>
+      <p>{{ "hub.examplesHint" | translate }}</p>
+      @for (example of examples; track example) {
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="loading()"
+          (click)="useExample(example)"
+        >
+          {{ "matchmaking.examples." + example + ".label" | translate }}
+        </button>
+      }
+      <p class="aside-note">{{ "hub.noAccount" | translate }}</p>
+    </aside>
+  </div>
 
   <div aria-live="polite" aria-atomic="true">
     @if (loading()) {
@@ -165,6 +190,12 @@
             >
               {{ "matchmaking.editDescription" | translate }}
             </button>
+            <a
+              href="https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/kategorie"
+              target="_blank"
+              rel="noopener noreferrer"
+              >{{ "hub.library" | translate }}</a
+            >
           </mat-card-content></mat-card
         >
       } @else {
@@ -187,7 +218,10 @@
                     <span>{{ need }}</span>
                   }
                 </div>
-                <p class="explanation">{{ match.explanation }}</p>
+                <div class="explanation">
+                  <h4>{{ "hub.whyMatch" | translate }}</h4>
+                  <p>{{ match.explanation }}</p>
+                </div>
               </mat-card-content>
               <mat-card-actions>
                 <a
