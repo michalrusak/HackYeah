@@ -7,6 +7,7 @@ import { AppService } from './app.service.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { MatchmakingModule } from './modules/matchmaking/matchmaking.module.js';
+import { IdeaCreatorModule } from './modules/idea-creator/idea-creator.module.js';
 
 const isTestEnv = process.env.NODE_ENV === 'test';
 
@@ -22,7 +23,8 @@ const isTestEnv = process.env.NODE_ENV === 'test';
         limit: 100,
       },
     ]),
-    ...(isTestEnv ? [] : [PrismaModule]),
+    // Kreator pomysłów wymaga bazy, więc dzieli los PrismaModule w testach.
+    ...(isTestEnv ? [] : [PrismaModule, IdeaCreatorModule]),
     HealthModule,
     MatchmakingModule,
   ],

@@ -1,0 +1,147 @@
+:host {
+  display: block;
+}
+
+.detail {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.intro {
+  margin: 12px 0 20px;
+}
+
+.intro h1 {
+  margin: 8px 0;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--mat-sys-secondary-container, #dce2f9);
+  color: var(--mat-sys-on-secondary-container, #131c2b);
+}
+
+.badge.good-practice {
+  background: var(--mat-sys-tertiary-container, #ffd8e4);
+  color: var(--mat-sys-on-tertiary-container, #31111d);
+}
+
+.badge.subtle {
+  background: var(--mat-sys-surface-container-high, #e5e6ea);
+  color: inherit;
+}
+
+.badge.draft {
+  background: var(--mat-sys-error-container, #f9dedc);
+  color: var(--mat-sys-on-error-container, #410e0b);
+}
+
+.essence {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+
+.region {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+}
+
+.region mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.actions button,
+.actions a {
+  min-height: 44px;
+}
+
+section {
+  margin-bottom: 24px;
+}
+
+section h2 {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+
+.visual {
+  margin: 0 0 24px;
+}
+
+.visual img {
+  width: 100%;
+  border-radius: 16px;
+  display: block;
+}
+
+.visual figcaption {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+}
+
+.plain-language {
+  margin-bottom: 24px;
+}
+
+.plain-language h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.related-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.related-list h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.related-list p {
+  margin: 0 0 4px;
+}
+
+.call-cta {
+  margin-bottom: 24px;
+}
+
+.hint,
+.status {
+  color: var(--mat-sys-on-surface-variant, #44474e);
+  font-size: 14px;
+}
+
+.error {
+  color: var(--mat-sys-error, #b3261e);
+  font-weight: 600;
+}

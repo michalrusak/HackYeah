@@ -1,0 +1,105 @@
+<section class="calls" aria-labelledby="calls-title">
+  <header class="intro">
+    <span class="eyebrow">{{ "ideaCreator.eyebrow" | translate }}</span>
+    <h1 id="calls-title">{{ "ideaCreator.calls.title" | translate }}</h1>
+    <p>{{ "ideaCreator.calls.subtitle" | translate }}</p>
+  </header>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+    <p role="status">{{ "ideaCreator.calls.loading" | translate }}</p>
+  }
+
+  @if (errorKey(); as key) {
+    <p class="error" role="alert">{{ key | translate }}</p>
+  }
+
+  @if (!loading() && !hasOpenCall()) {
+    <mat-card class="closed-notice">
+      <mat-card-content>
+        <h2>{{ "ideaCreator.calls.closedTitle" | translate }}</h2>
+        <p>{{ "ideaCreator.calls.closedDescription" | translate }}</p>
+        @if (nextOpeningAt(); as next) {
+          <p>
+            <strong>{{ "ideaCreator.calls.nextOpening" | translate }}:</strong>
+            {{ next | date: "longDate" }}
+          </p>
+        }
+        <a mat-stroked-button routerLink="/pomysly/nowy">
+          <mat-icon aria-hidden="true">add</mat-icon>
+          {{ "ideaCreator.calls.createMeanwhile" | translate }}
+        </a>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <ul class="call-list">
+    @for (call of calls(); track call.id) {
+      <li>
+        <mat-card>
+          <mat-card-content>
+            <p class="badges">
+              <span
+                class="badge"
+                [class.status-open]="call.status === 'open'"
+                [class.status-upcoming]="call.status === 'upcoming'"
+              >
+                {{ "ideaCreator.callStatus." + call.status | translate }}
+              </span>
+            </p>
+            <h2>{{ call.name }}</h2>
+            <p class="operator">{{ call.operator }}</p>
+            <p>{{ call.description }}</p>
+            <dl class="facts">
+              <div>
+                <dt>{{ "ideaCreator.calls.window" | translate }}</dt>
+                <dd>
+                  {{ call.opensAt | date: "shortDate" }} –
+                  {{ call.closesAt | date: "shortDate" }}
+                </dd>
+              </div>
+              @if (call.budget) {
+                <div>
+                  <dt>{{ "ideaCreator.calls.budget" | translate }}</dt>
+                  <dd>{{ call.budget }}</dd>
+                </div>
+              }
+              @if (call.maxGrant) {
+                <div>
+                  <dt>{{ "ideaCreator.calls.maxGrant" | translate }}</dt>
+                  <dd>{{ call.maxGrant }}</dd>
+                </div>
+              }
+            </dl>
+
+            <mat-expansion-panel class="sections">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{ "ideaCreator.calls.sections" | translate }}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <ol>
+                @for (section of call.sections; track section.id) {
+                  <li>
+                    <strong>{{ section.title }}</strong>
+                    <span>{{ section.question }}</span>
+                  </li>
+                }
+              </ol>
+            </mat-expansion-panel>
+
+            @if (call.status === "open") {
+              <p class="hint">
+                {{ "ideaCreator.calls.howToApply" | translate }}
+              </p>
+              <a mat-flat-button routerLink="/pomysly/moje">
+                <mat-icon aria-hidden="true">description</mat-icon>
+                {{ "ideaCreator.calls.chooseIdea" | translate }}
+              </a>
+            }
+          </mat-card-content>
+        </mat-card>
+      </li>
+    }
+  </ul>
+</section>

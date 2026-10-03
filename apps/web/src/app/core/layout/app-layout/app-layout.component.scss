@@ -137,3 +137,40 @@
     flex-direction: column;
   }
 }
+
+.main-nav {
+  background: var(--hub-surface);
+  padding: 0 32px 16px;
+}
+.main-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  list-style: none;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0;
+}
+.main-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--hub-muted);
+  text-decoration: none;
+  font-size: 15px;
+}
+.main-nav a:hover,
+.main-nav a.active {
+  background: var(--hub-soft);
+  color: var(--hub-brand);
+}
+.main-nav a.active {
+  font-weight: 600;
+}
+@media (max-width: 720px) {
+  .main-nav {
+    padding-inline: 24px;
+  }
+}

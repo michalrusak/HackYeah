@@ -1,0 +1,64 @@
+<section class="mine" aria-labelledby="mine-title">
+  <header class="intro">
+    <h1 id="mine-title">{{ "ideaCreator.mine.title" | translate }}</h1>
+    <p>{{ "ideaCreator.mine.subtitle" | translate }}</p>
+  </header>
+
+  <h2>{{ "ideaCreator.mine.ideasTitle" | translate }}</h2>
+  @if (store.ideas().length === 0) {
+    <mat-card>
+      <mat-card-content>
+        <p>{{ "ideaCreator.mine.ideasEmpty" | translate }}</p>
+        <a mat-flat-button routerLink="/pomysly/nowy">
+          <mat-icon aria-hidden="true">add</mat-icon>
+          {{ "ideaCreator.list.create" | translate }}
+        </a>
+      </mat-card-content>
+    </mat-card>
+  }
+  <ul class="entries">
+    @for (entry of store.ideas(); track entry.id) {
+      <li>
+        <mat-card>
+          <mat-card-content>
+            <h3>
+              <a [routerLink]="['/pomysly', entry.id]">{{ entry.title }}</a>
+            </h3>
+            <div class="row-actions">
+              <a mat-stroked-button [routerLink]="['/pomysly', entry.id, 'canva']">
+                {{ "ideaCreator.mine.openCanvas" | translate }}
+              </a>
+              <button mat-button type="button" (click)="forget(entry.id)">
+                {{ "ideaCreator.mine.forget" | translate }}
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </li>
+    }
+  </ul>
+
+  <h2>{{ "ideaCreator.mine.applicationsTitle" | translate }}</h2>
+  @if (store.applications().length === 0) {
+    <p class="hint">{{ "ideaCreator.mine.applicationsEmpty" | translate }}</p>
+  }
+  <ul class="entries">
+    @for (entry of store.applications(); track entry.id) {
+      <li>
+        <mat-card>
+          <mat-card-content>
+            <h3>
+              <a
+                [routerLink]="['/nabory', entry.callId, 'wniosek', entry.id]"
+                >{{ entry.ideaTitle }}</a
+              >
+            </h3>
+            <p class="meta">{{ entry.callName }}</p>
+          </mat-card-content>
+        </mat-card>
+      </li>
+    }
+  </ul>
+
+  <p class="hint">{{ "ideaCreator.mine.storageNotice" | translate }}</p>
+</section>

@@ -12,6 +12,9 @@ export default defineConfig({
   schema: 'prisma/schema.prisma',
   migrations: {
     path: 'prisma/migrations',
+    // Seed działa na sterowniku `pg`, nie na wygenerowanym kliencie Prisma —
+    // dzięki temu nie wymaga wcześniejszego `prisma generate` ani kompilacji.
+    seed: 'node prisma/seed.mjs',
   },
   datasource: {
     url: process.env['DATABASE_URL'],

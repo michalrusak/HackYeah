@@ -1,0 +1,35 @@
+:host {
+  display: block;
+  position: relative;
+}
+
+.workspace {
+  background: transparent;
+  min-height: 60vh;
+}
+
+.assistant-drawer {
+  width: min(460px, 100vw);
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 8px 0;
+}
+
+.assistant-trigger {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10;
+  /* Cel dotykowy powyżej 44 px zgodnie z WCAG 2.5.5. */
+  min-height: 48px;
+}
+
+@media (max-width: 600px) {
+  .assistant-trigger {
+    right: 12px;
+    bottom: 12px;
+  }
+}

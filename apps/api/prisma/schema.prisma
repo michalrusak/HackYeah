@@ -6,3 +6,158 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum IdeaStage {
+  POMYSL
+  PROTOTYP
+  TEST_MIKROSKALA
+  WDROZONE
+  SKALOWANIE
+}
+
+enum IdeaKind {
+  IDEA
+  GOOD_PRACTICE
+}
+
+// Enum zamiast flagi logicznej: moderacja z panelu administratora dołoży tu
+// kolejne wartości bez migracji danych.
+enum IdeaStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+}
+
+enum AssistantMessageRole {
+  USER
+  ASSISTANT
+}
+
+enum AssistantMessageKind {
+  CHAT
+  EXPAND
+  WILDCARD
+}
+
+model Idea {
+  id                   String     @id @default(cuid())
+  title                String
+  essence              String
+  problem              String
+  targetAudience       String
+  description          String     @default("")
+  stage                IdeaStage
+  kind                 IdeaKind   @default(IDEA)
+  status               IdeaStatus @default(DRAFT)
+  region               String     @default("")
+  contactEmail         String?
+  audiences            String[]
+  areas                String[]
+  needs                String[]
+  plainLanguageSummary String?
+  editTokenHash        String
+
+  // Ścieżka JST: samorząd bierze dobrą praktykę jako punkt wyjścia zamiast
+  // tylko ją oglądać.
+  adoptedFromId String?
+  adoptedFrom   Idea?   @relation("IdeaAdoption", fields: [adoptedFromId], references: [id], onDelete: SetNull)
+  adoptions     Idea[]  @relation("IdeaAdoption")
+
+  canvas       IdeaCanvas?
+  visuals      IdeaVisual[]
+  messages     AssistantMessage[]
+  applications Application[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([kind, status])
+  @@index([stage])
+}
+
+model IdeaCanvas {
+  id      String @id @default(cuid())
+  ideaId  String @unique
+  idea    Idea   @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  version Int    @default(1)
+  answers Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model IdeaVisual {
+  id     String @id @default(cuid())
+  ideaId String
+  idea   Idea   @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+
+  prompt String
+  // Opis alternatywny generowany razem z obrazem — bez niego grafika łamie
+  // WCAG 1.1.1, więc pole jest wymagane.
+  altText  String
+  mimeType String
+  data     Bytes
+  model    String
+
+  createdAt DateTime @default(now())
+
+  @@index([ideaId, createdAt])
+}
+
+model GrantCall {
+  id          String   @id @default(cuid())
+  name        String
+  operator    String
+  description String
+  opensAt     DateTime
+  closesAt    DateTime
+  budget      String?
+  maxGrant    String?
+  // Definicja pól wniosku — każdy nabór ma własny zestaw sekcji.
+  sections    Json
+  isPublished Boolean  @default(true)
+
+  applications Application[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isPublished, opensAt])
+}
+
+model Application {
+  id          String    @id @default(cuid())
+  ideaId      String
+  idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  grantCallId String
+  grantCall   GrantCall @relation(fields: [grantCallId], references: [id], onDelete: Cascade)
+
+  answers       Json
+  status        ApplicationStatus @default(DRAFT)
+  editTokenHash String
+  submittedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([grantCallId, status])
+  @@index([ideaId])
+}
+
+model AssistantMessage {
+  id      String  @id @default(cuid())
+  ideaId  String?
+  idea    Idea?   @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  role    AssistantMessageRole
+  kind    AssistantMessageKind @default(CHAT)
+  content String
+
+  createdAt DateTime @default(now())
+
+  @@index([ideaId, createdAt])
+}

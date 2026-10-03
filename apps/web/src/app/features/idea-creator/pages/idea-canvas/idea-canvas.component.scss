@@ -1,0 +1,96 @@
+:host {
+  display: block;
+}
+
+.canvas-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.intro {
+  margin: 12px 0 20px;
+}
+
+.intro h1 {
+  margin: 8px 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.toolbar button {
+  min-height: 44px;
+}
+
+.save-state {
+  margin: 0;
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+  min-height: 20px;
+}
+
+/* Plansza jest siatką zwykłych pól formularza — obsługa z klawiatury
+   działa tu tak samo jak przeciąganie myszą (WCAG 2.1.1). */
+.board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  border: 0;
+}
+
+.column {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.field-card h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.field-card mat-form-field {
+  width: 100%;
+}
+
+.field-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+}
+
+.counter {
+  display: block;
+  margin-top: 4px;
+}
+
+.hint {
+  color: var(--mat-sys-on-surface-variant, #44474e);
+  font-size: 14px;
+}
+
+.error {
+  color: var(--mat-sys-error, #b3261e);
+  font-weight: 600;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

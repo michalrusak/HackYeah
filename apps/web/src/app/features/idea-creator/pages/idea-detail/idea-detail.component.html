@@ -1,0 +1,212 @@
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" />
+  <p role="status">{{ "ideaCreator.detail.loading" | translate }}</p>
+}
+
+@if (errorKey(); as key) {
+  <p class="error" role="alert">{{ key | translate }}</p>
+}
+
+@if (idea(); as item) {
+  <article class="detail" aria-labelledby="idea-title">
+    <header class="intro">
+      <p class="badges">
+        <span
+          class="badge"
+          [class.good-practice]="item.kind === 'GOOD_PRACTICE'"
+          >{{ "ideaCreator.kinds." + item.kind | translate }}</span
+        >
+        <span class="badge subtle">{{
+          "ideaCreator.stages." + item.stage | translate
+        }}</span>
+        @if (item.status === "DRAFT") {
+          <span class="badge draft">{{
+            "ideaCreator.detail.draft" | translate
+          }}</span>
+        }
+      </p>
+      <h1 id="idea-title">{{ item.title }}</h1>
+      <p class="essence">{{ item.essence }}</p>
+      @if (item.region) {
+        <p class="region">
+          <mat-icon aria-hidden="true">place</mat-icon>{{ item.region }}
+        </p>
+      }
+    </header>
+
+    <div class="actions">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="togglePlainLanguage()"
+        [disabled]="busyAction() === 'plainLanguage'"
+        [attr.aria-pressed]="showPlainLanguage()"
+      >
+        <mat-icon aria-hidden="true">record_voice_over</mat-icon>
+        {{ "ideaCreator.detail.plainLanguage" | translate }}
+      </button>
+
+      <a mat-stroked-button [routerLink]="['/pomysly', item.id, 'canva']">
+        <mat-icon aria-hidden="true">dashboard</mat-icon>
+        {{ "ideaCreator.detail.canvas" | translate }}
+      </a>
+
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="loadRelated()"
+        [disabled]="busyAction() === 'related'"
+      >
+        <mat-icon aria-hidden="true">travel_explore</mat-icon>
+        {{ "ideaCreator.detail.related" | translate }}
+      </button>
+
+      @if (!isOwner()) {
+        <button
+          mat-flat-button
+          type="button"
+          (click)="adopt()"
+          [disabled]="busyAction() === 'adopt'"
+        >
+          <mat-icon aria-hidden="true">content_copy</mat-icon>
+          {{ "ideaCreator.detail.adopt" | translate }}
+        </button>
+      }
+
+      @if (isOwner() && item.status === "DRAFT") {
+        <button
+          mat-flat-button
+          type="button"
+          (click)="publish()"
+          [disabled]="busyAction() === 'publish'"
+        >
+          <mat-icon aria-hidden="true">public</mat-icon>
+          {{ "ideaCreator.detail.publish" | translate }}
+        </button>
+      }
+
+      @if (isOwner() && !item.visualId) {
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="generateVisual()"
+          [disabled]="busyAction() === 'visual'"
+        >
+          <mat-icon aria-hidden="true">image</mat-icon>
+          {{ "ideaCreator.detail.visualize" | translate }}
+        </button>
+      }
+    </div>
+
+    @if (busyAction()) {
+      <mat-progress-bar mode="indeterminate" />
+      <p class="status" role="status">
+        {{ "ideaCreator.detail.working" | translate }}
+      </p>
+    }
+
+    @if (!isOwner()) {
+      <p class="hint">{{ "ideaCreator.detail.adoptHint" | translate }}</p>
+    }
+
+    @if (showPlainLanguage() && plainLanguage()) {
+      <mat-card class="plain-language">
+        <mat-card-content>
+          <h2>{{ "ideaCreator.detail.plainLanguageTitle" | translate }}</h2>
+          <p>{{ plainLanguage() }}</p>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    @if (visualUrl(); as url) {
+      <figure class="visual">
+        <img [src]="url" [alt]="item.visualAltText ?? ''" />
+        <figcaption>{{ item.visualAltText }}</figcaption>
+      </figure>
+    }
+
+    <section aria-labelledby="problem-title">
+      <h2 id="problem-title">{{ "ideaCreator.fields.problem" | translate }}</h2>
+      <p>{{ item.problem }}</p>
+    </section>
+
+    <section aria-labelledby="audience-title">
+      <h2 id="audience-title">
+        {{ "ideaCreator.fields.targetAudience" | translate }}
+      </h2>
+      <p>{{ item.targetAudience }}</p>
+    </section>
+
+    @if (item.description) {
+      <section aria-labelledby="description-title">
+        <h2 id="description-title">
+          {{ "ideaCreator.fields.description" | translate }}
+        </h2>
+        <p>{{ item.description }}</p>
+      </section>
+    }
+
+    @if (item.audiences.length || item.areas.length || item.needs.length) {
+      <section aria-labelledby="tags-title">
+        <h2 id="tags-title">{{ "ideaCreator.detail.tags" | translate }}</h2>
+        <mat-chip-set [attr.aria-label]="'ideaCreator.detail.tags' | translate">
+          @for (tag of item.audiences; track tag) {
+            <mat-chip>{{ tag }}</mat-chip>
+          }
+          @for (tag of item.areas; track tag) {
+            <mat-chip>{{ tag }}</mat-chip>
+          }
+          @for (tag of item.needs; track tag) {
+            <mat-chip>{{ tag }}</mat-chip>
+          }
+        </mat-chip-set>
+      </section>
+    }
+
+    @if (related(); as matches) {
+      <section aria-labelledby="related-title">
+        <h2 id="related-title">
+          {{ "ideaCreator.detail.relatedTitle" | translate }}
+        </h2>
+        @if (matches.matches.length === 0) {
+          <p>{{ "ideaCreator.detail.relatedEmpty" | translate }}</p>
+        }
+        <ul class="related-list">
+          @for (match of matches.matches; track match.id) {
+            <li>
+              <h3>{{ match.name }}</h3>
+              <p>{{ match.explanation }}</p>
+              <a [href]="match.sourceUrl" target="_blank" rel="noopener">
+                {{ "ideaCreator.detail.relatedSource" | translate }}
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (openCall(); as call) {
+      <mat-card class="call-cta">
+        <mat-card-content>
+          <h2>{{ "ideaCreator.detail.callTitle" | translate }}</h2>
+          <p>{{ call.name }}</p>
+          @if (isOwner()) {
+            <button
+              mat-flat-button
+              type="button"
+              (click)="startApplication()"
+              [disabled]="busyAction() === 'application'"
+            >
+              <mat-icon aria-hidden="true">description</mat-icon>
+              {{ "ideaCreator.detail.startApplication" | translate }}
+            </button>
+          } @else {
+            <p class="hint">
+              {{ "ideaCreator.detail.callNeedsOwnership" | translate }}
+            </p>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+  </article>
+}

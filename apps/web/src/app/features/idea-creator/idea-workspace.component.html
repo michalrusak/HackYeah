@@ -1,0 +1,42 @@
+<mat-sidenav-container class="workspace" autosize>
+  <mat-sidenav-content>
+    <router-outlet />
+  </mat-sidenav-content>
+
+  <mat-sidenav
+    #drawer
+    mode="over"
+    position="end"
+    [opened]="open()"
+    (openedChange)="open.set($event)"
+    class="assistant-drawer"
+    [attr.aria-label]="'ideaCreator.assistant.title' | translate"
+  >
+    <div class="drawer-header">
+      <button
+        mat-icon-button
+        type="button"
+        (click)="open.set(false)"
+        [attr.aria-label]="'ideaCreator.assistant.close' | translate"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <app-assistant-panel
+      [ideaId]="context.ideaId()"
+      [seed]="context.seed()"
+    />
+  </mat-sidenav>
+</mat-sidenav-container>
+
+<button
+  mat-fab
+  extended
+  type="button"
+  class="assistant-trigger"
+  (click)="toggle()"
+  [attr.aria-expanded]="open()"
+>
+  <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+  {{ "ideaCreator.assistant.open" | translate }}
+</button>

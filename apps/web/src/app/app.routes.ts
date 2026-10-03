@@ -18,6 +18,30 @@ export const routes: Routes = [
         data: { breadcrumb: 'nav.matchmaking' },
       },
       {
+        path: 'pomysly',
+        loadChildren: () =>
+          import('./features/idea-creator/idea-creator.routes').then(
+            (m) => m.ideaRoutes,
+          ),
+        data: { breadcrumb: 'nav.ideas' },
+      },
+      {
+        path: 'nabory',
+        loadChildren: () =>
+          import('./features/idea-creator/idea-creator.routes').then(
+            (m) => m.callRoutes,
+          ),
+        data: { breadcrumb: 'nav.calls' },
+      },
+      {
+        path: 'materialy',
+        loadComponent: () =>
+          import(
+            './features/idea-creator/pages/materials/materials.component'
+          ).then((m) => m.MaterialsComponent),
+        data: { breadcrumb: 'nav.materials' },
+      },
+      {
         path: 'about',
         component: AboutComponent,
         data: { breadcrumb: 'nav.about' },
