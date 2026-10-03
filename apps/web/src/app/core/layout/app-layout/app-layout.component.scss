@@ -45,7 +45,9 @@
     justify-content: center;
     gap: 0;
   }
-  .primary-nav a { font-size: 12px; }
+  .primary-nav a {
+    font-size: 12px;
+  }
   .header,
   .page-content {
     padding-inline: 16px;

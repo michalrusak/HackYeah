@@ -25,12 +25,19 @@ export class ApiService {
   request<T>(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     path: string,
-    schema: z.ZodType<T>,
+    schema: { parse(value: unknown): T },
     options: { body?: unknown; headers?: Record<string, string> } = {},
   ): Observable<T> {
-    return this.http.request<unknown>(method, `${this.baseUrl}${path}`, options).pipe(
-      map((body) => z.object({ success: z.literal(true), data: schema }).parse(body).data),
-    );
+    return this.http
+      .request<unknown>(method, `${this.baseUrl}${path}`, options)
+      .pipe(
+        map((body) => {
+          const envelope = z
+            .object({ success: z.literal(true), data: z.unknown() })
+            .parse(body);
+          return schema.parse(envelope.data);
+        }),
+      );
   }
 
   matchInnovations(description: string): Observable<MatchmakingData> {

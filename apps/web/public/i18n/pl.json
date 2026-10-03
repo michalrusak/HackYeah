@@ -115,9 +115,18 @@
     "queryError": "Opisz wymagania w 8–2000 znakach.",
     "examplesLabel": "Inspiracja na początek:",
     "examples": {
-      "accessibility": { "label": "Dostępność", "query": "Szukam osób poruszających się na wózku, które zadeklarowały gotowość do testowania dostępności przestrzeni miejskiej. Test możemy przeprowadzić w Krakowie lub zdalnie." },
-      "computer": { "label": "Mocny komputer", "query": "Potrzebuję osoby z mocnym komputerem i kartą graficzną do zdalnego przetestowania aplikacji 3D dla organizacji społecznych. Przyda się doświadczenie w grafice lub testowaniu oprogramowania." },
-      "community": { "label": "Działania społeczne", "query": "Szukamy osób z doświadczeniem w wolontariacie i organizowaniu lokalnych spotkań, które pomogą przetestować pomysł na integrację sąsiedzką i działania międzypokoleniowe." }
+      "accessibility": {
+        "label": "Dostępność",
+        "query": "Szukam osób poruszających się na wózku, które zadeklarowały gotowość do testowania dostępności przestrzeni miejskiej. Test możemy przeprowadzić w Krakowie lub zdalnie."
+      },
+      "computer": {
+        "label": "Mocny komputer",
+        "query": "Potrzebuję osoby z mocnym komputerem i kartą graficzną do zdalnego przetestowania aplikacji 3D dla organizacji społecznych. Przyda się doświadczenie w grafice lub testowaniu oprogramowania."
+      },
+      "community": {
+        "label": "Działania społeczne",
+        "query": "Szukamy osób z doświadczeniem w wolontariacie i organizowaniu lokalnych spotkań, które pomogą przetestować pomysł na integrację sąsiedzką i działania międzypokoleniowe."
+      }
     },
     "searchPrivacy": "Zapytanie i publiczne profile analizuje AI przez OpenRouter. Nie wpisuj cudzych danych ani informacji poufnych. Wynik zapisujemy w Twojej historii.",
     "search": "Znajdź testerów",
@@ -127,12 +136,18 @@
     "retry": "Spróbuj ponownie",
     "cancel": "Anuluj",
     "close": "Zamknij",
-    "history": { "title": "Moje zapisane poszukiwania", "details": "Dopasowania: {{matches}} · Wybrane osoby: {{assigned}}" },
+    "history": {
+      "title": "Moje zapisane poszukiwania",
+      "details": "Dopasowania: {{matches}} · Wybrane osoby: {{assigned}}"
+    },
     "resultsEyebrow": "Od pomysłu do współpracy",
     "resultsTitle": "Osoby pasujące do Twojego testu",
     "showCatalog": "Pokaż społeczność",
     "candidateCount": "Przeanalizowane profile: {{count}} z {{total}} aktywnych w bazie.",
     "scoreNote": "Procent oznacza stopień dopasowania deklaracji do zapytania, a nie prawdopodobieństwo sukcesu. Uzasadnienie AI może wymagać weryfikacji.",
+    "staleMatches": "Niektóre profile zmieniły się od wyszukiwania lub są już niedostępne. Ich poprzednie oceny zostały ukryte. Wyszukaj ponownie, aby sprawdzić aktualne dopasowania.",
+    "staleResultsTitle": "Te dopasowania wymagają odświeżenia",
+    "staleResultsDescription": "Profile pasujące do tego zapytania zmieniły się lub są już niedostępne. Uruchom wyszukiwanie ponownie, aby sprawdzić aktualne dopasowania i wybrać osoby do testu.",
     "assignedCount": "Wybrane osoby: {{count}}",
     "matchScore": "Dopasowanie do wymagań",
     "assign": "Dodaj do testu",
@@ -149,7 +164,11 @@
     "demo": "Demo",
     "demoNote": "Profile oznaczone „Demo” są fikcyjnymi przykładami zapisanymi w bazie danych.",
     "footer": "Tworzymy innowacje razem.",
-    "availability": { "remote": "Współpraca zdalna", "onsite": "Na miejscu", "hybrid": "Zdalnie i na miejscu" },
+    "availability": {
+      "remote": "Współpraca zdalna",
+      "onsite": "Na miejscu",
+      "hybrid": "Zdalnie i na miejscu"
+    },
     "profile": {
       "eyebrow": "Dołącz swoją perspektywę",
       "createTitle": "Twój profil testera",

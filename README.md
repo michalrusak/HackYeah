@@ -10,9 +10,13 @@ Komendy działają tak samo na **Windows (PowerShell)**, **macOS** i **Linux (ba
 
 | Narzędzie | Wersja |
 |-----------|--------|
-| Node.js | ≥ 22 |
+| Node.js | 22.23.3 (pnpm pobiera wersję projektu przy `pnpm install`) |
 | pnpm | 11.x (`corepack enable` → wersja z `package.json`) |
 | Docker | do bazy PostgreSQL |
+
+Wersja Node.js do uruchamiania skryptów jest przypięta w `package.json` (`devEngines.runtime`). Po zmianie konfiguracji uruchom `pnpm install`; nie trzeba zmieniać systemowej wersji Node.js.
+
+Skrypty Turbo przekazują jawnie `--ui=tui`. W Turbo 2.11.7 omija to błąd obsługi Ctrl+C w terminalu Windows, powodujący kod `3221226505` przy uruchamianiu przez pnpm. Samo `"ui": "tui"` w `turbo.json` nie wystarcza — launcher sprawdza argument CLI.
 
 ### `ERR_PNPM_IGNORED_BUILDS` (esbuild / workerd / prisma)
 

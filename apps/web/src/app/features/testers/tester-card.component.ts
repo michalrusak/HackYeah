@@ -16,6 +16,15 @@ export class TesterCardComponent {
   readonly assigned = input(false);
   readonly busy = input(false);
   readonly toggleAssignment = output<void>();
-  readonly initials = computed(() => this.profile().displayName.split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toLocaleUpperCase('pl'));
-  readonly traits = computed(() => [...this.profile().skills, ...this.profile().resources].slice(0, 5));
+  readonly initials = computed(() =>
+    this.profile()
+      .displayName.split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join('')
+      .toLocaleUpperCase('pl'),
+  );
+  readonly traits = computed(() =>
+    [...new Set([...this.profile().skills, ...this.profile().resources])].slice(0, 5),
+  );
 }

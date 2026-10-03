@@ -2,7 +2,6 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
-import { TypeOrmModule, type TypeOrmModuleOptions } from '@nestjs/typeorm';
 import {
   ApiErrorResponseSchema,
   ErrorCodes,
@@ -16,14 +15,10 @@ import {
   type TesterSearchData,
 } from '@repo/api-contracts';
 import request from 'supertest';
-import { DataSource, In } from 'typeorm';
-import {
-  TesterAssignmentEntity,
-  TesterProfileEntity,
-  TesterSearchEntity,
-} from '../src/modules/testers/testers.entities.js';
+import type { PrismaClient } from '../src/generated/prisma/client.js';
 import { TestersModule } from '../src/modules/testers/testers.module.js';
-import { createTestersDatabase } from './testers-db.js';
+import { PrismaService } from '../src/prisma/prisma.service.js';
+import { connectTestersDatabase, createTestersDatabase } from './testers-db.js';
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
 const profileInput: TesterProfileInput = {
@@ -44,15 +39,21 @@ describe.skipIf(!databaseUrl)(
   'Tester API with PostgreSQL (TEST_DATABASE_URL)',
   () => {
     let app: INestApplication;
-    let databaseOptions: TypeOrmModuleOptions;
+    let databaseSchema: string;
+    let database: PrismaClient;
     const profileIds: string[] = [];
     const searchIds: string[] = [];
     const fetchMock = vi.fn<typeof fetch>();
 
     async function startApp(): Promise<INestApplication> {
+      if (!databaseUrl) throw new Error('TEST_DATABASE_URL is required');
+      database = connectTestersDatabase(databaseUrl, databaseSchema);
+      await database.$connect();
       const module = await Test.createTestingModule({
-        imports: [TypeOrmModule.forRoot(databaseOptions), TestersModule],
+        imports: [TestersModule],
       })
+        .overrideProvider(PrismaService)
+        .useValue(database)
         .overrideProvider(ConfigService)
         .useValue(new ConfigService({ OPENROUTER_API_KEY: 'test-ai-key' }))
         .compile();
@@ -79,31 +80,34 @@ describe.skipIf(!databaseUrl)(
       return profile;
     }
 
-    function aiResponse(matches: TesterAiResult['matches']): void {
-      fetchMock.mockImplementation(async () =>
-        Response.json({
-          choices: [
-            {
-              finish_reason: 'stop',
-              message: {
-                content: JSON.stringify({
-                  summary: 'Osoby do testów dostępności.',
-                  matches,
-                }),
-              },
+    function completion(matches: TesterAiResult['matches']): Response {
+      return Response.json({
+        choices: [
+          {
+            finish_reason: 'stop',
+            message: {
+              content: JSON.stringify({
+                summary: 'Osoby do testów dostępności.',
+                matches,
+              }),
             },
-          ],
-        }),
-      );
+          },
+        ],
+      });
     }
 
-    async function search(owner: string): Promise<TesterSearchData> {
+    function aiResponse(matches: TesterAiResult['matches']): void {
+      fetchMock.mockImplementation(async () => completion(matches));
+    }
+
+    async function search(
+      owner: string,
+      query = 'Szukam osoby z mocnym komputerem do testów dostępności.',
+    ): Promise<TesterSearchData> {
       const response = await request(app.getHttpServer())
         .post('/api/testers/search')
         .set('X-Tester-Key', owner)
-        .send({
-          query: 'Szukam osoby z mocnym komputerem do testów dostępności.',
-        })
+        .send({ query })
         .expect(200);
       const { data } = TesterSearchResponseSchema.parse(response.body);
       searchIds.push(data.id);
@@ -112,7 +116,7 @@ describe.skipIf(!databaseUrl)(
 
     beforeAll(async () => {
       if (!databaseUrl) throw new Error('TEST_DATABASE_URL is required');
-      databaseOptions = await createTestersDatabase(databaseUrl);
+      databaseSchema = await createTestersDatabase(databaseUrl);
       vi.stubGlobal('fetch', fetchMock);
       app = await startApp();
     });
@@ -123,27 +127,27 @@ describe.skipIf(!databaseUrl)(
     });
 
     afterAll(async () => {
-      if (app) {
-        try {
-          const database = app.get(DataSource);
+      try {
+        if (database) {
           if (searchIds.length) {
-            await database
-              .getRepository(TesterAssignmentEntity)
-              .delete({ searchId: In(searchIds) });
-            await database
-              .getRepository(TesterSearchEntity)
-              .delete({ id: In(searchIds) });
+            await database.testerAssignment.deleteMany({
+              where: { searchId: { in: searchIds } },
+            });
+            await database.testerSearch.deleteMany({
+              where: { id: { in: searchIds } },
+            });
           }
           if (profileIds.length) {
-            await database
-              .getRepository(TesterProfileEntity)
-              .delete({ id: In(profileIds) });
+            await database.testerProfile.deleteMany({
+              where: { id: { in: profileIds } },
+            });
           }
-        } finally {
-          await app.close();
         }
+      } finally {
+        await app?.close();
+        await database?.$disconnect();
+        vi.unstubAllGlobals();
       }
-      vi.unstubAllGlobals();
     });
 
     it('requires an owner key while allowing public browsing', async () => {
@@ -208,13 +212,9 @@ describe.skipIf(!databaseUrl)(
         resources: ['Komputer z GPU i 128 GB RAM'],
       });
       expect(edited.id).toBe(created.id);
-      const stored = await app
-        .get(DataSource)
-        .getRepository(TesterProfileEntity)
-        .createQueryBuilder('profile')
-        .addSelect('profile.ownerHash')
-        .where('profile.id = :id', { id: created.id })
-        .getOneOrFail();
+      const stored = await database.testerProfile.findUniqueOrThrow({
+        where: { id: created.id },
+      });
       expect(stored.city).toBe('Warszawa');
       expect(stored.resources).toEqual(['Komputer z GPU i 128 GB RAM']);
       expect(stored.ownerHash).toBe(
@@ -269,10 +269,9 @@ describe.skipIf(!databaseUrl)(
       expect(body).not.toContain(
         createHash('sha256').update(owner).digest('hex'),
       );
-      const stored = await app
-        .get(DataSource)
-        .getRepository(TesterSearchEntity)
-        .findOneBy({ id: result.id });
+      const stored = await database.testerSearch.findUnique({
+        where: { id: result.id },
+      });
       expect(stored).not.toBeNull();
     });
 
@@ -294,10 +293,7 @@ describe.skipIf(!databaseUrl)(
           matchedTraits: ['Komputer'],
         };
         aiResponse(scenario === 'duplicate' ? [match, match] : [match]);
-        const before = await app
-          .get(DataSource)
-          .getRepository(TesterSearchEntity)
-          .count();
+        const before = await database.testerSearch.count();
         const response = await request(app.getHttpServer())
           .post('/api/testers/search')
           .set('X-Tester-Key', owner)
@@ -306,9 +302,7 @@ describe.skipIf(!databaseUrl)(
         expect(ApiErrorResponseSchema.parse(response.body).error.code).toBe(
           ErrorCodes.AI_INVALID_RESPONSE,
         );
-        expect(
-          await app.get(DataSource).getRepository(TesterSearchEntity).count(),
-        ).toBe(before);
+        expect(await database.testerSearch.count()).toBe(before);
       },
     );
 
@@ -347,6 +341,139 @@ describe.skipIf(!databaseUrl)(
       expect(
         TesterSearchResponseSchema.parse(history.body).data.matches,
       ).toEqual([]);
+      await request(app.getHttpServer())
+        .post(`${path}/assignments`)
+        .set('X-Tester-Key', owner)
+        .send({ profileId: profile.id })
+        .expect(404);
+    });
+
+    it('invalidates historical AI matches and assignments after an active profile is edited', async () => {
+      const owner = newOwner();
+      const profile = await saveProfile(owner);
+      aiResponse([
+        {
+          profileId: profile.id,
+          score: 94,
+          reason: 'Posiada komputer z GPU.',
+          matchedTraits: ['Komputer z GPU'],
+        },
+      ]);
+      const result = await search(owner);
+      const path = `/api/testers/searches/${result.id}`;
+      await request(app.getHttpServer())
+        .post(`${path}/assignments`)
+        .set('X-Tester-Key', owner)
+        .send({ profileId: profile.id })
+        .expect(200);
+      await saveProfile(owner, {
+        resources: ['Tablet bez GPU'],
+        bio: 'Nie posiadam już komputera, do testów mogę udostępnić wyłącznie tablet.',
+      });
+      const reopened = await request(app.getHttpServer())
+        .get(path)
+        .set('X-Tester-Key', owner)
+        .expect(200);
+      expect(
+        TesterSearchResponseSchema.parse(reopened.body).data,
+      ).toMatchObject({
+        matches: [],
+        assignedProfileIds: [],
+        staleMatchCount: 1,
+      });
+      const history = await request(app.getHttpServer())
+        .get('/api/testers/searches')
+        .set('X-Tester-Key', owner)
+        .expect(200);
+      expect(
+        TesterSearchesResponseSchema.parse(history.body).data.searches,
+      ).toEqual([
+        expect.objectContaining({
+          id: result.id,
+          matchCount: 0,
+          assignedCount: 0,
+        }),
+      ]);
+      await request(app.getHttpServer())
+        .post(`${path}/assignments`)
+        .set('X-Tester-Key', owner)
+        .send({ profileId: profile.id })
+        .expect(404);
+      aiResponse([
+        {
+          profileId: profile.id,
+          score: 90,
+          reason: 'Deklaruje tablet do testów.',
+          matchedTraits: ['Tablet bez GPU'],
+        },
+      ]);
+      const current = await search(
+        owner,
+        'Szukam osoby z tabletem do testowania aplikacji.',
+      );
+      expect(current.staleMatchCount).toBe(0);
+      expect(current.matches[0]?.profile.resources).toEqual(['Tablet bez GPU']);
+    });
+
+    it('invalidates an AI match when its profile changes while the model request is in flight', async () => {
+      const owner = newOwner();
+      const profile = await saveProfile(owner);
+      fetchMock.mockImplementationOnce(async () => {
+        await saveProfile(owner, {
+          resources: ['Tablet bez GPU'],
+          bio: 'Nie posiadam już komputera, do testów mogę udostępnić wyłącznie tablet.',
+        });
+        return completion([
+          {
+            profileId: profile.id,
+            score: 94,
+            reason: 'Posiada komputer z GPU.',
+            matchedTraits: ['Komputer z GPU'],
+          },
+        ]);
+      });
+      const result = await search(owner);
+      expect(result).toMatchObject({
+        matches: [],
+        assignedProfileIds: [],
+        staleMatchCount: 1,
+      });
+      await request(app.getHttpServer())
+        .post(`/api/testers/searches/${result.id}/assignments`)
+        .set('X-Tester-Key', owner)
+        .send({ profileId: profile.id })
+        .expect(404);
+    });
+
+    it('opens legacy stored matches without profile versions as stale results', async () => {
+      const owner = newOwner();
+      const profile = await saveProfile(owner);
+      const legacyMatches = [
+        {
+          profileId: profile.id,
+          score: 94,
+          reason: 'Posiada komputer z GPU.',
+          matchedTraits: ['Komputer z GPU'],
+        },
+      ];
+      aiResponse(legacyMatches);
+      const result = await search(owner);
+      await database.testerSearch.update({
+        where: { id: result.id },
+        data: { matches: legacyMatches },
+      });
+      const path = `/api/testers/searches/${result.id}`;
+      const restored = await request(app.getHttpServer())
+        .get(path)
+        .set('X-Tester-Key', owner)
+        .expect(200);
+      expect(
+        TesterSearchResponseSchema.parse(restored.body).data,
+      ).toMatchObject({
+        matches: [],
+        assignedProfileIds: [],
+        staleMatchCount: 1,
+      });
       await request(app.getHttpServer())
         .post(`${path}/assignments`)
         .set('X-Tester-Key', owner)
@@ -396,12 +523,12 @@ describe.skipIf(!databaseUrl)(
         ).toEqual([profile.id]);
       }
       expect(
-        await app
-          .get(DataSource)
-          .getRepository(TesterAssignmentEntity)
-          .countBy({ searchId: result.id }),
+        await database.testerAssignment.count({
+          where: { searchId: result.id },
+        }),
       ).toBe(1);
       await app.close();
+      await database.$disconnect();
       app = await startApp();
       const restored = await request(app.getHttpServer())
         .get(path)
@@ -435,10 +562,9 @@ describe.skipIf(!databaseUrl)(
         TesterSearchResponseSchema.parse(removed.body).data.assignedProfileIds,
       ).toEqual([]);
       expect(
-        await app
-          .get(DataSource)
-          .getRepository(TesterAssignmentEntity)
-          .countBy({ searchId: result.id }),
+        await database.testerAssignment.count({
+          where: { searchId: result.id },
+        }),
       ).toBe(0);
     });
   },

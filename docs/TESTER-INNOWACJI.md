@@ -9,17 +9,17 @@ Zakładka `/tester-innowacji` łączy organizatorów testów innowacji społeczn
 3. **Dodanie profilu.** Przycisk na tej samej stronie otwiera formularz z nazwą publiczną, miejscowością, opisem, umiejętnościami, zasobami, zainteresowaniami, trybem udziału i opcjonalnym opisem potrzeb dostępnościowych. Wymagana jest zgoda na publikację i analizę tych informacji przez AI.
 4. **Edycja i widoczność.** Właściciel może edytować swój profil i wyłączyć jego widoczność. Nieaktywne profile nie uczestniczą w nowych wyszukiwaniach. Pozostali użytkownicy nie mogą edytować cudzego profilu.
 5. **Zachowanie dostępu.** Ponieważ projekt nie ma kont, przeglądarka generuje prywatny klucz dostępu. Klucz można skopiować i przywrócić na innym urządzeniu. Utrata klucza oznacza utratę dostępu; znajomość klucza daje dostęp do profilu i własnych wyszukiwań. Serwer zapisuje wyłącznie SHA-256 klucza.
-6. **Historia testów.** Zapytanie i wyniki zostają zapisane dla właściciela klucza. Użytkownik może ponownie otworzyć zapisane wyszukiwanie po odświeżeniu strony.
+6. **Historia testów.** Zapytanie i wyniki zostają zapisane dla właściciela klucza. Użytkownik może ponownie otworzyć zapisane wyszukiwanie po odświeżeniu strony. Ocena jest związana z wersją profilu poddaną analizie. Jeśli profil zmieni się podczas lub po analizie, stary wynik zostaje ukryty z komunikatem o potrzebie ponownego wyszukania.
 7. **Przypisanie testerów.** Osobę z wyników można przypisać do danego zapytania testowego lub usunąć przypisanie. Powtórzenie przypisania nie tworzy duplikatu. Jest to lista uczestników wybranych przez organizatora, nie wysyłka zaproszenia ani potwierdzenie udziału testera.
 8. **Dane demonstracyjne.** Seed dodaje fikcyjne, jednoznacznie oznaczone profile do PostgreSQL. Kolejne uruchomienie nie duplikuje rekordów i nie nadpisuje profili użytkowników. Interfejs pobiera dane z API; nie zawiera zastępczej listy wyników.
 
 ## Model danych i dostęp
 
-| Zasób | Zawartość i relacje |
-| --- | --- |
-| Profil testera | UUID, hash klucza właściciela, deklarowane cechy, zgoda, aktywność, oznaczenie demonstracyjne, daty utworzenia i zmiany |
-| Wyszukiwanie | UUID, hash klucza właściciela, zapytanie, podsumowanie, dopasowania i liczba analizowanych profili |
-| Przypisanie | Wyszukiwanie i profil połączone kluczami obcymi; unikalność pary zapobiega duplikatom |
+| Zasób          | Zawartość i relacje                                                                                                        |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Profil testera | UUID, hash klucza właściciela, deklarowane cechy, zgoda, aktywność, oznaczenie demonstracyjne, daty utworzenia i zmiany    |
+| Wyszukiwanie   | UUID, hash klucza właściciela, zapytanie, podsumowanie, dopasowania wraz z wersjami profili i liczba analizowanych profili |
+| Przypisanie    | Wyszukiwanie i profil połączone kluczami obcymi; unikalność pary zapobiega duplikatom                                      |
 
 Publiczny katalog zawiera wyłącznie aktywne profile. Profil właściciela, historia i przypisania wymagają nagłówka `X-Tester-Key` z losowym kluczem 32-bajtowym zapisanym jako 64 znaki szesnastkowe. Wdrożenie publiczne wymaga HTTPS. Klucz nie jest wysyłany do modelu AI.
 
@@ -29,16 +29,16 @@ AI otrzymuje zapytanie i deklarowane informacje potrzebne do dopasowania. Nie ot
 
 Wspólne schematy i typy: `packages/api-contracts/src/testers.schema.ts`.
 
-| Metoda i ścieżka | Działanie |
-| --- | --- |
-| `GET /api/testers/profiles` | Publiczne aktywne profile i liczebność katalogu |
-| `GET /api/testers/profile/me` | Własny profil albo `null` |
-| `PUT /api/testers/profile/me` | Utworzenie lub edycja własnego profilu |
-| `POST /api/testers/search` | Analiza AI i zapis wyszukiwania |
-| `GET /api/testers/searches` | Własna historia |
-| `GET /api/testers/searches/:id` | Zapisany wynik i przypisane osoby |
-| `POST /api/testers/searches/:id/assignments` | Przypisanie osoby z wyników |
-| `DELETE /api/testers/searches/:id/assignments/:profileId` | Usunięcie własnego przypisania |
+| Metoda i ścieżka                                          | Działanie                                       |
+| --------------------------------------------------------- | ----------------------------------------------- |
+| `GET /api/testers/profiles`                               | Publiczne aktywne profile i liczebność katalogu |
+| `GET /api/testers/profile/me`                             | Własny profil albo `null`                       |
+| `PUT /api/testers/profile/me`                             | Utworzenie lub edycja własnego profilu          |
+| `POST /api/testers/search`                                | Analiza AI i zapis wyszukiwania                 |
+| `GET /api/testers/searches`                               | Własna historia                                 |
+| `GET /api/testers/searches/:id`                           | Zapisany wynik i przypisane osoby               |
+| `POST /api/testers/searches/:id/assignments`              | Przypisanie osoby z wyników                     |
+| `DELETE /api/testers/searches/:id/assignments/:profileId` | Usunięcie własnego przypisania                  |
 
 ## Uruchomienie
 
@@ -54,6 +54,8 @@ pnpm dev
 ```
 
 Migracja dodaje wyłącznie tabele funkcji i nie resetuje istniejącej bazy. Seed jest operacją jawną, oddzieloną od startu aplikacji. Przy wdrożeniu produkcyjnym migrację uruchamia się przed API; profile demonstracyjne nie są wymagane do działania.
+
+Warstwa danych korzysta z Prisma 7: `apps/api/prisma/schema.prisma` i addytywnej migracji `20261003180000_create_testers`. Polecenie `pnpm db:migrate` stosuje istniejące migracje przez `prisma migrate deploy`, bez tworzenia migracji ani resetowania schematu.
 
 ## Kryteria odbioru
 

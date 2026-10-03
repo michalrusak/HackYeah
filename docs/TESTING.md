@@ -21,11 +21,7 @@ pnpm --filter api test
 
 - Runner: **Vitest** (`vitest.config.e2e.ts`)
 - Pliki: `test/**/*.e2e-spec.ts`
-<<<<<<< HEAD
 - Setup: `test/setup-e2e.ts` ustawia `NODE_ENV=test` (domyślnie bez połączenia z bazą; zestaw PostgreSQL włącza je jawnie)
-=======
-- Setup: `test/setup-e2e.ts` ustawia `NODE_ENV=test` (bez Prisma — szybkie testy HTTP)
->>>>>>> c9c4633a9ba83a7e1c91a70aaef98f6821bfa1ed
 - Walidacja odpowiedzi: schematy Zod z `@repo/api-contracts`
 
 ```bash
@@ -35,12 +31,13 @@ pnpm --filter api test:e2e
 ### Tester innowacji — prawdziwy PostgreSQL
 
 `apps/api/test/testers.e2e-spec.ts` uruchamia pełny moduł NestJS z repozytorium
-TypeORM i migracją produkcyjną. Zastąpiony jest jedynie transport HTTP do modelu
+Prisma i produkcyjnymi migracjami SQL. Zastąpiony jest jedynie transport HTTP do modelu
 AI, dzięki czemu testy są deterministyczne i nie zużywają płatnych tokenów.
 Bez `TEST_DATABASE_URL` ten zestaw jest pomijany; pozostałe E2E nadal działają.
 
 Wymagania: uruchomiony PostgreSQL, Node.js 22 lub nowszy obsługiwany przez projekt
 oraz zbudowane kontrakty: `pnpm --filter @repo/api-contracts build`.
+Po zmianie modeli wygeneruj klienta: `pnpm --filter api db:generate`.
 Zalecana jest osobna baza testowa. Rola w połączeniu musi móc tworzyć schematy.
 Adres ustaw w środowisku procesu, nie zapisuj danych dostępowych w repozytorium.
 
@@ -59,16 +56,18 @@ TEST_DATABASE_URL='postgresql://user:password@localhost:5432/hackyeah_test' pnpm
 ```
 
 Każdy przebieg tworzy własny schemat `testers_e2e_<UUID>`, ustawia `search_path`
-i uruchamia migrację z `synchronize: false`. Możliwe jest wskazanie istniejącej
+i wykonuje pliki SQL z `apps/api/prisma/migrations`. Klient Prisma z adapterem
+PostgreSQL używa wyłącznie tego schematu. Możliwe jest wskazanie istniejącej
 bazy: tabele aplikacji w `public` nie są używane ani czyszczone. Po testach usuwane
-są wyłącznie rekordy utworzone w danym przebiegu. Schemat, tabele i wpis migracji
-pozostają; testy nie wykonują `DROP`, `TRUNCATE` ani resetu bazy.
+są wyłącznie rekordy utworzone w danym przebiegu. Schemat i tabele pozostają;
+testy nie wykonują `DROP`, `TRUNCATE` ani resetu bazy.
 
 Zakres: walidacja zgody i formularza, tworzenie oraz edycja profilu, izolacja
 kluczy właścicieli, ukrywanie kluczy w API i danych AI, wyszukiwanie wyłącznie
 aktywnych profili, odrzucanie nieistniejących / nieaktywnych / powtórzonych ID
-modelu, cofnięcie publikacji, kontrola przypisań oraz ich trwałość po restarcie
-aplikacji.
+modelu, cofnięcie publikacji, unieważnianie wyników po edycji profilu (także
+podczas trwającego zapytania AI), kontrola przypisań oraz ich trwałość po
+restarcie aplikacji.
 
 ## Web — unit (`apps/web`)
 

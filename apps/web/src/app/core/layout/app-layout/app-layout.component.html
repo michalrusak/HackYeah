@@ -2,11 +2,23 @@
   <mat-toolbar class="header">
     <a class="brand" routerLink="/matchmaking">
       <mat-icon aria-hidden="true">travel_explore</mat-icon>
-      <span>{{ "app.name" | translate }}</span>
+      <span>{{ 'app.name' | translate }}</span>
     </a>
     <nav class="primary-nav" [attr.aria-label]="'header.mainNav' | translate">
-      <a mat-button routerLink="/matchmaking" routerLinkActive="active" ariaCurrentWhenActive="page">{{ 'nav.matchmaking' | translate }}</a>
-      <a mat-button routerLink="/tester-innowacji" routerLinkActive="active" ariaCurrentWhenActive="page">{{ 'nav.testers' | translate }}</a>
+      <a
+        mat-button
+        routerLink="/matchmaking"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        >{{ 'nav.matchmaking' | translate }}</a
+      >
+      <a
+        mat-button
+        routerLink="/tester-innowacji"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        >{{ 'nav.testers' | translate }}</a
+      >
     </nav>
     <button
       mat-icon-button
@@ -16,7 +28,7 @@
       "
       (click)="theme.toggle()"
     >
-      <mat-icon>{{ theme.isDark() ? "light_mode" : "dark_mode" }}</mat-icon>
+      <mat-icon>{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
     </button>
   </mat-toolbar>
   <main class="page-content"><router-outlet /></main>

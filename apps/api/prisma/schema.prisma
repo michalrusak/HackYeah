@@ -6,3 +6,52 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model TesterProfile {
+  id                 String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerHash          String             @unique(map: "uq_tester_profiles_owner") @map("owner_hash") @db.VarChar(64)
+  displayName        String             @map("display_name") @db.VarChar(80)
+  city               String             @db.VarChar(100)
+  bio                String
+  skills             String[]           @default([])
+  resources          String[]           @default([])
+  accessibilityNeeds String             @default("") @map("accessibility_needs")
+  interests          String[]           @default([])
+  availability       String             @db.VarChar(10)
+  consent            Boolean            @default(true)
+  isActive           Boolean            @default(true) @map("is_active")
+  isDemo             Boolean            @default(false) @map("is_demo")
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  assignments        TesterAssignment[]
+
+  @@map("tester_profiles")
+}
+
+model TesterSearch {
+  id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerHash      String             @map("owner_hash") @db.VarChar(64)
+  query          String
+  summary        String
+  matches        Json
+  candidateCount Int                @map("candidate_count")
+  totalProfiles  Int                @map("total_profiles")
+  candidateLimit Int                @map("candidate_limit")
+  createdAt      DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  assignments    TesterAssignment[]
+
+  @@index([ownerHash, createdAt], map: "idx_tester_searches_owner_created")
+  @@map("tester_searches")
+}
+
+model TesterAssignment {
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  searchId  String        @map("search_id") @db.Uuid
+  profileId String        @map("profile_id") @db.Uuid
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  search    TesterSearch  @relation(fields: [searchId], references: [id], onDelete: Cascade)
+  profile   TesterProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([searchId, profileId], map: "uq_tester_assignments_search_profile")
+  @@map("tester_assignments")
+}
