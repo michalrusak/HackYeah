@@ -1,32 +1,30 @@
 .layout {
   min-height: 100vh;
 }
-
-.layout-content {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+.header {
+  justify-content: space-between;
+  padding-inline: 24px;
+  background: transparent;
+  border-bottom: 1px solid var(--mat-sys-outline-variant, #c4c6d0);
 }
-
-.mobile-drawer {
-  width: 260px;
-
-  a.active-link {
-    background: rgb(0 0 0 / 4%);
-  }
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+  font-size: 18px;
 }
-
 .page-content {
-  flex: 1;
   padding: 24px;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
 }
-
 @media (max-width: 600px) {
+  .header,
   .page-content {
-    padding: 16px;
+    padding-inline: 16px;
   }
 }

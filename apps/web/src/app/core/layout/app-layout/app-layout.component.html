@@ -1,37 +1,19 @@
-<mat-sidenav-container class="layout">
-  <mat-sidenav #drawer class="mobile-drawer" mode="over">
-    <mat-nav-list>
-      @for (item of navItems; track item.path) {
-        <a
-          mat-list-item
-          [routerLink]="item.path"
-          routerLinkActive="active-link"
-          [routerLinkActiveOptions]="{ exact: item.path === '/' }"
-          (click)="closeDrawer()"
-        >
-          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-          <span matListItemTitle>{{ item.labelKey | translate }}</span>
-        </a>
-      }
-    </mat-nav-list>
-  </mat-sidenav>
-
-  <mat-sidenav-content class="layout-content">
-    <app-header
-      [isLoggedIn]="isLoggedIn()"
-      [notificationCount]="notificationCount()"
-      [userName]="demoUserName"
-      (menuToggle)="toggleDrawer()"
-      (search)="onSearch($event)"
-      (login)="onLogin()"
-      (logout)="onLogout()"
-    />
-
-    <main class="page-content">
-      <app-breadcrumb />
-      <router-outlet />
-    </main>
-
-    <app-footer />
-  </mat-sidenav-content>
-</mat-sidenav-container>
+<div class="layout">
+  <mat-toolbar class="header">
+    <a class="brand" routerLink="/matchmaking">
+      <mat-icon aria-hidden="true">travel_explore</mat-icon>
+      <span>{{ "matchmaking.title" | translate }}</span>
+    </a>
+    <button
+      mat-icon-button
+      type="button"
+      [attr.aria-label]="
+        (theme.isDark() ? 'header.themeLight' : 'header.themeDark') | translate
+      "
+      (click)="theme.toggle()"
+    >
+      <mat-icon>{{ theme.isDark() ? "light_mode" : "dark_mode" }}</mat-icon>
+    </button>
+  </mat-toolbar>
+  <main class="page-content"><router-outlet /></main>
+</div>

@@ -22,10 +22,28 @@
       "cache": false
     },
     "dev": {
+      "passThroughEnv": [
+        "OPENROUTER_API_KEY",
+        "OPENROUTER_MODEL",
+        "API_URL",
+        "WEB_API_URL",
+        "WEB_ORIGIN",
+        "WEB_PORT",
+        "PORT"
+      ],
       "cache": false,
       "persistent": true
     },
     "start": {
+      "passThroughEnv": [
+        "OPENROUTER_API_KEY",
+        "OPENROUTER_MODEL",
+        "API_URL",
+        "WEB_API_URL",
+        "WEB_ORIGIN",
+        "WEB_PORT",
+        "PORT"
+      ],
       "dependsOn": ["build"],
       "cache": false,
       "persistent": true

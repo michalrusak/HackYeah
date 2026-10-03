@@ -1,11 +1,17 @@
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  provideAppInitializer,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { routes } from './app.routes';
+import { ApiConfigService } from './core/services/api-config.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,11 +19,12 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(withFetch()),
-    provideTranslateHttpLoader({
-      prefix: './i18n/',
-      suffix: '.json',
-    }),
+    provideAppInitializer(() => inject(ApiConfigService).load()),
     provideTranslateService({
+      loader: provideTranslateHttpLoader({
+        prefix: '/i18n/',
+        suffix: '.json',
+      }),
       fallbackLang: 'pl',
       lang: 'pl',
     }),

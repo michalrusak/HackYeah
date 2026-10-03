@@ -5,6 +5,7 @@
   },
   "nav": {
     "home": "Start",
+    "matchmaking": "Matchmaking społeczny",
     "about": "O projekcie",
     "contact": "Kontakt"
   },
@@ -39,6 +40,60 @@
   "about": {
     "title": "O projekcie",
     "description": "Placeholder — opisz tu swój projekt hackathonowy."
+  },
+  "matchmaking": {
+    "eyebrow": "Biblioteka innowacji społecznych ROPS",
+    "title": "Znajdź rozwiązanie dla swojej społeczności",
+    "subtitle": "Opisz wyzwanie własnymi słowami. Rozpoznamy potrzeby i pokażemy innowacje społeczne, od których możesz zacząć.",
+    "descriptionLabel": "Opisz problem, dla kogo szukasz rozwiązania i co chcesz zmienić",
+    "placeholder": "Działamy z osobami starszymi w małej gminie. Chcemy pomóc im nawiązywać znajomości i częściej uczestniczyć we wspólnych spotkaniach…",
+    "hint": "Podaj odbiorców, główną trudność i oczekiwaną zmianę.",
+    "privacy": "Opis trafia do AI przez OpenRouter. Nie wpisuj danych osobowych. Nie zapisujemy opisów ani wyników w aplikacji.",
+    "submit": "Znajdź innowacje",
+    "loading": "Szukamy innowacji…",
+    "loadingDetail": "Interpretujemy potrzeby i porównujemy je z katalogiem. Może to potrwać do 30 sekund.",
+    "retry": "Spróbuj ponownie",
+    "examplesLabel": "Wypróbuj przykład:",
+    "examples": {
+      "seniors": {
+        "label": "Wsparcie seniorów",
+        "description": "Prowadzimy klub seniora w małej gminie. Starsi mieszkańcy czują się samotni i rzadko spotykają innych ludzi. Szukamy pomysłu na wspólne zajęcia, które pomogą im nawiązać relacje i uczestniczyć w życiu lokalnej społeczności."
+      },
+      "migrants": {
+        "label": "Integracja migrantów",
+        "description": "Nasza organizacja wspiera rodziny z Ukrainy mieszkające w Polsce i mające prawo do publicznej opieki zdrowotnej. Nie wiedzą, jak wybrać lekarza rodzinnego, zapisać dziecko na szczepienie i korzystać z przychodni. Potrzebujemy zrozumiałych informacji po ukraińsku, aby ułatwić im dostęp do usług."
+      },
+      "school": {
+        "label": "Powrót do szkoły",
+        "description": "W naszej szkole uczniowie w wieku 10–13 lat wracają po długiej nieobecności związanej z terapią lub leczeniem psychiatrycznym. Potrzebujemy materiałów psychoedukacyjnych dla nich, rodziców, nauczycieli i klasy, żeby wspierać powrót do szkoły, radzenie sobie z emocjami i odbudowę relacji z rówieśnikami."
+      }
+    },
+    "interpretationTitle": "Tak rozumiemy Twoje wyzwanie",
+    "audiences": "Odbiorcy",
+    "needs": "Potrzeby",
+    "areas": "Obszary",
+    "unspecified": "Do doprecyzowania",
+    "clarification": "Warto doprecyzować opis:",
+    "resultsTitle": "Dopasowane innowacje",
+    "resultsCount": "Liczba wyników: {{count}}",
+    "scoreNote": "Poziom dopasowania oznacza zgodność z opisanymi potrzebami. Nie jest oceną skuteczności innowacji. Sprawdź w źródle grupę docelową i warunki wykorzystania.",
+    "source": "Zobacz w ROPS",
+    "emptyTitle": "Potrzebujemy więcej szczegółów",
+    "emptyDescription": "Nie znaleźliśmy dopasowania w obecnym katalogu 15 innowacji. Dopisz konkretną trudność, odbiorców i oczekiwaną zmianę, a następnie wyszukaj ponownie.",
+    "levels": {
+      "high": "Wysokie dopasowanie",
+      "medium": "Średnie dopasowanie",
+      "partial": "Częściowe dopasowanie"
+    },
+    "errors": {
+      "validation": "Wpisz opis zawierający od 1 do 4000 znaków.",
+      "notConfigured": "Usługa AI nie została jeszcze skonfigurowana. Administrator musi dodać klucz OpenRouter.",
+      "unavailable": "Usługa AI jest chwilowo niedostępna. Spróbuj ponownie za chwilę.",
+      "timeout": "Interpretacja trwała zbyt długo. Spróbuj ponownie lub skróć opis.",
+      "invalidResponse": "AI zwróciło odpowiedź, której nie możemy odczytać. Spróbuj ponownie.",
+      "rateLimit": "Osiągnięto limit zapytań. Odczekaj chwilę i spróbuj ponownie.",
+      "generic": "Nie udało się pobrać dopasowań. Sprawdź połączenie i spróbuj ponownie."
+    }
   },
   "contact": {
     "title": "Kontakt",

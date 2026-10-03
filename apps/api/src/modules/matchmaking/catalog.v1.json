@@ -1,0 +1,208 @@
+{
+  "version": 1,
+  "innovations": [
+    {
+      "id": "senior-cuder",
+      "name": "Senior CUDER",
+      "description": "Gra karciana do wspólnych spotkań seniorów, wspierająca motywację, dbanie o zdrowie i budowanie relacji z rodziną, sąsiadami oraz nowymi znajomymi.",
+      "audiences": ["Seniorzy"],
+      "areas": ["Seniorzy", "Zdrowie", "Zdrowie psychiczne"],
+      "needs": [
+        "Relacje społeczne",
+        "Aktywizacja społeczna",
+        "Kompetencje społeczne"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Csenior-cuder",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "mobilne-centrum-pomocy",
+      "name": "Mobilne centrum pomocy dla osób starszych",
+      "description": "Wsparcie docierające do domu niesamodzielnych seniorów na wsi. Łączy coaching senioralny z indywidualnie dobraną pomocą specjalistów, m.in. prawnika, dietetyka i rehabilitanta.",
+      "audiences": ["Seniorzy", "Osoby o ograniczonej mobilności"],
+      "areas": ["Seniorzy", "Zdrowie"],
+      "needs": [
+        "Dostęp do usług",
+        "Opieka domowa",
+        "Aktywizacja społeczna",
+        "Relacje społeczne"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Cmobilne-centrum-pomocy-dla-osob-starszych",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "organizator-opieki",
+      "name": "Organizator kompleksowej opieki w miejscu zamieszkania",
+      "description": "Program organizacji opieki domowej dla osób starszych i osób po pogorszeniu stanu zdrowia. Pomaga rodzinie przygotować opiekę i zapewnić potrzebne wsparcie oraz sprzęt.",
+      "audiences": [
+        "Seniorzy",
+        "Zdrowie i medycyna",
+        "Osoby o ograniczonej mobilności"
+      ],
+      "areas": ["Seniorzy", "Zdrowie"],
+      "needs": ["Opieka domowa", "Wsparcie opiekunów", "Dostęp do usług"],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Corganizator-kompleksowej-opieki-w-miejscu-zamieszkania",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "merkury",
+      "name": "Merkury",
+      "description": "Internetowy symulator bankomatu, parkomatu, paczkomatu i kasy samoobsługowej. Pozwala seniorom ćwiczyć obsługę urządzeń w domowych warunkach.",
+      "audiences": ["Seniorzy"],
+      "areas": ["Seniorzy"],
+      "needs": ["Kompetencje cyfrowe", "Dostęp do usług"],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Cmerkury",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "bawita",
+      "name": "BaWita",
+      "description": "Drewniana tablica z ruchomymi elementami do ćwiczenia pamięci, sprawności manualnej i organizacji dnia. Przeznaczona dla dorosłych z wczesnym otępieniem oraz osób rehabilitowanych pamięciowo po udarach.",
+      "audiences": ["Seniorzy", "Zdrowie i medycyna"],
+      "areas": ["Seniorzy", "Zdrowie"],
+      "needs": ["Rehabilitacja", "Ćwiczenie pamięci"],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Cbawita",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "e-rzecznik",
+      "name": "E-rzecznik konsumenta seniora",
+      "description": "Aplikacja udostępniająca seniorom informacje dotyczące praw konsumenta, m.in. reklamacji, odstąpienia od umowy i egzekwowania przysługujących praw.",
+      "audiences": ["Seniorzy"],
+      "areas": ["Seniorzy"],
+      "needs": ["Prawa konsumenta", "Dostęp do usług"],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Ce-rzecznik-konsumenta-seniora",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "wirtualne-izby-pamieci",
+      "name": "Wirtualne izby pamięci",
+      "description": "Metoda warsztatowej pracy z seniorami obejmująca fotografowanie, opowiadanie historii przedmiotów i tworzenie wirtualnej galerii. Łączy przekazywanie dziedzictwa z nauką umiejętności cyfrowych.",
+      "audiences": ["Seniorzy"],
+      "areas": ["Seniorzy"],
+      "needs": [
+        "Relacje społeczne",
+        "Kompetencje cyfrowe",
+        "Aktywizacja społeczna"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Cwirtualne-izby-pamieci",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "health-guide-pl",
+      "name": "Health Guide PL",
+      "description": "Przewodnik po podstawowej publicznej opiece zdrowotnej w Polsce, przygotowany w językach angielskim i ukraińskim. Wyjaśnia dostęp do świadczeń osobom mającym prawo do korzystania z tego systemu.",
+      "audiences": [
+        "Cudzoziemcy",
+        "Zdrowie i medycyna",
+        "Dzieci, młodzież i rodzina"
+      ],
+      "areas": ["Integracja cudzoziemców", "Zdrowie"],
+      "needs": [
+        "Informacja o opiece zdrowotnej",
+        "Dostęp do usług",
+        "Dostępna komunikacja"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-cudzoziemcow%2Chealth-guide-pl",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "dialog-ponad-kulturami",
+      "name": "Dialog ponad kulturami",
+      "description": "Komunikator polsko-dari dla uchodźców z Afganistanu i polskich instytucji. Udostępnia słownictwo dotyczące zdrowia, edukacji, pracy i spraw urzędowych oraz wybrane piktogramy.",
+      "audiences": ["Cudzoziemcy"],
+      "areas": ["Integracja cudzoziemców"],
+      "needs": [
+        "Komunikacja międzykulturowa",
+        "Integracja kulturowa",
+        "Dostępna komunikacja",
+        "Dostęp do usług"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-cudzoziemcow%2Cdialog-ponad-kulturami-1",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "bez-presji-z-depresji",
+      "name": "Bez presji z depresji",
+      "description": "Karty pracy i ćwiczenia psychoedukacyjne wspierające dzieci i młodzież w powrocie do szkoły po długiej terapii lub leczeniu psychiatrycznym. Materiały obejmują również rodzinę, nauczycieli i klasę.",
+      "audiences": ["Dzieci, młodzież i rodzina"],
+      "areas": ["Zdrowie psychiczne"],
+      "needs": [
+        "Powrót do szkoły",
+        "Psychoedukacja",
+        "Zdrowie psychiczne",
+        "Wsparcie emocjonalne",
+        "Relacje społeczne"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny%2Cbez-presji-z-depresji",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "marimbaza",
+      "name": "MarimBaza!",
+      "description": "Warsztaty budowania instrumentów i przygotowania wydarzenia muzycznego z młodzieżą ośrodków szkolno-wychowawczych i socjoterapii. Służą rozwijaniu współpracy, komunikacji, poczucia własnej wartości i umiejętności manualnych.",
+      "audiences": ["Dzieci, młodzież i rodzina"],
+      "areas": ["Zdrowie psychiczne", "Niepełnosprawność"],
+      "needs": [
+        "Kompetencje społeczne",
+        "Aktywizacja społeczna",
+        "Relacje społeczne",
+        "Wsparcie emocjonalne"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny%2Cmarimbaza",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "rodzina-adopcyjna-dorasta",
+      "name": "Rodzina adopcyjna dorasta",
+      "description": "Interaktywne treści i ćwiczenia dla rodziców adopcyjnych nastolatków. Pomagają zrozumieć emocje, zachowania i reakcje wynikające ze specyficznej historii rodziny.",
+      "audiences": ["Dzieci, młodzież i rodzina"],
+      "areas": ["Rodzina i piecza zastępcza", "Zdrowie psychiczne"],
+      "needs": [
+        "Wsparcie rodziców adopcyjnych",
+        "Psychoedukacja",
+        "Wsparcie emocjonalne",
+        "Relacje społeczne"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny%2Crodzina-adopcyjna-dorasta",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "gluchy-czytelnik",
+      "name": "Głuchy czytelnik w bibliotece",
+      "description": "Publikacja przybliżająca osobom g/Głuchym korzystanie z bibliotek i wspieranie dzieci w czytaniu. Treści udostępniono w prostym języku polskim oraz w polskim języku migowym.",
+      "audiences": [
+        "Osoby z niepełnosprawnością sensoryczną",
+        "Dzieci, młodzież i rodzina"
+      ],
+      "areas": ["Niepełnosprawność"],
+      "needs": [
+        "Dostęp do czytelnictwa",
+        "Dostępna komunikacja",
+        "Dostęp do usług"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-sensoryczna%2Cgluchy-czytelnik-w-bibliotece",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "agencja-pracy-incydentalnej",
+      "name": "Agencja pracy incydentalnej",
+      "description": "Rozwiązanie wspierające powrót na rynek pracy osób w głębokim, wielowymiarowym kryzysie. Przeznaczone do wykorzystania przez podmioty zajmujące się aktywizacją zawodową.",
+      "audiences": ["Rynek pracy"],
+      "areas": ["Ubóstwo", "Zdrowie psychiczne"],
+      "needs": ["Aktywizacja zawodowa"],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-rynku-pracy%2Cagencja-pracy-incydentalnej",
+      "verifiedAt": "2026-10-03"
+    },
+    {
+      "id": "innotextil",
+      "name": "Innotextil",
+      "description": "Rozwiązanie wspierające samodzielną rehabilitację domową osób starszych i osób z ograniczeniami narządu ruchu. Odpowiada na trudności w dostępie do fizjoterapii i utrzymaniu jej efektów.",
+      "audiences": ["Seniorzy", "Osoby o ograniczonej mobilności"],
+      "areas": ["Niepełnosprawność", "Zdrowie", "Seniorzy"],
+      "needs": ["Rehabilitacja", "Dostęp do usług"],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci%2Cinnotextil",
+      "verifiedAt": "2026-10-03"
+    }
+  ]
+}

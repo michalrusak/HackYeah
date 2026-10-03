@@ -23,15 +23,15 @@ export class BreadcrumbService {
   }
 
   private updateBreadcrumbs(): void {
-    let route = this.router.routerState.root;
+    let route = this.router.routerState.snapshot.root;
     const items: BreadcrumbItem[] = [{ labelKey: 'nav.home', url: '/' }];
 
     while (route.firstChild) {
       route = route.firstChild;
-      const labelKey = route.snapshot.data['breadcrumb'] as string | undefined;
-      const path = route.snapshot.url.map((segment) => segment.path).join('/');
+      const labelKey = route.data['breadcrumb'];
+      const path = route.url.map((segment) => segment.path).join('/');
 
-      if (labelKey && path) {
+      if (typeof labelKey === 'string' && labelKey && path) {
         items.push({ labelKey, url: `/${path}` });
       }
     }

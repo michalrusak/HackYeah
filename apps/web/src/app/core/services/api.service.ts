@@ -5,14 +5,36 @@ import {
   HelloDataSchema,
   type HealthData,
   type HelloData,
+  MatchmakingDataSchema,
+  MatchmakingRequestSchema,
+  type MatchmakingData,
 } from '@repo/api-contracts';
 import { map, Observable } from 'rxjs';
 import { z } from 'zod';
+import { ApiConfigService } from './api-config.service';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/api';
+  private readonly config = inject(ApiConfigService);
+
+  private get baseUrl(): string {
+    return this.config.apiUrl;
+  }
+
+  matchInnovations(description: string): Observable<MatchmakingData> {
+    const input = MatchmakingRequestSchema.parse({ description });
+    return this.http
+      .post<unknown>(`${this.baseUrl}/matchmaking`, input)
+      .pipe(
+        map(
+          (body) =>
+            z
+              .object({ success: z.literal(true), data: MatchmakingDataSchema })
+              .parse(body).data,
+        ),
+      );
+  }
 
   getHello(): Observable<HelloData> {
     return this.http.get<unknown>(this.baseUrl).pipe(

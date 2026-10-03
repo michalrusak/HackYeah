@@ -1,0 +1,182 @@
+<section class="matchmaking" aria-labelledby="matchmaking-title">
+  <header class="intro">
+    <span class="eyebrow">{{ "matchmaking.eyebrow" | translate }}</span>
+    <h1 id="matchmaking-title">{{ "matchmaking.title" | translate }}</h1>
+    <p>{{ "matchmaking.subtitle" | translate }}</p>
+  </header>
+
+  <mat-card class="description-card">
+    <mat-card-content>
+      <form
+        [formGroup]="form"
+        (ngSubmit)="submit()"
+        [attr.aria-busy]="loading()"
+      >
+        <mat-form-field appearance="outline">
+          <mat-label>{{
+            "matchmaking.descriptionLabel" | translate
+          }}</mat-label>
+          <textarea
+            matInput
+            [formControl]="description"
+            rows="6"
+            maxlength="4000"
+            [placeholder]="'matchmaking.placeholder' | translate"
+          ></textarea>
+          <mat-hint>{{ "matchmaking.hint" | translate }}</mat-hint>
+          <mat-hint align="end">{{ description.value.length }} / 4000</mat-hint>
+          <mat-error>{{
+            "matchmaking.errors.validation" | translate
+          }}</mat-error>
+        </mat-form-field>
+        <div class="examples">
+          <span>{{ "matchmaking.examplesLabel" | translate }}</span>
+          @for (example of examples; track example) {
+            <button
+              mat-stroked-button
+              type="button"
+              [disabled]="loading()"
+              (click)="useExample(example)"
+            >
+              {{ "matchmaking.examples." + example + ".label" | translate }}
+            </button>
+          }
+        </div>
+        <div class="submit-row">
+          <button mat-flat-button type="submit" [disabled]="loading()">
+            <mat-icon>travel_explore</mat-icon>
+            {{
+              (loading() ? "matchmaking.loading" : "matchmaking.submit")
+                | translate
+            }}
+          </button>
+          <span>{{ "matchmaking.privacy" | translate }}</span>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <div aria-live="polite" aria-atomic="true">
+    @if (loading()) {
+      <div class="loading-state" role="status">
+        <mat-progress-bar
+          mode="indeterminate"
+          [attr.aria-label]="'matchmaking.loading' | translate"
+        />
+        <p>{{ "matchmaking.loadingDetail" | translate }}</p>
+      </div>
+    }
+    @if (errorKey(); as error) {
+      <div class="error-state" role="alert">
+        <p>{{ error | translate }}</p>
+        <button mat-stroked-button (click)="submit()">
+          {{ "matchmaking.retry" | translate }}
+        </button>
+      </div>
+    }
+  </div>
+
+  @if (result(); as data) {
+    <section class="interpretation" aria-labelledby="interpretation-title">
+      <h2 id="interpretation-title">
+        {{ "matchmaking.interpretationTitle" | translate }}
+      </h2>
+      <p>{{ data.interpretation.summary }}</p>
+      <dl>
+        <div>
+          <dt>{{ "matchmaking.audiences" | translate }}</dt>
+          <dd>
+            {{
+              data.interpretation.audiences.join(", ") ||
+                ("matchmaking.unspecified" | translate)
+            }}
+          </dd>
+        </div>
+        <div>
+          <dt>{{ "matchmaking.needs" | translate }}</dt>
+          <dd>
+            {{
+              data.interpretation.needs.join(", ") ||
+                ("matchmaking.unspecified" | translate)
+            }}
+          </dd>
+        </div>
+        <div>
+          <dt>{{ "matchmaking.areas" | translate }}</dt>
+          <dd>
+            {{
+              data.interpretation.areas.join(", ") ||
+                ("matchmaking.unspecified" | translate)
+            }}
+          </dd>
+        </div>
+      </dl>
+      @if (data.interpretation.missingInformation.length) {
+        <p class="clarification-title">
+          {{ "matchmaking.clarification" | translate }}
+        </p>
+        <ul>
+          @for (
+            question of data.interpretation.missingInformation;
+            track $index
+          ) {
+            <li>{{ question }}</li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="results" aria-labelledby="results-title" aria-live="polite">
+      <div class="results-heading">
+        <h2 id="results-title">{{ "matchmaking.resultsTitle" | translate }}</h2>
+        <span>{{
+          "matchmaking.resultsCount" | translate: { count: data.matches.length }
+        }}</span>
+      </div>
+      @if (!data.matches.length) {
+        <mat-card class="empty-state"
+          ><mat-card-content>
+            <h3>{{ "matchmaking.emptyTitle" | translate }}</h3>
+            <p>{{ "matchmaking.emptyDescription" | translate }}</p>
+          </mat-card-content></mat-card
+        >
+      } @else {
+        <p class="results-note">{{ "matchmaking.scoreNote" | translate }}</p>
+        <div class="result-grid">
+          @for (match of data.matches; track match.id) {
+            <mat-card class="innovation-card">
+              <mat-card-content>
+                <span
+                  class="match-level"
+                  [class.high]="match.level === 'high'"
+                  [class.medium]="match.level === 'medium'"
+                >
+                  {{ "matchmaking.levels." + match.level | translate }}
+                </span>
+                <h3>{{ match.name }}</h3>
+                <p>{{ match.description }}</p>
+                <div class="need-tags">
+                  @for (need of match.matchedNeeds; track need) {
+                    <span>{{ need }}</span>
+                  }
+                </div>
+                <p class="explanation">{{ match.explanation }}</p>
+              </mat-card-content>
+              <mat-card-actions>
+                <a
+                  mat-stroked-button
+                  [href]="match.sourceUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ "matchmaking.source" | translate
+                  }}<mat-icon>open_in_new</mat-icon>
+                </a>
+              </mat-card-actions>
+            </mat-card>
+          }
+        </div>
+      }
+    </section>
+  }
+</section>

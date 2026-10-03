@@ -7,6 +7,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { getDatabaseConfig } from './config/database.config.js';
 import { HealthModule } from './modules/health/health.module.js';
+import { MatchmakingModule } from './modules/matchmaking/matchmaking.module.js';
 
 const isTestEnv = process.env.NODE_ENV === 'test';
 
@@ -32,6 +33,7 @@ const isTestEnv = process.env.NODE_ENV === 'test';
           }),
         ]),
     HealthModule,
+    MatchmakingModule,
   ],
   controllers: [AppController],
   providers: [
