@@ -3,21 +3,23 @@
   "private": true,
   "scripts": {
     "setup": "node scripts/setup.mjs",
-    "build": "turbo run build",
+    "build": "turbo run build --ui=tui",
     "predev": "node scripts/setup.mjs",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --ui=tui",
     "prestart": "node scripts/setup.mjs",
-    "start": "turbo run start",
-    "lint:fix": "turbo run lint:fix",
+    "start": "turbo run start --ui=tui",
+    "lint:fix": "turbo run lint:fix --ui=tui",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f postgres",
+    "db:migrate": "node scripts/testers-db.mjs migrate",
+    "db:seed": "node scripts/testers-db.mjs seed",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types",
-    "test": "turbo run test",
-    "test:e2e": "turbo run test:e2e",
+    "check-types": "turbo run check-types --ui=tui",
+    "test": "turbo run test --ui=tui",
+    "test:e2e": "turbo run test:e2e --ui=tui",
     "db:generate": "pnpm --filter api db:generate",
-    "db:migrate": "pnpm --filter api db:migrate",
+    "db:migrate:dev": "pnpm --filter api db:migrate",
     "db:studio": "pnpm --filter api db:studio"
   },
   "devDependencies": {
@@ -26,6 +28,13 @@
     "typescript": "7.0.2"
   },
   "packageManager": "pnpm@11.25.0",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "22.23.3",
+      "onFail": "download"
+    }
+  },
   "engines": {
     "node": ">=22"
   }

@@ -1,0 +1,97 @@
+<div class="dialog-heading">
+  <h2 mat-dialog-title id="auth-title">
+    {{ "auth." + mode() + "Title" | translate }}
+  </h2>
+  <button
+    mat-icon-button
+    type="button"
+    mat-dialog-close
+    [disabled]="saving()"
+    [aria-label]="'testers.close' | translate"
+  >
+    <mat-icon aria-hidden="true">close</mat-icon>
+  </button>
+</div>
+<mat-dialog-content>
+  <p id="auth-intro">{{ "auth." + mode() + "Intro" | translate }}</p>
+  <form
+    id="auth-form"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    [attr.aria-busy]="saving()"
+  >
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>{{ "auth.loginLabel" | translate }}</mat-label>
+      <input
+        matInput
+        formControlName="login"
+        autocomplete="username"
+        autocapitalize="none"
+        spellcheck="false"
+        maxlength="40"
+        required
+      />
+      <mat-hint>{{ "auth.loginHint" | translate }}</mat-hint>
+      <mat-error>{{ "auth.loginError" | translate }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>{{ "auth.passwordLabel" | translate }}</mat-label>
+      <input
+        matInput
+        formControlName="password"
+        [type]="passwordVisible() ? 'text' : 'password'"
+        [attr.autocomplete]="
+          mode() === 'register' ? 'new-password' : 'current-password'
+        "
+        maxlength="128"
+        required
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="passwordVisible.set(!passwordVisible())"
+        [attr.aria-label]="
+          (passwordVisible() ? 'auth.hidePassword' : 'auth.showPassword')
+            | translate
+        "
+        [attr.aria-pressed]="passwordVisible()"
+      >
+        <mat-icon aria-hidden="true">{{
+          passwordVisible() ? "visibility_off" : "visibility"
+        }}</mat-icon>
+      </button>
+      <mat-hint>{{ "auth.passwordHint" | translate }}</mat-hint>
+      <mat-error>{{ "auth.passwordError" | translate }}</mat-error>
+    </mat-form-field>
+    @if (errorKey(); as error) {
+      <p class="error-message" role="alert">{{ error | translate }}</p>
+    }
+    @if (saving()) {
+      <p role="status">{{ "auth.saving" | translate }}</p>
+    }
+  </form>
+  <div class="switch-mode">
+    <p>
+      {{
+        (mode() === "login" ? "auth.noAccount" : "auth.hasAccount") | translate
+      }}
+    </p>
+    <button
+      mat-button
+      type="button"
+      [disabled]="saving()"
+      (click)="switchMode()"
+    >
+      {{ (mode() === "login" ? "auth.register" : "auth.login") | translate }}
+    </button>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" mat-dialog-close [disabled]="saving()">
+    {{ "testers.cancel" | translate }}
+  </button>
+  <button mat-flat-button type="submit" form="auth-form" [disabled]="saving()">
+    {{ (saving() ? "auth.saving" : "auth." + mode()) | translate }}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,131 @@
+.rops-contact-container {
+  padding: 16px;
+  height: calc(100vh - 64px - 32px); // Assuming header is ~64px
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.role-selector {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.chat-layout {
+  display: flex;
+  gap: 16px;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+
+  mat-card-content {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding: 0 !important;
+  }
+}
+
+.mat-list-item {
+  cursor: pointer;
+  &.active {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+}
+
+.chat-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.new-convo-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 16px !important;
+}
+
+.messages-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 16px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message-bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background-color: #f1f1f1;
+  align-self: flex-start;
+
+  &.own-message {
+    background-color: #e3f2fd; // Light blue
+    align-self: flex-end;
+  }
+}
+
+.message-content {
+  word-break: break-word;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  color: #666;
+  text-align: right;
+  margin-top: 4px;
+}
+
+.chat-input-area {
+  padding: 8px 16px !important;
+  .mat-mdc-form-field {
+    margin-bottom: -1.25em; // Hide padding bottom
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+
+  .large-icon {
+    font-size: 64px;
+    height: 64px;
+    width: 64px;
+    margin-bottom: 16px;
+    color: #ccc;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.actions.right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mt-2 {
+  margin-top: 8px;
+}
+.mb-2 {
+  margin-bottom: 8px;
+}

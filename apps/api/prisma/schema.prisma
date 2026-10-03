@@ -7,6 +7,79 @@ datasource db {
   provider = "postgresql"
 }
 
+model Account {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  login        String    @unique @db.VarChar(40)
+  passwordHash String    @map("password_hash") @db.VarChar(255)
+  ownerHash    String    @unique @map("owner_hash") @db.VarChar(64)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  sessions     Session[]
+
+  @@map("accounts")
+}
+
+model Session {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tokenHash String   @unique @map("token_hash") @db.VarChar(64)
+  accountId String   @map("account_id") @db.Uuid
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId, expiresAt])
+  @@map("sessions")
+}
+
+model TesterProfile {
+  id                 String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerHash          String             @unique(map: "uq_tester_profiles_owner") @map("owner_hash") @db.VarChar(64)
+  displayName        String             @map("display_name") @db.VarChar(80)
+  city               String             @db.VarChar(100)
+  bio                String
+  skills             String[]           @default([])
+  resources          String[]           @default([])
+  accessibilityNeeds String             @default("") @map("accessibility_needs")
+  interests          String[]           @default([])
+  availability       String             @db.VarChar(10)
+  consent            Boolean            @default(true)
+  isActive           Boolean            @default(true) @map("is_active")
+  isDemo             Boolean            @default(false) @map("is_demo")
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  assignments        TesterAssignment[]
+
+  @@map("tester_profiles")
+}
+
+model TesterSearch {
+  id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerHash      String             @map("owner_hash") @db.VarChar(64)
+  query          String
+  summary        String
+  matches        Json
+  candidateCount Int                @map("candidate_count")
+  totalProfiles  Int                @map("total_profiles")
+  candidateLimit Int                @map("candidate_limit")
+  createdAt      DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  assignments    TesterAssignment[]
+
+  @@index([ownerHash, createdAt], map: "idx_tester_searches_owner_created")
+  @@map("tester_searches")
+}
+
+model TesterAssignment {
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  searchId  String        @map("search_id") @db.Uuid
+  profileId String        @map("profile_id") @db.Uuid
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  search    TesterSearch  @relation(fields: [searchId], references: [id], onDelete: Cascade)
+  profile   TesterProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([searchId, profileId], map: "uq_tester_assignments_search_profile")
+  @@map("tester_assignments")
+}
+
 enum IdeaStage {
   POMYSL
   PROTOTYP
@@ -160,4 +233,59 @@ model AssistantMessage {
   createdAt DateTime @default(now())
 
   @@index([ideaId, createdAt])
+}
+
+enum UserRole {
+  CITIZEN
+  ROPS_EMPLOYEE
+}
+
+model User {
+  id                    String         @id @default(cuid())
+  email                 String         @unique
+  firstName             String?        @map("first_name")
+  lastName              String?        @map("last_name")
+  role                  UserRole       @default(CITIZEN)
+  
+  conversations         Conversation[] @relation("CitizenConversations")
+  assignedConversations Conversation[] @relation("EmployeeConversations")
+  messages              Message[]
+  
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Conversation {
+  id          String    @id @default(cuid())
+  subject     String
+  
+  citizenId   String    @map("citizen_id")
+  citizen     User      @relation("CitizenConversations", fields: [citizenId], references: [id])
+  
+  employeeId  String?   @map("employee_id")
+  employee    User?     @relation("EmployeeConversations", fields: [employeeId], references: [id])
+  
+  messages    Message[]
+  
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  content        String
+  
+  conversationId String       @map("conversation_id")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  senderId       String       @map("sender_id")
+  sender         User         @relation(fields: [senderId], references: [id])
+  
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@map("messages")
 }

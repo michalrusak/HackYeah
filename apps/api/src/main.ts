@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
+import { allowedWebOrigins } from './modules/auth/auth-http.js';
 import { DomainExceptionFilter } from './shared/filters/domain-exception.filter.js';
 
 async function bootstrap() {
@@ -7,9 +8,8 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useGlobalFilters(new DomainExceptionFilter());
   app.enableCors({
-    origin:
-      process.env.WEB_ORIGIN ??
-      `http://localhost:${process.env.WEB_PORT ?? '4200'}`,
+    origin: allowedWebOrigins(),
+    credentials: true,
   });
   await app.listen(process.env.PORT ?? 3000);
 }

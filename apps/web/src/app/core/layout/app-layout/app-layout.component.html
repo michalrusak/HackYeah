@@ -1,9 +1,9 @@
 <div class="layout">
-  <a class="skip" [href]="router.url + '#main-content'">{{
+  <a class="skip" [href]="router.url.split('#')[0] + '#main-content'">{{
     "hub.skip" | translate
   }}</a>
   <header class="header">
-    <a class="brand" routerLink="/matchmaking">
+    <a class="brand" routerLink="/matchmaking" (click)="onNavigationClick()">
       <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
         <rect
           x="3"
@@ -52,6 +52,7 @@
         <li>
           <a
             [routerLink]="item.path"
+            (click)="onNavigationClick()"
             routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: item.path === '/' }"
             #link="routerLinkActive"
@@ -63,7 +64,7 @@
       }
     </ul>
   </nav>
-  <main id="main-content" class="page-content" tabindex="-1">
+  <main #mainContent id="main-content" class="page-content" tabindex="-1">
     <router-outlet />
   </main>
   <footer class="footer">
