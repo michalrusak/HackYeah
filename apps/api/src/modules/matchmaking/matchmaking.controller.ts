@@ -6,6 +6,7 @@ import type {
   MatchmakingRequest,
 } from '@repo/api-contracts';
 import type { Response } from 'express';
+import { Throttle } from '@nestjs/throttler';
 import { MatchmakingValidationPipe } from './matchmaking-validation.pipe.js';
 import { MatchmakingService } from './matchmaking.service.js';
 
@@ -16,6 +17,7 @@ export class MatchmakingController {
   ) {}
 
   @Post()
+  @Throttle({ default: { ttl: 60_000, limit: 10 } })
   async match(
     @Body(new MatchmakingValidationPipe()) body: MatchmakingRequest,
     @Res({ passthrough: true }) response: Response,

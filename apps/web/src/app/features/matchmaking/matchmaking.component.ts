@@ -1,5 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  Injector,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
@@ -40,6 +49,13 @@ export class MatchmakingComponent {
   private readonly service = inject(MatchmakingService);
   private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly injector = inject(Injector);
+  private readonly descriptionInput =
+    viewChild<ElementRef<HTMLTextAreaElement>>('descriptionInput');
+  private readonly responseHeading =
+    viewChild<ElementRef<HTMLElement>>('responseHeading');
+  private readonly errorPanel =
+    viewChild<ElementRef<HTMLElement>>('errorPanel');
   readonly description = new FormControl('', {
     nonNullable: true,
     validators: [Validators.required, Validators.maxLength(4000)],
@@ -63,6 +79,11 @@ export class MatchmakingComponent {
     this.description.setValue(
       this.translate.instant(`matchmaking.examples.${example}.description`),
     );
+    this.editDescription();
+  }
+
+  editDescription(): void {
+    this.descriptionInput()?.nativeElement.focus();
   }
 
   submit(): void {
@@ -73,6 +94,7 @@ export class MatchmakingComponent {
     if (!parsed.success) {
       this.description.setErrors({ invalidDescription: true });
       this.description.markAsTouched();
+      this.editDescription();
       return;
     }
     this.loading.set(true);
@@ -86,6 +108,9 @@ export class MatchmakingComponent {
         next: (data) => {
           this.result.set(data);
           this.finish();
+          afterNextRender(() => this.responseHeading()?.nativeElement.focus(), {
+            injector: this.injector,
+          });
         },
         error: (error: unknown) => {
           const parsedError =
@@ -107,6 +132,9 @@ export class MatchmakingComponent {
             `matchmaking.errors.${code ? (keys[code] ?? 'generic') : error instanceof HttpErrorResponse && error.status === 429 ? 'rateLimit' : 'generic'}`,
           );
           this.finish();
+          afterNextRender(() => this.errorPanel()?.nativeElement.focus(), {
+            injector: this.injector,
+          });
         },
       });
   }

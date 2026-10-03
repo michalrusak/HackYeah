@@ -6,6 +6,9 @@ import {
 } from '@repo/api-contracts';
 import catalog from './catalog.v1.json' with { type: 'json' };
 import { rankInnovations } from './ranking.js';
+import { matchInformation } from './ranking.js';
+import { InformationCatalogSchema } from '@repo/api-contracts';
+import information from './information.v1.json' with { type: 'json' };
 
 const innovations = InnovationCatalogSchema.parse(catalog).innovations;
 const interpretation: Interpretation = {
@@ -73,14 +76,6 @@ describe('rankInnovations', () => {
   });
 
   it('uses the 70 and 40 point boundaries', () => {
-    const oneNeed = {
-      ...interpretation,
-      needs: ['Relacje społeczne'],
-    } satisfies Interpretation;
-    expect(
-      rankInnovations(oneNeed, [{ ...fixture, audiences: ['Cudzoziemcy'] }])[0]
-        .level,
-    ).toBe('high');
     const tenNeeds = {
       ...interpretation,
       needs: NeedSchema.options.slice(0, 10),
@@ -89,18 +84,40 @@ describe('rankInnovations', () => {
     const noCategories = {
       ...fixture,
       needs,
-      audiences: ['Cudzoziemcy'],
       areas: ['Ubóstwo'],
     } satisfies Innovation;
     expect(rankInnovations(tenNeeds, [noCategories])[0]).toMatchObject({
+      score: 70,
+      level: 'high',
+    });
+    expect(
+      rankInnovations(tenNeeds, [
+        { ...noCategories, needs: needs.slice(0, 2) },
+      ])[0],
+    ).toMatchObject({
       score: 40,
       level: 'medium',
     });
     expect(
       rankInnovations(tenNeeds, [
-        { ...noCategories, needs: needs.slice(0, 7) },
+        { ...noCategories, needs: needs.slice(0, 1) },
       ])[0].level,
     ).toBe('partial');
+  });
+
+  it('excludes innovations for a different audience even when generic needs coincide', () => {
+    const input: Interpretation = {
+      ...interpretation,
+      audiences: ['Cudzoziemcy'],
+      areas: ['Integracja cudzoziemców'],
+      needs: ['Dostęp do usług', 'Informacja o opiece zdrowotnej'],
+    };
+    const matches = rankInnovations(input, innovations);
+    expect(matches[0].id).toBe('health-guide-pl');
+    expect(
+      matches.every((item) => item.audiences.includes('Cudzoziemcy')),
+    ).toBe(true);
+    expect(matches.some((item) => item.id === 'e-rzecznik')).toBe(false);
   });
 
   it('returns only catalogue data and explanations backed by common tags', () => {
@@ -156,5 +173,36 @@ describe('rankInnovations', () => {
           .map((item) => item.id),
       ).toContain(example.expected);
     }
+  });
+});
+
+describe('related information', () => {
+  const items = InformationCatalogSchema.parse(information).information;
+  it('matches verified information and distinguishes national context from regional reports', () => {
+    const results = matchInformation(interpretation, items);
+    expect(results.map((item) => item.id)).toContain('mapa-seniorzy');
+    expect(results.every((item) => item.areas.includes('Seniorzy'))).toBe(true);
+    expect(results.length).toBeLessThanOrEqual(3);
+    expect(results.find((item) => item.id === 'mapa-seniorzy')?.scope).toBe(
+      'national',
+    );
+    expect(new Set(items.map((item) => item.id)).size).toBe(items.length);
+  });
+  it('does not return forced information for an unrecognized problem', () => {
+    expect(
+      matchInformation({ ...interpretation, needs: [], areas: [] }, items),
+    ).toEqual([]);
+  });
+  it('still supplies context when an area has no matching innovation', () => {
+    const input: Interpretation = {
+      ...interpretation,
+      audiences: ['Osoby w kryzysie bezdomności'],
+      needs: [],
+      areas: ['Bezdomność'],
+    };
+    expect(rankInnovations(input, innovations)).toEqual([]);
+    expect(matchInformation(input, items).map((item) => item.id)).toContain(
+      'mapa-bezdomnosc',
+    );
   });
 });

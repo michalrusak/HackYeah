@@ -17,6 +17,13 @@ const scenarios = [
   { key: "seniors", expected: "senior-cuder" },
   { key: "migrants", expected: "health-guide-pl" },
   { key: "school", expected: "bez-presji-z-depresji" },
+  {
+    description:
+      "Starsi mieszkańcy nie potrafią obsłużyć bankomatu ani paczkomatu. Szukamy bezpiecznego sposobu ćwiczenia tych urządzeń.",
+    key: "digital",
+    expected: "merkury",
+  },
+  { description: "Chcemy pomóc.", key: "ambiguous", empty: true },
 ];
 
 let failures = 0;
@@ -27,6 +34,7 @@ for (const scenario of scenarios) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         description:
+          scenario.description ??
           translations.matchmaking.examples[scenario.key].description,
       }),
       signal: AbortSignal.timeout(35_000),
@@ -37,7 +45,10 @@ for (const scenario of scenarios) {
       );
     const { data } = MatchmakingResponseSchema.parse(await response.json());
     const ids = data.matches.slice(0, 3).map((match) => match.id);
-    const passed = ids.includes(scenario.expected);
+    const passed = scenario.empty
+      ? data.matches.length === 0 &&
+        data.interpretation.missingInformation.length > 0
+      : ids.includes(scenario.expected) && data.relatedInformation.length > 0;
     console.log(
       `${passed ? "PASS" : "FAIL"} ${scenario.key}: ${ids.join(", ")}`,
     );

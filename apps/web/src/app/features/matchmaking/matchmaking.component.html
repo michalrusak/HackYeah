@@ -12,19 +12,24 @@
         (ngSubmit)="submit()"
         [attr.aria-busy]="loading()"
       >
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>{{
             "matchmaking.descriptionLabel" | translate
           }}</mat-label>
           <textarea
+            #descriptionInput
+            id="problem-description"
             matInput
             [formControl]="description"
             rows="6"
             maxlength="4000"
+            [attr.aria-label]="'matchmaking.descriptionLabel' | translate"
             [placeholder]="'matchmaking.placeholder' | translate"
           ></textarea>
           <mat-hint>{{ "matchmaking.hint" | translate }}</mat-hint>
-          <mat-hint align="end">{{ description.value.length }} / 4000</mat-hint>
+          <mat-hint align="end" class="character-count"
+            >{{ description.value.length }} / 4000</mat-hint
+          >
           <mat-error>{{
             "matchmaking.errors.validation" | translate
           }}</mat-error>
@@ -67,7 +72,7 @@
       </div>
     }
     @if (errorKey(); as error) {
-      <div class="error-state" role="alert">
+      <div class="error-state" role="alert" #errorPanel tabindex="-1">
         <p>{{ error | translate }}</p>
         <button mat-stroked-button (click)="submit()">
           {{ "matchmaking.retry" | translate }}
@@ -78,10 +83,14 @@
 
   @if (result(); as data) {
     <section class="interpretation" aria-labelledby="interpretation-title">
-      <h2 id="interpretation-title">
+      <h2 id="interpretation-title" #responseHeading tabindex="-1">
         {{ "matchmaking.interpretationTitle" | translate }}
       </h2>
       <p>{{ data.interpretation.summary }}</p>
+      <button mat-stroked-button type="button" (click)="editDescription()">
+        <mat-icon aria-hidden="true">edit</mat-icon>
+        {{ "matchmaking.editDescription" | translate }}
+      </button>
       <dl>
         <div>
           <dt>{{ "matchmaking.audiences" | translate }}</dt>
@@ -126,18 +135,36 @@
       }
     </section>
 
-    <section class="results" aria-labelledby="results-title" aria-live="polite">
+    <section class="results" aria-labelledby="results-title">
       <div class="results-heading">
         <h2 id="results-title">{{ "matchmaking.resultsTitle" | translate }}</h2>
         <span>{{
           "matchmaking.resultsCount" | translate: { count: data.matches.length }
         }}</span>
       </div>
+      <p class="catalog-note">
+        {{
+          "matchmaking.catalogNote"
+            | translate: { count: data.catalog.innovationCount }
+        }}
+      </p>
       @if (!data.matches.length) {
         <mat-card class="empty-state"
           ><mat-card-content>
             <h3>{{ "matchmaking.emptyTitle" | translate }}</h3>
-            <p>{{ "matchmaking.emptyDescription" | translate }}</p>
+            <p>
+              {{
+                "matchmaking.emptyDescription"
+                  | translate: { count: data.catalog.innovationCount }
+              }}
+            </p>
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="editDescription()"
+            >
+              {{ "matchmaking.editDescription" | translate }}
+            </button>
           </mat-card-content></mat-card
         >
       } @else {
@@ -171,6 +198,9 @@
                 >
                   {{ "matchmaking.source" | translate
                   }}<mat-icon>open_in_new</mat-icon>
+                  <span class="sr-only">{{
+                    "matchmaking.newTab" | translate
+                  }}</span>
                 </a>
               </mat-card-actions>
             </mat-card>
@@ -178,5 +208,37 @@
         </div>
       }
     </section>
+    @if (data.relatedInformation.length) {
+      <section class="related-information" aria-labelledby="information-title">
+        <h2 id="information-title">
+          {{ "matchmaking.informationTitle" | translate }}
+        </h2>
+        <p>{{ "matchmaking.informationIntro" | translate }}</p>
+        <div class="information-grid">
+          @for (item of data.relatedInformation; track item.id) {
+            <article class="information-card">
+              <span class="scope">{{
+                "matchmaking.scopes." + item.scope | translate
+              }}</span>
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.summary }}</p>
+              <p class="source-label">{{ item.sourceLabel }}</p>
+              <a
+                mat-stroked-button
+                [href]="item.sourceUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {{ "matchmaking.readSource" | translate
+                }}<mat-icon aria-hidden="true">open_in_new</mat-icon>
+                <span class="sr-only">{{
+                  "matchmaking.newTab" | translate
+                }}</span>
+              </a>
+            </article>
+          }
+        </div>
+      </section>
+    }
   }
 </section>

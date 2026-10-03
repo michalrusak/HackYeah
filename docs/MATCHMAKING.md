@@ -1,6 +1,6 @@
 # Matchmaking społeczny
 
-MVP: opis problemu → interpretacja potrzeb przez Qwen → ranking maksymalnie pięciu innowacji ROPS. Strona: `/matchmaking`. Endpoint zgodny z aktualnym prefiksem projektu: `POST /api/matchmaking`.
+Blisko: opis problemu → interpretacja potrzeb przez Qwen → maksymalnie pięć innowacji ROPS oraz trzy powiązane informacje o problemie. Strona: `/matchmaking` (także po wejściu na `/`). Endpoint zgodny z aktualnym prefiksem projektu: `POST /api/matchmaking`. Zakres zgodności z kryteriami HUBMI: [MATCHMAKING-CRITERIA.md](MATCHMAKING-CRITERIA.md).
 
 ## Uruchomienie
 
@@ -18,7 +18,9 @@ Katalog: `apps/api/src/modules/matchmaking/catalog.v1.json`. Zawiera 15 rzeczywi
 
 Kategorie odbiorców odpowiadają dziewięciu kategoriom biblioteki ROPS. Osobnym wymiarem są obszary Mapy wyzwań społecznych. Słowniki i schematy są wspólne dla API i Angulara w `@repo/api-contracts`.
 
-Każdy wymiar mierzy odsetek rozpoznanych tagów występujących w innowacji. Wagi: potrzeby 50, odbiorcy 30, obszary 20. Puste wymiary są wyłączane, a pozostałe wagi normalizowane. Powtarzające się tagi nie podnoszą punktacji. Kandydat musi mieć wspólną potrzebę. Sortowanie: wynik malejąco, następnie `id` rosnąco; limit pięciu wyników. Wynik jest zaokrąglany do dwóch miejsc; poziomy: wysokie ≥70, średnie ≥40, częściowe <40. Uzasadnienie wymienia wyłącznie wspólne tagi. Poziom nie jest oceną skuteczności ani potwierdzeniem możliwości wdrożenia.
+Każdy wymiar mierzy odsetek rozpoznanych tagów występujących w innowacji. Wagi: potrzeby 50, odbiorcy 30, obszary 20. Puste wymiary są wyłączane, a pozostałe wagi normalizowane. Powtarzające się tagi nie podnoszą punktacji. Kandydat musi mieć wspólną potrzebę, a przy rozpoznanych odbiorcach również przynajmniej jednego wspólnego odbiorcę. To ogranicza polecanie rozwiązań dla innych grup na podstawie ogólnych potrzeb. Sortowanie: wynik malejąco, następnie `id` rosnąco; limit pięciu wyników. Wynik jest zaokrąglany do dwóch miejsc; poziomy: wysokie ≥70, średnie ≥40, częściowe <40. Uzasadnienie wymienia wyłącznie wspólne tagi. Poziom nie jest oceną skuteczności ani potwierdzeniem możliwości wdrożenia.
+
+Informacje są w `information.v1.json`: osiem podsumowań obszarów Mapy Wyzwań i dwa materiały regionalne. Dopasowanie wymaga wspólnego obszaru; jeśli nie rozpoznano obszaru, wymaga wspólnej potrzeby. Kolejność: liczba wspólnych obszarów, liczba wspólnych potrzeb, `id`. Limit: trzy. Informacje mogą pojawić się również przy braku innowacji. Nie są generowane przez AI. Mapa Wyzwań wprost oznacza swoje dane jako ogólnopolskie, dlatego UI odróżnia je od danych o Małopolsce.
 
 AI nie otrzymuje katalogu innowacji i nie generuje nazw ani URL. Nie zapisujemy opisów i wyników do bazy ani logów aplikacji. Telemetria zawiera jedynie czas, status i liczbę tokenów. Treść opisu jest wysyłana do OpenRouter; użytkownik widzi tę informację przy formularzu.
 
@@ -26,7 +28,9 @@ AI nie otrzymuje katalogu innowacji i nie generuje nazw ani URL. Nie zapisujemy 
 
 Żądanie: `{ "description": "Opis problemu" }`, od 1 do 4000 znaków, bez dodatkowych pól. Opis jest przycinany z białych znaków po sprawdzeniu maksymalnej długości.
 
-Sukces HTTP 200: `{ "success": true, "data": { "interpretation": { "summary", "audiences", "areas", "needs", "missingInformation" }, "matches": [...] } }`. Każdy wynik zawiera rekord katalogu, `score`, `level`, `matchedNeeds` i `explanation`. Pusta lista jest poprawną odpowiedzią, a UI proponuje uzupełnienie opisu.
+Sukces HTTP 200: `{ "success": true, "data": { "interpretation": { "summary", "audiences", "areas", "needs", "missingInformation" }, "matches": [...], "relatedInformation": [...], "catalog": { "version": 1, "innovationCount": 15 } } }`. Każdy wynik zawiera rekord katalogu, `score`, `level`, `matchedNeeds` i `explanation`. Pusta lista jest poprawną odpowiedzią, a UI proponuje uzupełnienie opisu. Liczba innowacji pochodzi z API, nie z tekstu w interfejsie.
+
+Endpoint ma limit 10 żądań na minutę na IP. Przy przekroczeniu limitu globalny Throttler zwraca HTTP 429, które UI rozpoznaje również bez envelope. Limit jest lokalny dla procesu; wdrożenie wielu instancji powinno korzystać ze wspólnego ogranicznika ruchu.
 
 Błędy mają envelope `{ "success": false, "error": { "code", "message" } }`: 400 `VALIDATION_ERROR`, 429 `RATE_LIMIT`, 502 `AI_INVALID_RESPONSE`, 503 `AI_NOT_CONFIGURED` / `AI_UNAVAILABLE`, 504 `AI_TIMEOUT`. UI tłumaczy kody na komunikaty i pozwala ponowić wyszukiwanie. Nie pokazuje odpowiedzi dostawcy ani klucza.
 
@@ -51,4 +55,4 @@ pnpm --filter web build
 
 Testy automatyczne nie używają rzeczywistego modelu ani bazy: obejmują walidację, punktację i remisy, źródła, interpretację, timeout, błędy, wysłanie formularza i ponowienie.
 
-Po uruchomieniu API ze skonfigurowanym OpenRouter wykonaj `node scripts/matchmaking-demo.mjs`. Skrypt wysyła dokładnie trzy przykłady z UI i sprawdza oczekiwane wyniki w pierwszej trójce: Senior CUDER, Health Guide PL, Bez presji z depresji. Te trzy wywołania korzystają z rzeczywistego API i mogą generować opłaty. Skrypt nie wypisuje opisów ani kluczy.
+Po uruchomieniu API ze skonfigurowanym OpenRouter wykonaj `node scripts/matchmaking-demo.mjs`. Skrypt wysyła trzy przykłady z UI, problem obsługi urządzeń przez seniorów i opis nieprecyzyjny. Oczekiwane innowacje w pierwszej trójce: Senior CUDER, Health Guide PL, Bez presji z depresji, Merkury. Nieprecyzyjny opis ma dać pytanie doprecyzowujące i zero innowacji. Sprawdzane są także powiązane informacje. Te pięć wywołań korzysta z rzeczywistego API i może generować opłaty. Skrypt nie wypisuje opisów ani kluczy. `temperature: 0` ogranicza zmienność, ale nie daje gwarancji identycznej interpretacji.

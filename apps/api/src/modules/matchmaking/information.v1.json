@@ -1,0 +1,174 @@
+{
+  "version": 1,
+  "information": [
+    {
+      "id": "mapa-seniorzy",
+      "title": "Samotność i codzienna samodzielność seniorów",
+      "summary": "Mapa Wyzwań wskazuje potrzebę kontaktów społecznych, aktywizacji i rozwoju umiejętności cyfrowych osób starszych. To kontekst do szukania rozwiązań lokalnych, a nie diagnoza konkretnej gminy.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 8",
+      "verifiedAt": "2026-10-03",
+      "areas": ["Seniorzy"],
+      "needs": [
+        "Relacje społeczne",
+        "Aktywizacja społeczna",
+        "Kompetencje cyfrowe",
+        "Opieka domowa",
+        "Wsparcie opiekunów"
+      ]
+    },
+    {
+      "id": "mapa-integracja",
+      "title": "Równy dostęp migrantów do usług i edukacji",
+      "summary": "Mapa Wyzwań opisuje bariery językowe i kulturowe oraz potrzebę dostosowania usług publicznych. Wskazuje również na włączenie dzieci migrantów do szkoły i wsparcie w integracji społecznej.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 5",
+      "verifiedAt": "2026-10-03",
+      "areas": ["Integracja cudzoziemców"],
+      "needs": [
+        "Dostęp do usług",
+        "Informacja o opiece zdrowotnej",
+        "Integracja kulturowa",
+        "Komunikacja międzykulturowa",
+        "Dostępna komunikacja"
+      ]
+    },
+    {
+      "id": "mapa-zdrowie-psychiczne",
+      "title": "Izolacja, wsparcie emocjonalne i powrót do codzienności",
+      "summary": "Mapa Wyzwań zwraca uwagę na izolację młodych osób, trudności w radzeniu sobie z emocjami i bariery w korzystaniu z pomocy. Opisuje też potrzebę włączenia społecznego po kryzysie psychicznym.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 7",
+      "verifiedAt": "2026-10-03",
+      "areas": ["Zdrowie psychiczne"],
+      "needs": [
+        "Zdrowie psychiczne",
+        "Wsparcie emocjonalne",
+        "Powrót do szkoły",
+        "Psychoedukacja",
+        "Relacje społeczne",
+        "Aktywizacja zawodowa"
+      ]
+    },
+    {
+      "id": "mapa-zdrowie",
+      "title": "Dostęp do opieki i wsparcie opiekunów",
+      "summary": "Mapa Wyzwań przedstawia potrzebę równego dostępu do opieki oraz dostosowania wsparcia do osób starszych i zależnych. Uwzględnia obciążenie osób łączących pracę z opieką nad bliskimi.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 6",
+      "verifiedAt": "2026-10-03",
+      "areas": ["Zdrowie"],
+      "needs": [
+        "Informacja o opiece zdrowotnej",
+        "Opieka domowa",
+        "Wsparcie opiekunów",
+        "Rehabilitacja",
+        "Dostęp do usług"
+      ]
+    },
+    {
+      "id": "mapa-niepelnosprawnosc",
+      "title": "Samodzielność i dostępne otoczenie",
+      "summary": "Mapa Wyzwań omawia bariery uczestnictwa osób z niepełnosprawnościami. Pomaga spojrzeć na dostępność usług, samodzielne funkcjonowanie i włączenie społeczne jako powiązane potrzeby.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 3",
+      "verifiedAt": "2026-10-03",
+      "areas": ["Niepełnosprawność"],
+      "needs": [
+        "Dostępna komunikacja",
+        "Dostęp do usług",
+        "Rehabilitacja",
+        "Aktywizacja zawodowa",
+        "Dostęp do czytelnictwa"
+      ]
+    },
+    {
+      "id": "mapa-bezdomnosc",
+      "title": "Bezdomność młodych osób i ciągłość wsparcia",
+      "summary": "Mapa Wyzwań wskazuje na trudność rozpoznawania bezdomności młodych osób i luki w przejściu między formami pomocy. Samo zapewnienie noclegu nie wyczerpuje potrzeb w budowaniu samodzielności.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 2",
+      "verifiedAt": "2026-10-03",
+      "areas": ["Bezdomność"],
+      "needs": [
+        "Dostęp do usług",
+        "Wsparcie emocjonalne",
+        "Aktywizacja zawodowa"
+      ]
+    },
+    {
+      "id": "mapa-ubostwo",
+      "title": "Ubóstwo i ograniczone możliwości uczestnictwa",
+      "summary": "Mapa Wyzwań opisuje ubóstwo jako problem wpływający na codzienne funkcjonowanie i dostęp do możliwości rozwoju. To punkt wyjścia do analizy potrzeb i zasobów w lokalnej społeczności.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 4",
+      "verifiedAt": "2026-10-03",
+      "areas": ["Ubóstwo"],
+      "needs": [
+        "Dostęp do usług",
+        "Aktywizacja zawodowa",
+        "Aktywizacja społeczna"
+      ]
+    },
+    {
+      "id": "mapa-rodzina",
+      "title": "Wsparcie rodzin i stabilność pieczy zastępczej",
+      "summary": "Mapa Wyzwań wskazuje na potrzebę rozwoju rodzinnej pieczy zastępczej i współpracy instytucji. Podkreśla znaczenie stabilnej opieki, wsparcia rodzeństw i kompetencji opiekunów.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 1",
+      "verifiedAt": "2026-10-03",
+      "areas": ["Rodzina i piecza zastępcza"],
+      "needs": [
+        "Wsparcie rodziców adopcyjnych",
+        "Psychoedukacja",
+        "Wsparcie emocjonalne",
+        "Kompetencje społeczne"
+      ]
+    },
+    {
+      "id": "malopolska-piecza",
+      "title": "Piecza zastępcza w Małopolsce: stan, potrzeby, wyzwania",
+      "summary": "Raport ROPS z 2024 roku opisuje zasoby pieczy zastępczej w regionie, sytuację dzieci i plany powiatów. Pomaga uzupełnić ogólnopolską Mapę Wyzwań o kontekst Małopolski.",
+      "scope": "malopolska",
+      "sourceUrl": "https://rops.krakow.pl/aktualnosci/piecza-zastepcza-w-malopolsce-stan-potrzeby-wyzwania",
+      "sourceLabel": "ROPS Kraków, raport o pieczy zastępczej, 2024",
+      "verifiedAt": "2026-10-03",
+      "areas": ["Rodzina i piecza zastępcza"],
+      "needs": [
+        "Wsparcie rodziców adopcyjnych",
+        "Wsparcie opiekunów",
+        "Dostęp do usług"
+      ]
+    },
+    {
+      "id": "malopolska-uslugi",
+      "title": "Usługi społeczne w Małopolsce: deficyty i potrzeby",
+      "summary": "Aktualizacja diagnozy z 2025 roku wspiera planowanie usług społecznych w regionie. Materiał pozwala sprawdzić lokalny kontekst przed wyborem i wdrożeniem innowacji.",
+      "scope": "malopolska",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2C2025-uslugi-spoleczne-w-malopolsce-deficyty-potrzeby-potencjal-rozwojowy-zaktualizowane-wnioski-z-diagnozy%2C1422",
+      "sourceLabel": "ROPS Kraków, diagnoza usług społecznych, 2025",
+      "verifiedAt": "2026-10-03",
+      "areas": [
+        "Seniorzy",
+        "Zdrowie",
+        "Niepełnosprawność",
+        "Rodzina i piecza zastępcza",
+        "Bezdomność"
+      ],
+      "needs": [
+        "Dostęp do usług",
+        "Opieka domowa",
+        "Wsparcie opiekunów",
+        "Rehabilitacja"
+      ]
+    }
+  ]
+}

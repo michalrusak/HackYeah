@@ -42,10 +42,22 @@
     "description": "Placeholder — opisz tu swój projekt hackathonowy."
   },
   "matchmaking": {
+    "productName": "Blisko · innowacje społeczne",
+    "skipToForm": "Przejdź do opisu problemu",
+    "editDescription": "Popraw lub uzupełnij opis",
+    "catalogNote": "Przeszukujemy {{count}} sprawdzonych opisów innowacji ROPS. To katalog demonstracyjny, nie cała biblioteka.",
+    "informationTitle": "Poznaj kontekst swojego problemu",
+    "informationIntro": "Powiązane informacje z Mapy Wyzwań i raportów ROPS pomogą lepiej rozpoznać potrzeby przed wyborem rozwiązania.",
+    "readSource": "Przeczytaj materiał ROPS",
+    "newTab": " — otwiera się w nowej karcie",
+    "scopes": {
+      "national": "Kontekst ogólnopolski",
+      "malopolska": "Dane o Małopolsce"
+    },
     "eyebrow": "Biblioteka innowacji społecznych ROPS",
     "title": "Znajdź rozwiązanie dla swojej społeczności",
     "subtitle": "Opisz wyzwanie własnymi słowami. Rozpoznamy potrzeby i pokażemy innowacje społeczne, od których możesz zacząć.",
-    "descriptionLabel": "Opisz problem, dla kogo szukasz rozwiązania i co chcesz zmienić",
+    "descriptionLabel": "Opisz problem własnymi słowami",
     "placeholder": "Działamy z osobami starszymi w małej gminie. Chcemy pomóc im nawiązywać znajomości i częściej uczestniczyć we wspólnych spotkaniach…",
     "hint": "Podaj odbiorców, główną trudność i oczekiwaną zmianę.",
     "privacy": "Opis trafia do AI przez OpenRouter. Nie wpisuj danych osobowych. Nie zapisujemy opisów ani wyników w aplikacji.",
@@ -78,8 +90,8 @@
     "resultsCount": "Liczba wyników: {{count}}",
     "scoreNote": "Poziom dopasowania oznacza zgodność z opisanymi potrzebami. Nie jest oceną skuteczności innowacji. Sprawdź w źródle grupę docelową i warunki wykorzystania.",
     "source": "Zobacz w ROPS",
-    "emptyTitle": "Potrzebujemy więcej szczegółów",
-    "emptyDescription": "Nie znaleźliśmy dopasowania w obecnym katalogu 15 innowacji. Dopisz konkretną trudność, odbiorców i oczekiwaną zmianę, a następnie wyszukaj ponownie.",
+    "emptyTitle": "Nie mamy jeszcze odpowiedniej innowacji",
+    "emptyDescription": "W katalogu {{count}} innowacji nie znaleźliśmy rozwiązania pasującego do potrzeb i odbiorców. To nie znaczy, że rozwiązanie nie istnieje. Uzupełnij opis: kto potrzebuje wsparcia, co jest trudne i co chcesz zmienić.",
     "levels": {
       "high": "Wysokie dopasowanie",
       "medium": "Średnie dopasowanie",

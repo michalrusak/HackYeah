@@ -1,8 +1,11 @@
 <div class="layout">
+  <a class="skip-link" [href]="router.url + '#main-content'">{{
+    "matchmaking.skipToForm" | translate
+  }}</a>
   <mat-toolbar class="header">
     <a class="brand" routerLink="/matchmaking">
       <mat-icon aria-hidden="true">travel_explore</mat-icon>
-      <span>{{ "matchmaking.title" | translate }}</span>
+      <span>{{ "matchmaking.productName" | translate }}</span>
     </a>
     <button
       mat-icon-button
@@ -15,5 +18,7 @@
       <mat-icon>{{ theme.isDark() ? "light_mode" : "dark_mode" }}</mat-icon>
     </button>
   </mat-toolbar>
-  <main class="page-content"><router-outlet /></main>
+  <main class="page-content" id="main-content" tabindex="-1">
+    <router-outlet />
+  </main>
 </div>
