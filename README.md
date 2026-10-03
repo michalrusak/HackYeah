@@ -1,159 +1,202 @@
-# Turborepo starter
+# HackYeah
 
-This Turborepo starter is maintained by the Turborepo core team.
+Monorepo na hackathon: **NestJS** (backend) + **Angular** (frontend) + **PostgreSQL**.
 
-## Using this example
+Komendy działają tak samo na **Windows (PowerShell)**, **macOS** i **Linux (bash)**.
 
-Run the following command:
+---
 
-```sh
-npx create-turbo@latest
+## Wymagania
+
+| Narzędzie | Wersja |
+|-----------|--------|
+| Node.js | ≥ 22 |
+| pnpm | 11.x (zalecane: wersja z `package.json`) |
+| Docker | do bazy PostgreSQL |
+
+---
+
+## Szybki start
+
+```bash
+pnpm install
+pnpm setup        # tworzy .env z .env.example (tylko pierwszy raz)
+pnpm docker:up    # uruchamia PostgreSQL
+pnpm dev          # API + frontend w trybie developerskim
 ```
 
-## What's inside?
+Po starcie:
 
-This Turborepo includes the following packages/apps:
+| Serwis | URL |
+|--------|-----|
+| Frontend (Angular) | http://localhost:4200 |
+| Backend (NestJS) | http://localhost:3000 |
+| PostgreSQL | `localhost:5432` |
 
-### Apps and Packages
+---
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## Struktura projektu
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```
+HackYeah/
+├── apps/
+│   ├── api/          NestJS — REST API, TypeORM, PostgreSQL
+│   └── web/          Angular 19 + Angular Material
+├── packages/
+│   ├── eslint-config/
+│   └── typescript-config/
+├── scripts/          skrypty cross-platform (Node.js)
+├── docker-compose.yml
+└── .env.example      szablon zmiennych środowiskowych
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo build
-pnpm exec turbo build
-pnpm exec turbo build
+## Komendy
+
+Wszystkie uruchamiasz z **katalogu głównego** repozytorium.
+
+| Komenda | Opis |
+|---------|------|
+| `pnpm setup` | Tworzy `.env` z `.env.example` |
+| `pnpm dev` | Dev: hot reload (API + web) |
+| `pnpm start` | Prod: build + start serwerów |
+| `pnpm build` | Build wszystkich aplikacji |
+| `pnpm lint:fix` | Lint z auto-fix |
+| `pnpm check-types` | Sprawdzenie typów TypeScript |
+| `pnpm format` | Formatowanie Prettier |
+| `pnpm docker:up` | Start PostgreSQL |
+| `pnpm docker:down` | Stop PostgreSQL |
+| `pnpm docker:logs` | Logi bazy |
+
+### Pojedyncza aplikacja
+
+```bash
+pnpm dev --filter=web
+pnpm dev --filter=api
+pnpm build --filter=web
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## Zmienne środowiskowe
 
-```sh
-turbo build --filter=docs
+Skopiuj konfigurację jednym poleceniem:
+
+```bash
+pnpm setup
 ```
 
-Without global `turbo`:
+Plik `.env` jest w **rootcie** repozytoria. Turbo ładuje go automatycznie.
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+| Zmienna | Domyślnie | Gdzie używana |
+|---------|-----------|---------------|
+| `PORT` | `3000` | NestJS (`apps/api/src/main.ts`) |
+| `WEB_PORT` | `4200` | Angular (`scripts/web-dev.mjs`) |
+| `API_URL` | `http://localhost:3000` | Frontend → backend |
+| `DATABASE_URL` | `postgresql://hackyeah:hackyeah@localhost:5432/hackyeah` | TypeORM |
+| `POSTGRES_*` | `hackyeah` / `5432` | Docker Compose |
+
+---
+
+## Baza danych
+
+PostgreSQL startuje przez Docker Compose:
+
+```bash
+pnpm docker:up
 ```
 
-### Develop
+Domyślne dane logowania:
 
-To develop all apps and packages, run the following command:
+- **user:** `hackyeah`
+- **hasło:** `hackyeah`
+- **baza:** `hackyeah`
+- **port:** `5432`
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+API **wymaga działającej bazy** — przed `pnpm dev` lub `pnpm start` uruchom `pnpm docker:up`.
 
-```sh
-cd my-turborepo
-turbo dev
+---
+
+## Frontend (Angular)
+
+- **Angular 19** + **Angular Material** (motyw `azure-blue`)
+- Layout: header z nawigacją, wyszukiwarką, powiadomieniami i menu użytkownika
+- Linki nawigacji: `apps/web/src/app/core/constants/app.constants.ts`
+
+Nowy komponent Material:
+
+```bash
+cd apps/web
+pnpm ng generate @angular/material:card moj-komponent
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
+## Backend (NestJS)
+
+- **NestJS 12** + **TypeORM** + **PostgreSQL**
+- Konfiguracja bazy: `apps/api/src/config/database.config.ts`
+- Domyślny endpoint: `GET http://localhost:3000/` → `Hello World!`
+
+---
+
+## Dev vs Start
+
+| | `pnpm dev` | `pnpm start` |
+|---|-----------|--------------|
+| **Cel** | Codzienna praca | Test wersji produkcyjnej |
+| **Frontend** | `ng serve` (hot reload) | Serwuje zbudowany `dist/` |
+| **Backend** | `nest start --watch` | `node dist/main.js` |
+| **Build** | Nie | Tak, automatycznie |
+
+Nie uruchamiaj `dev` i `start` jednocześnie — oba używają portów **3000** i **4200**.
+
+---
+
+## Rozwiązywanie problemów
+
+### Port zajęty (`EADDRINUSE`)
+
+Zatrzymaj poprzedni proces (**Ctrl+C**) albo:
+
+**Windows (PowerShell):**
+
+```powershell
+netstat -ano | findstr ":3000"
+Stop-Process -Id <PID> -Force
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+**macOS / Linux:**
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
+```bash
+lsof -i :3000
+kill <PID>
 ```
 
-Without global `turbo`:
+### API nie łączy się z bazą
 
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+1. Sprawdź, czy Docker działa: `pnpm docker:up`
+2. Sprawdź, czy istnieje `.env`: `pnpm setup`
+3. Logi bazy: `pnpm docker:logs`
+
+### `pnpm` nie znaleziony
+
+```bash
+corepack enable
+corepack prepare pnpm@11.25.0 --activate
 ```
 
-### Remote Caching
+---
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## Dla nowych osób w zespole
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+1. Sklonuj repozytorium
+2. Zainstaluj Node ≥ 22, pnpm, Docker
+3. `pnpm install`
+4. `pnpm setup`
+5. `pnpm docker:up`
+6. `pnpm dev`
+7. Otwórz http://localhost:4200
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Powodzenia na hackathonie!

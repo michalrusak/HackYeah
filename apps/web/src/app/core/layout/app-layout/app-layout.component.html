@@ -1,0 +1,34 @@
+<mat-sidenav-container class="layout">
+  <mat-sidenav #drawer class="mobile-drawer" mode="over">
+    <mat-nav-list>
+      @for (item of navItems; track item.path) {
+        <a
+          mat-list-item
+          [routerLink]="item.path"
+          routerLinkActive="active-link"
+          [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+          (click)="closeDrawer()"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <app-header
+      [isLoggedIn]="isLoggedIn()"
+      [notificationCount]="notificationCount()"
+      [userName]="'Jan Kowalski'"
+      (menuToggle)="toggleDrawer()"
+      (search)="onSearch($event)"
+      (login)="onLogin()"
+      (logout)="onLogout()"
+    />
+
+    <main class="page-content">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

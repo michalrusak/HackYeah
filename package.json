@@ -2,8 +2,11 @@
   "name": "HackYeah",
   "private": true,
   "scripts": {
+    "setup": "node scripts/setup.mjs",
     "build": "turbo run build",
+    "predev": "node scripts/setup.mjs",
     "dev": "turbo run dev",
+    "prestart": "node scripts/setup.mjs",
     "start": "turbo run start",
     "lint:fix": "turbo run lint:fix",
     "docker:up": "docker compose up -d",

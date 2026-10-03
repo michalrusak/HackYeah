@@ -1,0 +1,23 @@
+.layout {
+  min-height: 100vh;
+}
+
+.mobile-drawer {
+  width: 260px;
+
+  a.active-link {
+    background: rgb(0 0 0 / 4%);
+  }
+}
+
+.page-content {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+  .page-content {
+    padding: 16px;
+  }
+}

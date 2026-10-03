@@ -1,0 +1,106 @@
+<mat-toolbar class="header" color="primary">
+  <button
+    mat-icon-button
+    class="menu-button"
+    type="button"
+    aria-label="Otwórz menu"
+    (click)="menuToggle.emit()"
+  >
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <a class="brand" routerLink="/">
+    <mat-icon aria-hidden="true">bolt</mat-icon>
+    <span>{{ appName }}</span>
+  </a>
+
+  <nav class="desktop-nav" aria-label="Główna nawigacja">
+    @for (item of navItems(); track item.path) {
+      <a
+        mat-button
+        [routerLink]="item.path"
+        routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+      >
+        <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
+        {{ item.label }}
+      </a>
+    }
+  </nav>
+
+  <span class="spacer"></span>
+
+  <form class="search-form" (ngSubmit)="onSearchSubmit()">
+    <mat-form-field class="search-field" appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Szukaj</mat-label>
+      <input
+        matInput
+        type="search"
+        name="search"
+        [(ngModel)]="searchQuery"
+        placeholder="Szukaj..."
+        aria-label="Szukaj"
+      />
+      <button mat-icon-button matSuffix type="submit" aria-label="Szukaj">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+  </form>
+
+  <button
+    mat-icon-button
+    type="button"
+    aria-label="Powiadomienia"
+    [matMenuTriggerFor]="notificationsMenu"
+  >
+    <mat-icon
+      [matBadge]="notificationCount() || null"
+      [matBadgeHidden]="notificationCount() === 0"
+      matBadgeColor="warn"
+      matBadgeSize="small"
+    >
+      notifications
+    </mat-icon>
+  </button>
+
+  <mat-menu #notificationsMenu="matMenu" xPosition="before">
+    <div class="menu-heading" mat-menu-item disabled>Powiadomienia</div>
+    @if (notificationCount() === 0) {
+      <button mat-menu-item disabled>Brak nowych powiadomień</button>
+    } @else {
+      <button mat-menu-item>
+        <mat-icon>info</mat-icon>
+        Masz {{ notificationCount() }} nowych powiadomień
+      </button>
+    }
+  </mat-menu>
+
+  @if (isLoggedIn()) {
+    <button mat-button type="button" [matMenuTriggerFor]="userMenu" class="user-trigger">
+      <mat-icon aria-hidden="true">account_circle</mat-icon>
+      <span class="user-name">{{ userName() }}</span>
+      <mat-icon aria-hidden="true">arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu" xPosition="before">
+      <div class="menu-heading" mat-menu-item disabled>{{ userName() }}</div>
+      <button mat-menu-item>
+        <mat-icon>person</mat-icon>
+        Profil
+      </button>
+      <button mat-menu-item>
+        <mat-icon>settings</mat-icon>
+        Ustawienia
+      </button>
+      <button mat-menu-item (click)="logout.emit()">
+        <mat-icon>logout</mat-icon>
+        Wyloguj
+      </button>
+    </mat-menu>
+  } @else {
+    <button mat-stroked-button type="button" class="login-button" (click)="login.emit()">
+      <mat-icon aria-hidden="true">login</mat-icon>
+      <span class="login-label">Zaloguj</span>
+    </button>
+  }
+</mat-toolbar>
