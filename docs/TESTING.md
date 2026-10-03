@@ -30,7 +30,7 @@ pnpm --filter api test:e2e
 
 ### Tester innowacji — prawdziwy PostgreSQL
 
-`apps/api/test/testers.e2e-spec.ts` uruchamia pełny moduł NestJS z repozytorium
+`apps/api/test/testers.e2e-spec.ts` i `auth.e2e-spec.ts` uruchamiają pełne moduły NestJS z repozytorium
 Prisma i produkcyjnymi migracjami SQL. Zastąpiony jest jedynie transport HTTP do modelu
 AI, dzięki czemu testy są deterministyczne i nie zużywają płatnych tokenów.
 Bez `TEST_DATABASE_URL` ten zestaw jest pomijany; pozostałe E2E nadal działają.
@@ -62,12 +62,16 @@ bazy: tabele aplikacji w `public` nie są używane ani czyszczone. Po testach us
 są wyłącznie rekordy utworzone w danym przebiegu. Schemat i tabele pozostają;
 testy nie wykonują `DROP`, `TRUNCATE` ani resetu bazy.
 
-Zakres: walidacja zgody i formularza, tworzenie oraz edycja profilu, izolacja
-kluczy właścicieli, ukrywanie kluczy w API i danych AI, wyszukiwanie wyłącznie
+Zakres: walidacja formularza, tworzenie oraz edycja profilu, izolacja
+kont właścicieli, ukrywanie danych uwierzytelniania w API i danych AI, wyszukiwanie wyłącznie
 aktywnych profili, odrzucanie nieistniejących / nieaktywnych / powtórzonych ID
-modelu, cofnięcie publikacji, unieważnianie wyników po edycji profilu (także
+modelu, unieważnianie wyników po edycji profilu (także
 podczas trwającego zapytania AI), kontrola przypisań oraz ich trwałość po
 restarcie aplikacji.
+
+Konta: rejestracja, hashowanie hasła i tokenu sesji, błędne logowanie, wylogowanie,
+wygaśnięcie sesji, sprawdzanie Origin, izolacja profili i historii, powiązanie
+dotychczasowego profilu z kontem oraz odrzucanie późniejszych prób dostępu starym kluczem.
 
 ## Web — unit (`apps/web`)
 
