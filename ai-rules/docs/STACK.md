@@ -10,10 +10,10 @@ Living document. AI agents: read before choosing patterns.
 | Language | TypeScript strict |
 | Lint / format | oxlint (apps) + Prettier (root) |
 | Containers | Docker Compose (PostgreSQL 17) |
-| ORM | **TypeORM** (NestJS) |
+| ORM | **Prisma 7** (NestJS) |
 | Validation | Zod w `@repo/api-contracts` (envelope, hello, health) |
 | API shape | `{ success, data }` / `{ success, error }` — see `playbooks/03-api.md` |
-| API layers | Controller → Service → Repository → TypeORM |
+| API layers | Controller → Service → Repository → Prisma |
 | Frontend UI | **Angular Material** + CDK |
 | Frontend forms | Reactive Forms + walidacja (Zod opcjonalnie w serwisie) |
 | Frontend HTTP | HttpClient + interceptory + feature services |
@@ -24,7 +24,7 @@ Living document. AI agents: read before choosing patterns.
 
 | App | Framework | UI | API | DB | Status |
 |-----|-----------|-----|-----|-----|--------|
-| `apps/api` | NestJS 12 | — | REST | TypeORM + Postgres | ✅ scaffold |
+| `apps/api` | NestJS 12 | — | REST | Prisma + Postgres | ✅ scaffold |
 | `apps/web` | Angular 19 | Material | → `API_URL` | — | ✅ scaffold |
 
 ## Shared packages
@@ -43,7 +43,7 @@ Living document. AI agents: read before choosing patterns.
 - TanStack Query (React) — w Angular: signals + services (lub `@tanstack/angular-query` gdy potrzeba)
 - next-intl, react-i18next
 - `@repo/ui` (React)
-- Prisma *(playbooki mogą wspominać jako wzorzec — projekt używa TypeORM)*
+- TypeORM *(zastąpione przez Prisma)*
 
 ## Open decisions
 

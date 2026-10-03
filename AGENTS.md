@@ -24,7 +24,7 @@ Bundle (wszystko w jednym pliku): `ai-rules/bundles/full.md`
 
 | Obszar | Zasada |
 |--------|--------|
-| API | Controller → Service → Repository → TypeORM |
+| API | Controller → Service → Repository → Prisma |
 | Angular | Standalone components, Material, ngx-translate |
 | i18n | `apps/web/public/i18n/pl.json` — zero hardcoded UI text |
 | Env / skrypty | `pnpm setup`, root `scripts/*.mjs` (Windows + macOS + Linux) |

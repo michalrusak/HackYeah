@@ -1,32 +1,25 @@
-import { Injectable, Optional } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import { createApiSuccess, type HealthData } from '@repo/api-contracts';
-import { DataSource } from 'typeorm';
+import { PrismaService } from '../../prisma/prisma.service.js';
 
 @Injectable()
 export class HealthService {
   constructor(
     @Optional()
-    @InjectDataSource()
-    private readonly dataSource: DataSource | null,
+    @Inject(PrismaService)
+    private readonly prisma: PrismaService | null,
   ) {}
 
   async getHealth() {
     let database: HealthData['database'] = 'down';
 
-    if (!this.dataSource) {
-      return createApiSuccess({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        database,
-      });
-    }
-
-    try {
-      await this.dataSource.query('SELECT 1');
-      database = 'up';
-    } catch {
-      database = 'down';
+    if (this.prisma) {
+      try {
+        await this.prisma.$queryRawUnsafe('SELECT 1');
+        database = 'up';
+      } catch {
+        database = 'down';
+      }
     }
 
     const data: HealthData = {

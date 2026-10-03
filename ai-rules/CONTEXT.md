@@ -6,7 +6,7 @@ Attach at the start of **every** session.
 
 | Warstwa | Technologia | App |
 |---------|-------------|-----|
-| Backend | NestJS 12 + TypeORM + PostgreSQL | `apps/api` |
+| Backend | NestJS 12 + Prisma + PostgreSQL | `apps/api` |
 | Frontend | Angular 19 + Angular Material + ngx-translate | `apps/web` |
 | Monorepo | Turborepo + pnpm | root |
 
