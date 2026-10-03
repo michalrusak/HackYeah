@@ -304,7 +304,10 @@
         <p class="results-note">{{ "matchmaking.scoreNote" | translate }}</p>
         <div class="result-grid">
           @for (match of data.matches; track match.id) {
-            <mat-card class="innovation-card">
+            <mat-card
+              class="innovation-card"
+              [class.preview-expanded]="preview()?.id === match.id"
+            >
               <mat-card-content>
                 <span
                   class="match-level"
@@ -331,19 +334,81 @@
                     {{ "adaptation.cta" | translate }}
                   </button>
                 }
-                <a
+                <button
+                  #previewToggle
+                  class="preview-toggle"
                   mat-stroked-button
-                  [href]="match.sourceUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  type="button"
+                  [id]="'preview-toggle-' + match.id"
+                  [attr.aria-expanded]="preview()?.id === match.id"
+                  [attr.aria-controls]="'innovation-preview-' + match.id"
+                  (click)="togglePreview(match)"
                 >
-                  {{ "matchmaking.source" | translate
-                  }}<mat-icon>open_in_new</mat-icon>
-                  <span class="sr-only">{{
-                    "matchmaking.newTab" | translate
-                  }}</span>
-                </a>
+                  <mat-icon aria-hidden="true">{{
+                    preview()?.id === match.id ? "expand_less" : "expand_more"
+                  }}</mat-icon>
+                  {{
+                    (preview()?.id === match.id
+                      ? "matchmaking.preview.collapse"
+                      : "matchmaking.preview.expand"
+                    ) | translate
+                  }}
+                  <span class="sr-only">: {{ match.name }}</span>
+                </button>
               </mat-card-actions>
+              <section
+                class="innovation-preview"
+                [id]="'innovation-preview-' + match.id"
+                [hidden]="preview()?.id !== match.id"
+                [attr.aria-label]="
+                  'matchmaking.preview.title' | translate: { name: match.name }
+                "
+              >
+                @if (preview(); as activePreview) {
+                  @if (activePreview.id === match.id) {
+                    <div class="preview-toolbar">
+                      <p>{{ "matchmaking.preview.caption" | translate }}</p>
+                      <a
+                        [href]="match.sourceUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {{ "matchmaking.preview.external" | translate }}
+                        <span class="sr-only">{{
+                          "matchmaking.newTab" | translate
+                        }}</span>
+                      </a>
+                    </div>
+                    <p class="preview-hint">
+                      {{ "matchmaking.preview.fallback" | translate }}
+                    </p>
+                    @if (previewLoading()) {
+                      <p class="preview-status" role="status">
+                        {{ "matchmaking.preview.loading" | translate }}
+                      </p>
+                    }
+                    <iframe
+                      [src]="activePreview.url"
+                      [title]="
+                        'matchmaking.preview.title'
+                          | translate: { name: match.name }
+                      "
+                      sandbox="allow-scripts allow-same-origin allow-forms allow-downloads"
+                      referrerpolicy="no-referrer"
+                      (load)="previewLoaded(match.id)"
+                    ></iframe>
+                    <button
+                      mat-button
+                      type="button"
+                      class="preview-close"
+                      (click)="closePreview(match.id)"
+                    >
+                      <mat-icon aria-hidden="true">expand_less</mat-icon>
+                      {{ "matchmaking.preview.collapse" | translate }}
+                    </button>
+                  }
+                }
+              </section>
             </mat-card>
           }
         </div>

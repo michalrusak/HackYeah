@@ -353,3 +353,58 @@ mat-card-actions a {
 .clarification-resume {
   margin-top: 24px;
 }
+
+.innovation-card.preview-expanded {
+  grid-column: 1 / -1;
+  border: 1px solid var(--hub-brand);
+}
+.preview-toggle {
+  width: 100%;
+  min-height: 52px;
+  height: auto;
+  padding: 12px;
+}
+.innovation-preview {
+  border-top: 1px solid var(--hub-border);
+  min-width: 0;
+}
+.preview-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding: 16px 24px 0;
+}
+.preview-toolbar p {
+  margin: 0;
+  font-weight: 600;
+}
+.preview-toolbar a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 14px;
+}
+.preview-hint,
+.preview-status {
+  margin: 8px 24px 16px;
+  color: var(--hub-muted);
+  font-size: 14px;
+}
+.innovation-preview iframe {
+  display: block;
+  width: 100%;
+  height: clamp(400px, 75dvh, 800px);
+  border: 0;
+  border-block: 1px solid var(--hub-border);
+  background: var(--hub-surface);
+}
+.preview-close {
+  min-height: 48px;
+  margin: 12px 24px;
+}
+
+.preview-toggle {
+  scroll-margin-top: 16px;
+}

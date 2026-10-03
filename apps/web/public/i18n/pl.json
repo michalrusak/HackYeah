@@ -103,6 +103,15 @@
     "resultsCount": "Liczba wyników: {{count}}",
     "scoreNote": "Poziom dopasowania oznacza zgodność z opisanymi potrzebami. Nie jest oceną skuteczności innowacji. Sprawdź w źródle grupę docelową i warunki wykorzystania.",
     "source": "Opis i materiały w ROPS",
+    "preview": {
+      "expand": "Rozwiń podgląd",
+      "collapse": "Zwiń podgląd",
+      "title": "Podgląd innowacji: {{name}}",
+      "caption": "Strona innowacji · ROPS Kraków",
+      "external": "Otwórz osobno",
+      "fallback": "Podgląd pokazuje stronę ROPS. Jeśli treść lub materiały nie są dostępne w ramce, użyj „Otwórz osobno”.",
+      "loading": "Ładowanie strony innowacji…"
+    },
     "emptyTitle": "Nie znaleźliśmy trafnej propozycji",
     "emptyDescription": "W katalogu {{count}} innowacji nie znaleźliśmy rozwiązania pasującego do potrzeb i odbiorców. To nie znaczy, że rozwiązanie nie istnieje. Uzupełnij opis: kto potrzebuje wsparcia, co jest trudne i co chcesz zmienić.",
     "levels": {

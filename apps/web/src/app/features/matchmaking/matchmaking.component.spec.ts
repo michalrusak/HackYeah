@@ -1,3 +1,4 @@
+import { DomSanitizer } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import {
@@ -83,6 +84,12 @@ describe('MatchmakingComponent', () => {
       },
     });
     translate.use('pl');
+    const sanitizer = TestBed.inject(DomSanitizer);
+    const blankPreview =
+      sanitizer.bypassSecurityTrustResourceUrl('about:blank');
+    spyOn(sanitizer, 'bypassSecurityTrustResourceUrl').and.returnValue(
+      blankPreview,
+    );
     fixture = TestBed.createComponent(MatchmakingComponent);
     root = fixture.nativeElement;
     http = TestBed.inject(HttpTestingController);
@@ -135,6 +142,9 @@ describe('MatchmakingComponent', () => {
     expect(root.querySelector('.need-tags')?.textContent).toContain(
       'Relacje społeczne',
     );
+    expect(root.querySelector('.innovation-card iframe')).toBeNull();
+    root.querySelector<HTMLButtonElement>('.preview-toggle')?.click();
+    fixture.detectChanges();
     const link = root.querySelector<HTMLAnchorElement>('.innovation-card a');
     expect(link?.href).toBe(result.matches[0].sourceUrl);
     expect(link?.rel).toContain('noopener');
@@ -147,6 +157,94 @@ describe('MatchmakingComponent', () => {
     expect(
       root.querySelector<HTMLAnchorElement>('.information-card a')?.href,
     ).toBe(result.relatedInformation[0].sourceUrl);
+  });
+
+  it('expands a source preview on demand and collapses without losing the search', async () => {
+    submitDescription();
+    http.expectOne('/api/matchmaking').flush(createApiSuccess(result));
+    fixture.detectChanges();
+    const toggle = root.querySelector<HTMLButtonElement>('.preview-toggle');
+    expect(toggle?.getAttribute('aria-expanded')).toBe('false');
+    expect(root.querySelector('iframe')).toBeNull();
+    toggle?.click();
+    fixture.detectChanges();
+    expect(toggle?.getAttribute('aria-expanded')).toBe('true');
+    const frame = root.querySelector('iframe');
+    expect(frame?.getAttribute('title')).toBeTruthy();
+    expect(frame?.getAttribute('sandbox')).not.toContain(
+      'allow-top-navigation',
+    );
+    expect(frame?.getAttribute('sandbox')).not.toContain('allow-popups');
+    expect(
+      TestBed.inject(DomSanitizer).bypassSecurityTrustResourceUrl,
+    ).toHaveBeenCalledWith(result.matches[0].sourceUrl + '#content');
+    frame?.dispatchEvent(new Event('load'));
+    fixture.detectChanges();
+    expect(root.querySelector('.preview-status')).toBeNull();
+    root.querySelector<HTMLButtonElement>('.preview-close')?.click();
+    fixture.detectChanges();
+    expect(root.querySelector('iframe')).toBeNull();
+    expect(toggle?.getAttribute('aria-expanded')).toBe('false');
+    await fixture.whenStable();
+    expect(document.activeElement).toBe(toggle);
+    expect(fixture.componentInstance.result()).toEqual(result);
+    expect(fixture.componentInstance.description.value).toBe(
+      'Seniorzy potrzebują spotkań.',
+    );
+    http.expectNone('/api/matchmaking');
+  });
+
+  it('keeps only one preview and clears it when results are replaced or edited', () => {
+    const second = {
+      ...result.matches[0],
+      id: 'other-innovation',
+      name: 'Druga innowacja',
+    };
+    submitDescription();
+    http
+      .expectOne('/api/matchmaking')
+      .flush(
+        createApiSuccess({ ...result, matches: [...result.matches, second] }),
+      );
+    fixture.detectChanges();
+    const toggles = root.querySelectorAll<HTMLButtonElement>('.preview-toggle');
+    toggles[0].click();
+    fixture.detectChanges();
+    toggles[1].click();
+    fixture.componentInstance.previewLoaded(result.matches[0].id);
+    expect(fixture.componentInstance.previewLoading()).toBeTrue();
+    fixture.detectChanges();
+    expect(root.querySelectorAll('iframe').length).toBe(1);
+    expect(toggles[0].getAttribute('aria-expanded')).toBe('false');
+    expect(toggles[1].getAttribute('aria-expanded')).toBe('true');
+    fixture.componentInstance.submit();
+    http.expectOne('/api/matchmaking').flush(createApiSuccess(result));
+    fixture.detectChanges();
+    expect(root.querySelector('iframe')).toBeNull();
+    fixture.componentInstance.togglePreview(result.matches[0]);
+    fixture.componentInstance.description.setValue('Inna potrzeba.');
+    fixture.detectChanges();
+    expect(fixture.componentInstance.preview()).toBeNull();
+    expect(root.querySelector('iframe')).toBeNull();
+  });
+
+  it('does not trust source URLs outside the HTTPS ROPS innovation library', () => {
+    for (const sourceUrl of [
+      'javascript:alert(1)',
+      'https://example.org/innovation',
+      'http://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/test',
+      'https://rops.krakow.pl/other-page',
+      'https://rops.krakow.pl:8443/innowacje-spoleczne/biblioteka-innowacji-spolecznych/test',
+      'https://user@rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/test',
+    ])
+      fixture.componentInstance.togglePreview({
+        ...result.matches[0],
+        sourceUrl,
+      });
+    expect(fixture.componentInstance.preview()).toBeNull();
+    expect(
+      TestBed.inject(DomSanitizer).bypassSecurityTrustResourceUrl,
+    ).not.toHaveBeenCalled();
   });
 
   it('focuses the interpretation after completing a search and returns to the description for refinement', async () => {
@@ -340,20 +438,18 @@ describe('MatchmakingComponent', () => {
 
   it('offers contact instead of more questions when the round limit is reached', () => {
     submitDescription();
-    http
-      .expectOne('/api/matchmaking')
-      .flush(
-        createApiSuccess({
-          ...result,
-          clarification: {
-            reason: 'too_many_matches',
-            question: null,
-            round: 3,
-            maxRounds: 3,
-            totalMatches: 8,
-          },
-        }),
-      );
+    http.expectOne('/api/matchmaking').flush(
+      createApiSuccess({
+        ...result,
+        clarification: {
+          reason: 'too_many_matches',
+          question: null,
+          round: 3,
+          maxRounds: 3,
+          totalMatches: 8,
+        },
+      }),
+    );
     fixture.detectChanges();
     expect(root.querySelector('.clarification-card textarea')).toBeNull();
     expect(

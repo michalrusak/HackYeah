@@ -1,3 +1,4 @@
+import { DomSanitizer, type SafeResourceUrl } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 import { AdaptationService } from '../adaptation/adaptation.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -10,6 +11,7 @@ import {
   Injector,
   signal,
   viewChild,
+  viewChildren,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -18,7 +20,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
+import { MatButtonModule, type MatButton } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,6 +33,8 @@ import {
   ClarificationAnswerSchema,
   type ClarificationAnswer,
   type MatchmakingData,
+  type InnovationMatch,
+  InnovationSchema,
 } from '@repo/api-contracts';
 import { MatchmakingService } from './matchmaking.service';
 
@@ -75,6 +79,66 @@ export class MatchmakingComponent {
   });
   readonly form = new FormGroup({ description: this.description });
   readonly examples = ['seniors', 'migrants', 'school'];
+  private readonly sanitizer = inject(DomSanitizer);
+  readonly preview = signal<{ id: string; url: SafeResourceUrl } | null>(null);
+  readonly previewLoading = signal(false);
+  private readonly previewToggles = viewChildren<
+    MatButton,
+    ElementRef<HTMLButtonElement>
+  >('previewToggle', { read: ElementRef });
+
+  togglePreview(match: InnovationMatch): void {
+    if (this.preview()?.id === match.id) {
+      this.closePreview(match.id);
+      return;
+    }
+    const parsed = InnovationSchema.shape.sourceUrl.safeParse(match.sourceUrl);
+    if (!parsed.success) return;
+    const url = new URL(parsed.data);
+    if (
+      url.origin !== 'https://rops.krakow.pl' ||
+      url.username ||
+      url.password ||
+      !url.pathname.startsWith(
+        '/innowacje-spoleczne/biblioteka-innowacji-spolecznych/',
+      )
+    )
+      return;
+    url.hash = 'content';
+    this.previewLoading.set(true);
+    this.preview.set({
+      id: match.id,
+      url: this.sanitizer.bypassSecurityTrustResourceUrl(url.href),
+    });
+    this.scrollPreviewToggle(match.id, 'start');
+  }
+
+  closePreview(id?: string): void {
+    this.preview.set(null);
+    this.previewLoading.set(false);
+    if (id) this.scrollPreviewToggle(id, 'nearest', true);
+  }
+
+  private scrollPreviewToggle(
+    id: string,
+    block: ScrollLogicalPosition,
+    focus = false,
+  ): void {
+    afterNextRender(
+      () => {
+        const button = this.previewToggles().find(
+          (ref) => ref.nativeElement.id === `preview-toggle-${id}`,
+        )?.nativeElement;
+        if (focus) button?.focus();
+        button?.scrollIntoView({ block });
+      },
+      { injector: this.injector },
+    );
+  }
+  previewLoaded(id: string): void {
+    if (this.preview()?.id === id) this.previewLoading.set(false);
+  }
+
   readonly loading = signal(false);
   readonly result = signal<MatchmakingData | null>(null);
   readonly errorKey = signal<string | null>(null);
@@ -125,6 +189,7 @@ export class MatchmakingComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.result.set(null);
+        this.closePreview();
         this.errorKey.set(null);
         this.answers.set([]);
         this.answer.reset();
@@ -170,6 +235,7 @@ export class MatchmakingComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
+          this.closePreview();
           this.result.set(data);
           this.answers.set(answers);
           this.answer.reset('', { emitEvent: false });
