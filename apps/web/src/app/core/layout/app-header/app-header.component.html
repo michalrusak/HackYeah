@@ -3,7 +3,7 @@
     mat-icon-button
     class="menu-button"
     type="button"
-    aria-label="Otwórz menu"
+    [attr.aria-label]="'header.openMenu' | translate"
     (click)="menuToggle.emit()"
   >
     <mat-icon>menu</mat-icon>
@@ -11,10 +11,10 @@
 
   <a class="brand" routerLink="/">
     <mat-icon aria-hidden="true">bolt</mat-icon>
-    <span>{{ appName }}</span>
+    <span>{{ 'app.name' | translate }}</span>
   </a>
 
-  <nav class="desktop-nav" aria-label="Główna nawigacja">
+  <nav class="desktop-nav" [attr.aria-label]="'header.mainNav' | translate">
     @for (item of navItems(); track item.path) {
       <a
         mat-button
@@ -23,7 +23,7 @@
         [routerLinkActiveOptions]="{ exact: item.path === '/' }"
       >
         <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
-        {{ item.label }}
+        {{ item.labelKey | translate }}
       </a>
     }
   </nav>
@@ -32,16 +32,21 @@
 
   <form class="search-form" (ngSubmit)="onSearchSubmit()">
     <mat-form-field class="search-field" appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Szukaj</mat-label>
+      <mat-label>{{ 'header.search' | translate }}</mat-label>
       <input
         matInput
         type="search"
         name="search"
         [(ngModel)]="searchQuery"
-        placeholder="Szukaj..."
-        aria-label="Szukaj"
+        [placeholder]="'header.searchPlaceholder' | translate"
+        [attr.aria-label]="'header.search' | translate"
       />
-      <button mat-icon-button matSuffix type="submit" aria-label="Szukaj">
+      <button
+        mat-icon-button
+        matSuffix
+        type="submit"
+        [attr.aria-label]="'header.search' | translate"
+      >
         <mat-icon>search</mat-icon>
       </button>
     </mat-form-field>
@@ -50,7 +55,7 @@
   <button
     mat-icon-button
     type="button"
-    aria-label="Powiadomienia"
+    [attr.aria-label]="'header.notifications' | translate"
     [matMenuTriggerFor]="notificationsMenu"
   >
     <mat-icon
@@ -64,13 +69,20 @@
   </button>
 
   <mat-menu #notificationsMenu="matMenu" xPosition="before">
-    <div class="menu-heading" mat-menu-item disabled>Powiadomienia</div>
+    <div class="menu-heading" mat-menu-item disabled>
+      {{ 'header.notifications' | translate }}
+    </div>
     @if (notificationCount() === 0) {
-      <button mat-menu-item disabled>Brak nowych powiadomień</button>
+      <button mat-menu-item disabled>
+        {{ 'header.notificationsEmpty' | translate }}
+      </button>
     } @else {
       <button mat-menu-item>
         <mat-icon>info</mat-icon>
-        Masz {{ notificationCount() }} nowych powiadomień
+        {{
+          'header.notificationsCount'
+            | translate: { count: notificationCount() }
+        }}
       </button>
     }
   </mat-menu>
@@ -86,21 +98,21 @@
       <div class="menu-heading" mat-menu-item disabled>{{ userName() }}</div>
       <button mat-menu-item>
         <mat-icon>person</mat-icon>
-        Profil
+        {{ 'header.profile' | translate }}
       </button>
       <button mat-menu-item>
         <mat-icon>settings</mat-icon>
-        Ustawienia
+        {{ 'header.settings' | translate }}
       </button>
       <button mat-menu-item (click)="logout.emit()">
         <mat-icon>logout</mat-icon>
-        Wyloguj
+        {{ 'header.logout' | translate }}
       </button>
     </mat-menu>
   } @else {
     <button mat-stroked-button type="button" class="login-button" (click)="login.emit()">
       <mat-icon aria-hidden="true">login</mat-icon>
-      <span class="login-label">Zaloguj</span>
+      <span class="login-label">{{ 'header.login' | translate }}</span>
     </button>
   }
 </mat-toolbar>

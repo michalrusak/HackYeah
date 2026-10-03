@@ -1,0 +1,39 @@
+{
+  "app": {
+    "name": "HackYeah",
+    "title": "HackYeah"
+  },
+  "nav": {
+    "home": "Start",
+    "about": "O projekcie",
+    "contact": "Kontakt"
+  },
+  "header": {
+    "openMenu": "Otwórz menu",
+    "mainNav": "Główna nawigacja",
+    "search": "Szukaj",
+    "searchPlaceholder": "Szukaj...",
+    "notifications": "Powiadomienia",
+    "notificationsEmpty": "Brak nowych powiadomień",
+    "notificationsCount": "Masz {{count}} nowych powiadomień",
+    "login": "Zaloguj",
+    "profile": "Profil",
+    "settings": "Ustawienia",
+    "logout": "Wyloguj",
+    "defaultUser": "Użytkownik"
+  },
+  "home": {
+    "title": "Witaj w {{name}}",
+    "subtitle": "Layout z headerem jest gotowy",
+    "description": "Header zawiera nawigację, wyszukiwarkę, powiadomienia i menu użytkownika. Na mobile działa boczne menu.",
+    "cta": "Zacznij budować"
+  },
+  "about": {
+    "title": "O projekcie",
+    "description": "Placeholder — opisz tu swój projekt hackathonowy."
+  },
+  "contact": {
+    "title": "Kontakt",
+    "description": "Placeholder — email, social media, formularz kontaktowy."
+  }
+}

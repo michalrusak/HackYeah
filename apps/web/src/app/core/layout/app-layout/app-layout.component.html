@@ -10,7 +10,7 @@
           (click)="closeDrawer()"
         >
           <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-          <span matListItemTitle>{{ item.label }}</span>
+          <span matListItemTitle>{{ item.labelKey | translate }}</span>
         </a>
       }
     </mat-nav-list>
@@ -20,7 +20,7 @@
     <app-header
       [isLoggedIn]="isLoggedIn()"
       [notificationCount]="notificationCount()"
-      [userName]="'Jan Kowalski'"
+      [userName]="demoUserName"
       (menuToggle)="toggleDrawer()"
       (search)="onSearch($event)"
       (login)="onLogin()"

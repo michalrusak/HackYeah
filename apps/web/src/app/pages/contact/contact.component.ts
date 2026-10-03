@@ -1,18 +1,10 @@
 import { Component } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-contact',
-  imports: [MatCardModule],
-  template: `
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Kontakt</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>Placeholder — email, social media, formularz kontaktowy.</p>
-      </mat-card-content>
-    </mat-card>
-  `,
+  imports: [MatCardModule, TranslatePipe],
+  templateUrl: './contact.component.html',
 })
 export class ContactComponent {}

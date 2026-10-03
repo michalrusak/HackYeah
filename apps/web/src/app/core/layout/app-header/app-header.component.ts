@@ -8,7 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { APP_NAME, NAV_ITEMS } from '../../constants/app.constants';
+import { TranslatePipe } from '@ngx-translate/core';
+import { NAV_ITEMS } from '../../constants/app.constants';
 import { NavItem } from '../../models/nav-item.model';
 
 @Component({
@@ -17,6 +18,7 @@ import { NavItem } from '../../models/nav-item.model';
     FormsModule,
     RouterLink,
     RouterLinkActive,
+    TranslatePipe,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
@@ -29,11 +31,10 @@ import { NavItem } from '../../models/nav-item.model';
   styleUrl: './app-header.component.scss',
 })
 export class AppHeaderComponent {
-  readonly appName = APP_NAME;
   readonly navItems = input<NavItem[]>(NAV_ITEMS);
   readonly isLoggedIn = input(false);
   readonly notificationCount = input(0);
-  readonly userName = input('Użytkownik');
+  readonly userName = input('Jan Kowalski');
 
   readonly menuToggle = output<void>();
   readonly search = output<string>();

@@ -1,18 +1,17 @@
 <mat-card>
   <mat-card-header>
-    <mat-card-title>Witaj w HackYeah</mat-card-title>
-    <mat-card-subtitle>Layout z headerem jest gotowy</mat-card-subtitle>
+    <mat-card-title>{{
+      'home.title' | translate: { name: ('app.name' | translate) }
+    }}</mat-card-title>
+    <mat-card-subtitle>{{ 'home.subtitle' | translate }}</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <p>
-      Header zawiera nawigację, wyszukiwarkę, powiadomienia i menu użytkownika.
-      Na mobile działa boczne menu.
-    </p>
+    <p>{{ 'home.description' | translate }}</p>
   </mat-card-content>
   <mat-card-actions align="end">
     <button mat-raised-button color="primary">
       <mat-icon>rocket_launch</mat-icon>
-      Zacznij budować
+      {{ 'home.cta' | translate }}
     </button>
   </mat-card-actions>
 </mat-card>

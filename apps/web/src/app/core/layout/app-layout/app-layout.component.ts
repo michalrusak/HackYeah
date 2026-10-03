@@ -3,6 +3,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { NAV_ITEMS } from '../../constants/app.constants';
 import { AppHeaderComponent } from '../app-header/app-header.component';
 
@@ -12,6 +13,7 @@ import { AppHeaderComponent } from '../app-header/app-header.component';
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
+    TranslatePipe,
     MatSidenavModule,
     MatListModule,
     MatIconModule,
@@ -24,6 +26,7 @@ export class AppLayoutComponent {
   readonly navItems = NAV_ITEMS;
   readonly isLoggedIn = signal(false);
   readonly notificationCount = signal(0);
+  readonly demoUserName = 'Jan Kowalski';
 
   private readonly drawer = viewChild.required<MatSidenav>('drawer');
 

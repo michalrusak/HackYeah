@@ -1,9 +1,7 @@
 import { NavItem } from '../models/nav-item.model';
 
-export const APP_NAME = 'HackYeah';
-
 export const NAV_ITEMS: NavItem[] = [
-  { label: 'Start', path: '/', icon: 'home' },
-  { label: 'O projekcie', path: '/about', icon: 'info' },
-  { label: 'Kontakt', path: '/contact', icon: 'mail' },
+  { labelKey: 'nav.home', path: '/', icon: 'home' },
+  { labelKey: 'nav.about', path: '/about', icon: 'info' },
+  { labelKey: 'nav.contact', path: '/contact', icon: 'mail' },
 ];
