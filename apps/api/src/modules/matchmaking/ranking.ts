@@ -2,6 +2,7 @@ import type {
   Innovation,
   InnovationMatch,
   Interpretation,
+  RelatedInformation,
 } from '@repo/api-contracts';
 
 export function rankInnovations(
@@ -23,6 +24,7 @@ export function rankInnovations(
       const matchedAudiences = audiences.filter((audience) =>
         innovation.audiences.includes(audience),
       );
+      if (audiences.length && !matchedAudiences.length) return [];
       const matchedAreas = areas.filter((area) =>
         innovation.areas.includes(area),
       );
@@ -55,4 +57,33 @@ export function rankInnovations(
       (a, b) => b.score - a.score || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
     )
     .slice(0, 5);
+}
+
+export function matchInformation(
+  interpretation: Interpretation,
+  catalog: readonly RelatedInformation[],
+): RelatedInformation[] {
+  return catalog
+    .map((item) => ({
+      item,
+      sharedAreas: interpretation.areas.filter((area) =>
+        item.areas.includes(area),
+      ).length,
+      sharedNeeds: interpretation.needs.filter((need) =>
+        item.needs.includes(need),
+      ).length,
+    }))
+    .filter(
+      (match) =>
+        match.sharedAreas > 0 ||
+        (!interpretation.areas.length && match.sharedNeeds > 0),
+    )
+    .sort(
+      (a, b) =>
+        b.sharedAreas - a.sharedAreas ||
+        b.sharedNeeds - a.sharedNeeds ||
+        (a.item.id < b.item.id ? -1 : a.item.id > b.item.id ? 1 : 0),
+    )
+    .slice(0, 3)
+    .map((match) => match.item);
 }

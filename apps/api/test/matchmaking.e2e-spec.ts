@@ -55,6 +55,36 @@ describe('POST /api/matchmaking', () => {
     expect(interpret).toHaveBeenCalledWith(
       'Uczniowie wracają do szkoły po terapii.',
     );
+    expect(data.relatedInformation.length).toBeGreaterThan(0);
+    expect(
+      data.relatedInformation.every((item) =>
+        item.sourceUrl.startsWith('https://rops.krakow.pl/'),
+      ),
+    ).toBe(true);
+    expect(data.catalog.innovationCount).toBe(15);
+  });
+
+  it('does not mix migrant needs with innovations addressed exclusively to other audiences', async () => {
+    interpret.mockResolvedValue({
+      ...interpretation,
+      audiences: ['Cudzoziemcy'],
+      areas: ['Integracja cudzoziemców', 'Zdrowie'],
+      needs: ['Dostęp do usług', 'Informacja o opiece zdrowotnej'],
+    });
+    const response = await request(app.getHttpServer())
+      .post('/api/matchmaking')
+      .send({
+        description: 'Rodziny z Ukrainy szukają informacji o przychodni.',
+      })
+      .expect(200);
+    const { data } = MatchmakingResponseSchema.parse(response.body);
+    expect(data.matches[0].id).toBe('health-guide-pl');
+    expect(
+      data.matches.every((match) => match.audiences.includes('Cudzoziemcy')),
+    ).toBe(true);
+    expect(data.relatedInformation.map((item) => item.id)).toContain(
+      'mapa-integracja',
+    );
   });
 
   it.each([

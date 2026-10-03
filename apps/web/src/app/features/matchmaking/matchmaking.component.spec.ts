@@ -11,6 +11,21 @@ import { ApiConfigService } from '../../core/services/api-config.service';
 import { MatchmakingComponent } from './matchmaking.component';
 
 const result: MatchmakingData = {
+  catalog: { version: 1, innovationCount: 15 },
+  relatedInformation: [
+    {
+      id: 'mapa-seniorzy',
+      title: 'Samotność seniorów',
+      summary: 'Kontekst problemu.',
+      scope: 'national',
+      sourceUrl:
+        'https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048',
+      sourceLabel: 'Mapa Wyzwań Społecznych',
+      verifiedAt: '2026-10-03',
+      areas: ['Seniorzy'],
+      needs: ['Relacje społeczne'],
+    },
+  ],
   interpretation: {
     summary: 'Seniorzy potrzebują wspólnych spotkań.',
     audiences: ['Seniorzy'],
@@ -55,6 +70,7 @@ describe('MatchmakingComponent', () => {
     const translate = TestBed.inject(TranslateService);
     translate.setTranslation('pl', {
       matchmaking: {
+        scopes: { national: 'Kontekst ogólnopolski' },
         examples: {
           seniors: { description: 'Seniorzy czują się samotni.' },
           migrants: {
@@ -120,6 +136,25 @@ describe('MatchmakingComponent', () => {
     const link = root.querySelector<HTMLAnchorElement>('.innovation-card a');
     expect(link?.href).toBe(result.matches[0].sourceUrl);
     expect(link?.rel).toContain('noopener');
+    expect(root.querySelector('.related-information')?.textContent).toContain(
+      'Samotność seniorów',
+    );
+    expect(root.querySelector('.scope')?.textContent).toContain(
+      'Kontekst ogólnopolski',
+    );
+    expect(
+      root.querySelector<HTMLAnchorElement>('.information-card a')?.href,
+    ).toBe(result.relatedInformation[0].sourceUrl);
+  });
+
+  it('focuses the interpretation after completing a search and returns to the description for refinement', async () => {
+    submitDescription();
+    http.expectOne('/api/matchmaking').flush(createApiSuccess(result));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(document.activeElement?.id).toBe('interpretation-title');
+    root.querySelector<HTMLButtonElement>('.interpretation button')?.click();
+    expect(document.activeElement?.id).toBe('problem-description');
   });
 
   it('renders an empty state and clarification without invented results', () => {
@@ -132,6 +167,8 @@ describe('MatchmakingComponent', () => {
           missingInformation: ['Kogo wspieracie?'],
         },
         matches: [],
+        relatedInformation: [],
+        catalog: result.catalog,
       }),
     );
     fixture.detectChanges();

@@ -1,55 +1,197 @@
-.layout {
-  min-height: 100vh;
+:host {
+  --rail-width: 76px;
+  --menu-width: 284px;
 }
+
+.layout {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 1000;
+  padding: 12px 20px;
+  background: var(--mat-sys-surface, #fff);
+  color: var(--mat-sys-primary, #005cbb);
+  border: 2px solid currentColor;
+  border-radius: 8px;
+}
+.skip-link:focus {
+  top: 12px;
+}
+
 .header {
-  justify-content: space-between;
-  padding-inline: 24px;
-  background: transparent;
-  border-bottom: 1px solid var(--mat-sys-outline-variant, #c4c6d0);
+  flex-shrink: 0;
+  height: 72px;
+  gap: 12px;
+  padding-inline: 18px 24px;
+  background: var(--mat-sys-surface, #fff);
+  border-bottom: 1px solid var(--mat-sys-outline-variant, #dce4e4);
 }
 .brand {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   color: inherit;
   text-decoration: none;
-  font-size: 18px;
+  font-size: 17px;
+  font-weight: 600;
+  white-space: normal;
+  line-height: 1.3;
 }
-.primary-nav {
+.brand-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 13px;
+  background: var(--mat-sys-primary-container, #dff5ef);
+  color: var(--mat-sys-on-primary-container, #075a50);
+}
+.theme-toggle {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.mobile-menu-button {
+  display: none;
+}
+
+.workspace {
+  flex: 1;
+  min-height: 0;
+  background: transparent;
+}
+.sidebar {
+  width: var(--rail-width);
+  border-right: 1px solid var(--mat-sys-outline-variant, #dce4e4);
+  border-radius: 0;
+  background: var(--mat-sys-surface, #fff);
+  transition:
+    width 180ms ease,
+    box-shadow 180ms ease;
+}
+.sidebar-body {
   display: flex;
-  gap: 8px;
-  margin-inline: auto;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 24px 12px 16px;
+  box-sizing: border-box;
+  overflow-x: clip;
 }
-.primary-nav .active {
-  background: #dff5ef;
-  color: #075a50;
+.sidebar-heading,
+.nav-link,
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  white-space: nowrap;
+}
+.sidebar-heading {
+  padding: 0 13px 24px;
+  color: var(--mat-sys-on-surface-variant, #566563);
+  font-size: 12px;
+  font-weight: 500;
+}
+.side-nav {
+  display: grid;
+  gap: 8px;
+}
+.nav-link {
+  min-height: 50px;
+  padding-inline: 13px;
+  border-radius: 14px;
+  color: var(--mat-sys-on-surface-variant, #566563);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+.nav-link:hover {
+  background: var(--mat-sys-surface-container-high, #edf3f1);
+}
+.nav-link.active {
+  background: var(--mat-sys-primary-container, #dff5ef);
+  color: var(--mat-sys-on-primary-container, #075a50);
+  font-weight: 600;
+}
+.sidebar mat-icon {
+  flex-shrink: 0;
+}
+.nav-label {
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 24px;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant, #566563);
+}
+.sidebar-footer button {
+  flex-shrink: 0;
 }
 .page-content {
-  padding: 24px;
-  max-width: 1200px;
+  padding: 32px;
+  max-width: 1280px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
 }
-@media (max-width: 600px) {
+
+@media (min-width: 768px) {
+  .workspace-content {
+    margin-left: var(--rail-width) !important;
+  }
+  .sidebar-pinned .workspace-content {
+    margin-left: var(--menu-width) !important;
+  }
+  .sidebar:focus-within,
+  .sidebar-pinned .sidebar {
+    width: var(--menu-width);
+    .nav-label {
+      opacity: 1;
+    }
+  }
+}
+@media (min-width: 768px) and (hover: hover) {
+  .sidebar:hover {
+    width: var(--menu-width);
+    box-shadow: 12px 0 28px rgb(0 0 0 / 8%);
+    .nav-label {
+      opacity: 1;
+    }
+  }
+}
+@media (max-width: 767px) {
   .header {
-    height: auto;
-    min-height: 112px;
-    flex-wrap: wrap;
+    height: 64px;
+    padding-inline: 8px 12px;
     gap: 8px;
-    padding-block: 10px;
   }
-  .primary-nav {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-    gap: 0;
+  .brand {
+    font-size: 14px;
   }
-  .primary-nav a {
-    font-size: 12px;
+  .brand-icon {
+    display: none;
   }
-  .header,
+  .mobile-menu-button {
+    display: inline-flex;
+  }
+  .sidebar {
+    width: min(var(--menu-width), 85vw);
+    .nav-label {
+      opacity: 1;
+    }
+  }
+  .sidebar-footer {
+    display: none;
+  }
   .page-content {
-    padding-inline: 16px;
+    padding: 24px 16px;
   }
 }

@@ -10,7 +10,7 @@ import {
   InterpretationError,
   OpenRouterService,
 } from './openrouter.service.js';
-import { rankInnovations } from './ranking.js';
+import { rankInnovations, matchInformation } from './ranking.js';
 
 export interface MatchmakingOutcome {
   status: number;
@@ -30,7 +30,15 @@ export class MatchmakingService {
       const matches = rankInnovations(interpretation, this.catalog.findAll());
       return {
         status: 200,
-        body: createApiSuccess({ interpretation, matches }),
+        body: createApiSuccess({
+          interpretation,
+          matches,
+          relatedInformation: matchInformation(
+            interpretation,
+            this.catalog.findInformation(),
+          ),
+          catalog: this.catalog.metadata(),
+        }),
       };
     } catch (error) {
       if (!(error instanceof InterpretationError)) throw error;

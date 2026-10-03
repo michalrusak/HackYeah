@@ -95,10 +95,38 @@ export const InnovationMatchSchema = InnovationSchema.extend({
   matchedNeeds: z.array(NeedSchema).min(1),
   explanation: z.string().min(1),
 });
+
+export const RelatedInformationSchema = z
+  .object({
+    id: z.string().regex(/^[a-z0-9-]+$/),
+    title: z.string().min(1),
+    summary: z.string().min(1),
+    scope: z.enum(["national", "malopolska"]),
+    sourceUrl: InnovationSchema.shape.sourceUrl,
+    sourceLabel: z.string().min(1),
+    verifiedAt: InnovationSchema.shape.verifiedAt,
+    areas: z.array(SocialAreaSchema).min(1),
+    needs: z.array(NeedSchema),
+  })
+  .strict();
+export const InformationCatalogSchema = z
+  .object({
+    version: z.literal(1),
+    information: z.array(RelatedInformationSchema).min(1),
+  })
+  .strict();
+
 export const MatchmakingDataSchema = z
   .object({
     interpretation: InterpretationSchema,
     matches: z.array(InnovationMatchSchema).max(5),
+    relatedInformation: z.array(RelatedInformationSchema).max(3),
+    catalog: z
+      .object({
+        version: z.number().int().positive(),
+        innovationCount: z.number().int().positive(),
+      })
+      .strict(),
   })
   .strict();
 export const MatchmakingResponseSchema = apiSuccessSchema(
@@ -158,3 +186,4 @@ export type Interpretation = z.infer<typeof InterpretationSchema>;
 export type Innovation = z.infer<typeof InnovationSchema>;
 export type InnovationMatch = z.infer<typeof InnovationMatchSchema>;
 export type MatchmakingData = z.infer<typeof MatchmakingDataSchema>;
+export type RelatedInformation = z.infer<typeof RelatedInformationSchema>;
