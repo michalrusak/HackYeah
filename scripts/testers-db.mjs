@@ -12,6 +12,10 @@ if (!['migrate', 'seed'].includes(action)) {
 
 loadRootEnv();
 try {
+  if (action === 'migrate') {
+    await waitForExit(execLocal('pnpm', ['--filter', 'api', 'db:migrate:deploy'], { cwd: rootDir }));
+    process.exit(0);
+  }
   await waitForExit(execLocal('pnpm', ['--filter', '@repo/api-contracts', 'build'], { cwd: rootDir }));
   await waitForExit(execLocal('pnpm', ['--filter', 'api', 'build'], { cwd: rootDir }));
   await waitForExit(execLocal(process.execPath, ['apps/api/dist/database/testers-db.cli.js', action], { cwd: rootDir }));

@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ApiErrorResponseSchema } from '@repo/api-contracts';
 
 export function testerErrorKey(error: unknown): string {
+  if (error instanceof Error && error.message === 'TESTER_KEY_NOT_FOUND') return 'testers.access.notFound';
   const response = error instanceof HttpErrorResponse ? ApiErrorResponseSchema.safeParse(error.error) : null;
   const code = response?.success ? response.data.error.code : '';
   const messages: Record<string, string> = {

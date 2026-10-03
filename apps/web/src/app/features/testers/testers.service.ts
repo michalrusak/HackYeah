@@ -14,7 +14,7 @@ import {
   type TesterSearchData,
   type TesterSearchesData,
 } from '@repo/api-contracts';
-import { Observable, tap } from 'rxjs';
+import { forkJoin, map, Observable } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
 
 const OWNER_KEY_STORAGE = 'hackyeah.tester-owner-key';
@@ -68,11 +68,15 @@ export class TestersService {
 
   restoreKey(value: string): Observable<MyTesterProfileData> {
     const key = TesterOwnerKeySchema.parse(value.trim());
-    return this.api.request('GET', '/testers/profile/me', MyTesterProfileDataSchema, {
-      headers: { 'X-Tester-Key': key },
-    }).pipe(tap(() => {
+    const options = { headers: { 'X-Tester-Key': key } };
+    return forkJoin({
+      own: this.api.request('GET', '/testers/profile/me', MyTesterProfileDataSchema, options),
+      history: this.api.request('GET', '/testers/searches', TesterSearchesDataSchema, options),
+    }).pipe(map(({ own, history }) => {
+      if (!own.profile && !history.searches.length) throw new Error('TESTER_KEY_NOT_FOUND');
       localStorage.setItem(OWNER_KEY_STORAGE, key);
       this.ownerKey = key;
+      return own;
     }));
   }
 
