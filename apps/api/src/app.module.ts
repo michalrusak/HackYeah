@@ -8,6 +8,7 @@ import { HealthModule } from './modules/health/health.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { MatchmakingModule } from './modules/matchmaking/matchmaking.module.js';
 import { IdeaCreatorModule } from './modules/idea-creator/idea-creator.module.js';
+import { ContactModule } from './modules/contact/contact.module.js';
 
 const isTestEnv = process.env.NODE_ENV === 'test';
 
@@ -27,6 +28,7 @@ const isTestEnv = process.env.NODE_ENV === 'test';
     ...(isTestEnv ? [] : [PrismaModule, IdeaCreatorModule]),
     HealthModule,
     MatchmakingModule,
+    ContactModule,
   ],
   controllers: [AppController],
   providers: [

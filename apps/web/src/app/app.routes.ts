@@ -47,6 +47,14 @@ export const routes: Routes = [
         data: { breadcrumb: 'nav.about' },
       },
       {
+        path: 'rops-contact',
+        loadComponent: () =>
+          import('./features/rops-contact/rops-contact.component').then(
+            (m) => m.RopsContactComponent,
+          ),
+        data: { breadcrumb: 'nav.rops_contact' },
+      },
+      {
         path: 'contact',
         component: ContactComponent,
         data: { breadcrumb: 'nav.contact' },

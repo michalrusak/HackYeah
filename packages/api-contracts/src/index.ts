@@ -10,3 +10,4 @@ export * from "./grant-call.schema.js";
 export * from "./application.schema.js";
 export * from "./assistant.schema.js";
 export * from "./material.schema.js";
+export * from "./contact.schema.js";

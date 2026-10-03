@@ -10,7 +10,8 @@
     "calls": "Nabory grantowe",
     "materials": "Materiały",
     "about": "O projekcie",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "rops_contact": "Kontakt ROPS"
   },
   "layout": {
     "skipToContent": "Przejdź do treści"
@@ -323,5 +324,21 @@
   "contact": {
     "title": "Kontakt",
     "description": "Placeholder — email, social media, formularz kontaktowy."
+  },
+  "rops-contact": {
+    "simulate_role": "Symuluj rolę (Prototyp)",
+    "roles": {
+      "citizen": "Użytkownik prywatny / Mieszkaniec",
+      "employee": "Pracownik ROPS"
+    },
+    "conversations": "Twoje konwersacje",
+    "new_conversation": "Nowa rozmowa",
+    "first_name": "Imię",
+    "last_name": "Nazwisko",
+    "subject": "Temat / Czego dotyczy sprawa?",
+    "message": "Treść pierwszej wiadomości",
+    "send": "Wyślij",
+    "type_message": "Napisz wiadomość...",
+    "select_conversation": "Wybierz konwersację z listy po lewej, aby rozpocząć rozmowę."
   }
 }

@@ -161,3 +161,58 @@ model AssistantMessage {
 
   @@index([ideaId, createdAt])
 }
+
+enum UserRole {
+  CITIZEN
+  ROPS_EMPLOYEE
+}
+
+model User {
+  id                    String         @id @default(cuid())
+  email                 String         @unique
+  firstName             String?        @map("first_name")
+  lastName              String?        @map("last_name")
+  role                  UserRole       @default(CITIZEN)
+  
+  conversations         Conversation[] @relation("CitizenConversations")
+  assignedConversations Conversation[] @relation("EmployeeConversations")
+  messages              Message[]
+  
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Conversation {
+  id          String    @id @default(cuid())
+  subject     String
+  
+  citizenId   String    @map("citizen_id")
+  citizen     User      @relation("CitizenConversations", fields: [citizenId], references: [id])
+  
+  employeeId  String?   @map("employee_id")
+  employee    User?     @relation("EmployeeConversations", fields: [employeeId], references: [id])
+  
+  messages    Message[]
+  
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  content        String
+  
+  conversationId String       @map("conversation_id")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  senderId       String       @map("sender_id")
+  sender         User         @relation(fields: [senderId], references: [id])
+  
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@map("messages")
+}

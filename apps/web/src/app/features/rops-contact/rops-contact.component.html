@@ -1,0 +1,135 @@
+<div class="rops-contact-container">
+  <div class="role-selector">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "rops-contact.simulate_role" | translate }}</mat-label>
+      <mat-select [(ngModel)]="currentRole">
+        <mat-option *ngFor="let role of roles" [value]="role.value">
+          {{ role.viewValue | translate }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="chat-layout">
+    <mat-card class="sidebar">
+      <mat-card-header>
+        <mat-card-title>{{
+          "rops-contact.conversations" | translate
+        }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <button
+          mat-stroked-button
+          color="primary"
+          class="full-width mt-2 mb-2"
+          (click)="createNewConversation()"
+          *ngIf="currentRole === 'CITIZEN'"
+        >
+          <mat-icon>add</mat-icon>
+          {{ "rops-contact.new_conversation" | translate }}
+        </button>
+        <mat-list>
+          <mat-list-item
+            *ngFor="let conv of conversations"
+            (click)="selectConversation(conv)"
+            [class.active]="selectedConversation?.id === conv.id"
+          >
+            <span matListItemTitle>{{ conv.subject }}</span>
+            <span matListItemLine *ngIf="conv.citizen?.firstName">{{ conv.citizen?.firstName }} {{ conv.citizen?.lastName }}</span>
+            <span matListItemLine>{{ conv.updatedAt | date: "short" }}</span>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="chat-area">
+      <ng-container *ngIf="isCreatingNew">
+        <mat-card-header>
+          <mat-card-title>{{
+            "rops-contact.new_conversation" | translate
+          }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="new-convo-content">
+          <div style="display: flex; gap: 16px;">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ "rops-contact.first_name" | translate }}</mat-label>
+              <input matInput [(ngModel)]="newFirstName" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ "rops-contact.last_name" | translate }}</mat-label>
+              <input matInput [(ngModel)]="newLastName" />
+            </mat-form-field>
+          </div>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ "rops-contact.subject" | translate }}</mat-label>
+            <input matInput [(ngModel)]="newSubject" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width flex-grow">
+            <mat-label>{{ "rops-contact.message" | translate }}</mat-label>
+            <textarea matInput [(ngModel)]="newMessage" rows="6"></textarea>
+          </mat-form-field>
+          <div class="actions right">
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="sendMessage()"
+              [disabled]="!newSubject || !newMessage || !newFirstName || !newLastName"
+            >
+              {{ "rops-contact.send" | translate }}
+            </button>
+          </div>
+        </mat-card-content>
+      </ng-container>
+
+      <ng-container *ngIf="selectedConversation && !isCreatingNew">
+        <mat-card-header>
+          <mat-card-title>{{ selectedConversation.subject }}</mat-card-title>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content class="messages-container">
+          <div
+            *ngFor="let msg of messages"
+            class="message-bubble"
+            [ngClass]="{
+              'own-message': msg.senderId === contactService.currentUserId,
+            }"
+          >
+            <div class="message-content">
+              <strong *ngIf="msg.sender?.firstName">{{ msg.sender?.firstName }} {{ msg.sender?.lastName }}:<br/></strong>
+              {{ msg.content }}
+            </div>
+            <div class="message-time">
+              {{ msg.createdAt | date: "shortTime" }}
+            </div>
+          </div>
+        </mat-card-content>
+        <mat-divider></mat-divider>
+        <mat-card-actions class="chat-input-area">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ "rops-contact.type_message" | translate }}</mat-label>
+            <input
+              matInput
+              [(ngModel)]="newMessage"
+              (keyup.enter)="sendMessage()"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="sendMessage()"
+              [disabled]="!newMessage"
+            >
+              <mat-icon>send</mat-icon>
+            </button>
+          </mat-form-field>
+        </mat-card-actions>
+      </ng-container>
+
+      <ng-container *ngIf="!selectedConversation && !isCreatingNew">
+        <div class="empty-state">
+          <mat-icon class="large-icon">chat</mat-icon>
+          <p>{{ "rops-contact.select_conversation" | translate }}</p>
+        </div>
+      </ng-container>
+    </mat-card>
+  </div>
+</div>
