@@ -26,10 +26,9 @@ const isTestEnv = process.env.NODE_ENV === 'test';
       },
     ]),
     // Kreator pomysłów wymaga bazy, więc dzieli los PrismaModule w testach.
-    ...(isTestEnv ? [] : [PrismaModule, IdeaCreatorModule]),
+    ...(isTestEnv ? [] : [PrismaModule, IdeaCreatorModule, ContactModule]),
     HealthModule,
     MatchmakingModule,
-    ContactModule,
     ...(isTestEnv ? [] : [TestersModule]),
   ],
   controllers: [AppController],

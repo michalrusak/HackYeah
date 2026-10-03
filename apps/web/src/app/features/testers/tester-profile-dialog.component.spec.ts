@@ -53,6 +53,16 @@ describe('TesterProfileDialogComponent', () => {
   }
   afterEach(() => http?.verify());
 
+  it('keeps a screen-reader name on the Material dialog close button', async () => {
+    await setup();
+    const root: HTMLElement = fixture.nativeElement;
+    expect(
+      root
+        .querySelector('button[mat-dialog-close]')
+        ?.getAttribute('aria-label'),
+    ).toBe('testers.close');
+  });
+
   it('validates mandatory fields and has no consent or visibility controls', async () => {
     await setup();
     const component = fixture.componentInstance;

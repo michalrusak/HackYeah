@@ -81,14 +81,12 @@ export class AppLayoutComponent {
           );
         }),
         switchMap((key) =>
-          translate
-            .stream([key, 'matchmaking.productName'])
-            .pipe(
-              map((labels: Record<string, string>) => ({
-                page: labels[key],
-                app: labels['matchmaking.productName'],
-              })),
-            ),
+          translate.stream([key, 'matchmaking.productName']).pipe(
+            map((labels: Record<string, string>) => ({
+              page: labels[key],
+              app: labels['matchmaking.productName'],
+            })),
+          ),
         ),
         takeUntilDestroyed(),
       )

@@ -8,6 +8,13 @@
   gap: 16px;
   padding: 24px 24px 0;
 }
+.dialog-heading > div {
+  min-width: 0;
+  flex: 1;
+}
+.dialog-heading > button {
+  flex-shrink: 0;
+}
 .eyebrow {
   display: block;
   font-size: 0.875rem;

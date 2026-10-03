@@ -83,6 +83,29 @@ pnpm --filter web test
 pnpm --filter web test:watch   # watch mode
 ```
 
+### Odbiór kont Testera i dostępności
+
+Sprawdź w przeglądarce następujący przebieg z tymczasowym kontem:
+
+1. „Dołącz jako tester” → rejestracja → zapis profilu w PostgreSQL.
+2. Wylogowanie → logowanie w nowej sesji przeglądarki → edycja tego samego profilu.
+3. Brak checkboxa zgody oraz przełącznika udostępniania w formularzu.
+4. Obsługa samą klawiaturą: pominięcie nawigacji, zmiana strony, otwieranie okien,
+   fokus na błędnym polu, zamknięcie przez Escape i powrót fokusu.
+5. Rozwinięcie menu przez hover/fokus oraz jego zwinięcie klawiszem Escape;
+   na telefonie otwarcie przyciskiem i zatrzymanie fokusu w otwartym menu.
+6. Katalog, logowanie, rejestracja i profil w jasnym oraz ciemnym motywie,
+   przy szerokości 320 px i zwiększonych odstępach tekstu. Sprawdź także samą
+   powierzchnię okna dialogowego: brak przewijania poziomego strony nie wyklucza
+   przycięcia jego zawartości.
+
+Do kontroli automatycznej użyj axe-core z regułami `wcag2a`, `wcag2aa`,
+`wcag21a`, `wcag21aa` po zakończeniu animacji interfejsu. Dla odstępów tekstu
+sprawdź interlinię 1,5, odstęp po akapicie 2 em, między literami 0,12 em
+i między słowami 0,16 em. Kontrolę automatyczną uzupełnij wizualną oraz próbą
+z czytnikiem ekranu i użytkownikami docelowymi; sam wynik axe nie potwierdza
+pełnej zgodności z WCAG 2.1 AA.
+
 ## CI (zalecany pipeline)
 
 ```bash

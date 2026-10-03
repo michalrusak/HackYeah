@@ -62,6 +62,15 @@ describe('AuthDialogComponent', () => {
     http.expectNone('/api/auth/register');
   });
 
+  it('keeps a screen-reader name on the Material dialog close button', () => {
+    const root: HTMLElement = fixture.nativeElement;
+    expect(
+      root
+        .querySelector('button[mat-dialog-close]')
+        ?.getAttribute('aria-label'),
+    ).toBe('testers.close');
+  });
+
   it('registers with a cookie session and transfers a legacy profile key only once', () => {
     localStorage.setItem(storageKey, 'a'.repeat(64));
     fixture.componentInstance.form.setValue({

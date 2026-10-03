@@ -8,8 +8,13 @@
   gap: 8px;
   padding-right: 16px;
 }
-h2 {
+.dialog-heading h2 {
+  min-width: 0;
+  flex: 1;
   font-size: 1.5rem;
+}
+.dialog-heading > button {
+  flex-shrink: 0;
 }
 p {
   line-height: 1.6;

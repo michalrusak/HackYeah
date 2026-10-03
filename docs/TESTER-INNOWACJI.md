@@ -16,13 +16,13 @@ Zakładka `/tester-innowacji` łączy organizatorów testów innowacji społeczn
 
 ## Dane i zabezpieczenia
 
-| Zasób | Zawartość |
-| --- | --- |
-| Konto | UUID, unikalny login i identyfikator właściciela, hash hasła scrypt z indywidualną solą |
-| Sesja | Hash losowego tokenu, konto, czas wygaśnięcia |
-| Profil | UUID, identyfikator właściciela, deklarowane cechy, historyczne flagi publikacji, daty, oznaczenie demo |
-| Wyszukiwanie | Właściciel, zapytanie, wyniki z wersjami profili, statystyki |
-| Przypisanie | Klucze obce wyszukiwania i profilu; unikalna para |
+| Zasób        | Zawartość                                                                                               |
+| ------------ | ------------------------------------------------------------------------------------------------------- |
+| Konto        | UUID, unikalny login i identyfikator właściciela, hash hasła scrypt z indywidualną solą                 |
+| Sesja        | Hash losowego tokenu, konto, czas wygaśnięcia                                                           |
+| Profil       | UUID, identyfikator właściciela, deklarowane cechy, historyczne flagi publikacji, daty, oznaczenie demo |
+| Wyszukiwanie | Właściciel, zapytanie, wyniki z wersjami profili, statystyki                                            |
+| Przypisanie  | Klucze obce wyszukiwania i profilu; unikalna para                                                       |
 
 Sesja trwa 7 dni. Token jest przekazywany wyłącznie przez cookie HttpOnly, SameSite=Lax, Path=/api; NODE_ENV=production włącza Secure. Baza przechowuje SHA-256 tokenu. Wylogowanie unieważnia bieżącą sesję. Hasła i tokeny sesji nie trafiają do localStorage ani do AI.
 
@@ -34,20 +34,20 @@ AI otrzymuje wyłącznie zapytanie i publiczne deklaracje potrzebne do dopasowan
 
 Kontrakty: `packages/api-contracts/src/auth.schema.ts` i `testers.schema.ts`.
 
-| Metoda i ścieżka | Działanie |
-| --- | --- |
-| POST /api/auth/register | Rejestracja, opcjonalne powiązanie starego profilu, sesja |
-| POST /api/auth/login | Logowanie i nowa sesja |
-| GET /api/auth/me | Bieżący użytkownik lub null |
-| POST /api/auth/logout | Unieważnienie sesji |
-| GET /api/testers/profiles | Publiczny katalog |
-| GET /api/testers/profile/me | Własny profil lub null; wymaga konta |
-| PUT /api/testers/profile/me | Zapis własnego profilu; wymaga konta |
-| POST /api/testers/search | Analiza AI i zapis wyniku |
-| GET /api/testers/searches | Własna historia |
-| GET /api/testers/searches/:id | Własny wynik |
-| POST /api/testers/searches/:id/assignments | Przypisanie osoby z wyniku |
-| DELETE /api/testers/searches/:id/assignments/:profileId | Usunięcie przypisania |
+| Metoda i ścieżka                                        | Działanie                                                 |
+| ------------------------------------------------------- | --------------------------------------------------------- |
+| POST /api/auth/register                                 | Rejestracja, opcjonalne powiązanie starego profilu, sesja |
+| POST /api/auth/login                                    | Logowanie i nowa sesja                                    |
+| GET /api/auth/me                                        | Bieżący użytkownik lub null                               |
+| POST /api/auth/logout                                   | Unieważnienie sesji                                       |
+| GET /api/testers/profiles                               | Publiczny katalog                                         |
+| GET /api/testers/profile/me                             | Własny profil lub null; wymaga konta                      |
+| PUT /api/testers/profile/me                             | Zapis własnego profilu; wymaga konta                      |
+| POST /api/testers/search                                | Analiza AI i zapis wyniku                                 |
+| GET /api/testers/searches                               | Własna historia                                           |
+| GET /api/testers/searches/:id                           | Własny wynik                                              |
+| POST /api/testers/searches/:id/assignments              | Przypisanie osoby z wyniku                                |
+| DELETE /api/testers/searches/:id/assignments/:profileId | Usunięcie przypisania                                     |
 
 ## Dostępność i intuicyjność — kryterium konkursowe 20%
 
