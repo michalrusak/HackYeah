@@ -1,5 +1,5 @@
 # HackYeah
-
+h
 Monorepo na hackathon: **NestJS** (backend) + **Angular** (frontend) + **PostgreSQL**.
 
 Komendy działają tak samo na **Windows (PowerShell)**, **macOS** i **Linux (bash)**.
