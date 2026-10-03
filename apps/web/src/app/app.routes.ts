@@ -18,6 +18,14 @@ export const routes: Routes = [
         data: { breadcrumb: 'nav.matchmaking' },
       },
       {
+        path: 'tester-innowacji',
+        loadComponent: () =>
+          import('./features/testers/testers.component').then(
+            (m) => m.TestersComponent,
+          ),
+        data: { breadcrumb: 'nav.testers' },
+      },
+      {
         path: 'about',
         component: AboutComponent,
         data: { breadcrumb: 'nav.about' },

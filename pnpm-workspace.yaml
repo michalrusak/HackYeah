@@ -1,6 +1,11 @@
 packages:
   - "apps/*"
   - "packages/*"
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
 minimumReleaseAgeExclude:
   - '@turbo/darwin-64@2.11.7'
   - '@turbo/darwin-arm64@2.11.7'

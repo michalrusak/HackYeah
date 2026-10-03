@@ -1,10 +1,15 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { CreateTesters1791000000000 } from '../database/migrations/1791000000000-create-testers.js';
 
 export function getDatabaseConfig(
   config: ConfigService,
 ): TypeOrmModuleOptions {
-  const synchronize = config.get<string>('NODE_ENV') !== 'production';
+  const migrationOptions = {
+    synchronize: false,
+    migrationsRun: false,
+    migrations: [CreateTesters1791000000000],
+  };
   const databaseUrl = config.get<string>('DATABASE_URL');
 
   if (databaseUrl) {
@@ -12,7 +17,7 @@ export function getDatabaseConfig(
       type: 'postgres',
       url: databaseUrl,
       autoLoadEntities: true,
-      synchronize,
+      ...migrationOptions,
     };
   }
 
@@ -24,6 +29,6 @@ export function getDatabaseConfig(
     password: config.get<string>('POSTGRES_PASSWORD', 'hackyeah'),
     database: config.get<string>('POSTGRES_DB', 'hackyeah'),
     autoLoadEntities: true,
-    synchronize,
+    ...migrationOptions,
   };
 }

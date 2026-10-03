@@ -1,0 +1,38 @@
+<div class="dialog-heading">
+  <div><span class="eyebrow">{{ 'testers.profile.eyebrow' | translate }}</span><h2 mat-dialog-title>{{ (profile ? 'testers.profile.editTitle' : 'testers.profile.createTitle') | translate }}</h2></div>
+  <button mat-icon-button type="button" mat-dialog-close [disabled]="saving() || restoring()" [attr.aria-label]="'testers.close' | translate"><mat-icon>close</mat-icon></button>
+</div>
+<mat-dialog-content>
+  <p class="intro">{{ 'testers.profile.intro' | translate }}</p>
+  <form id="tester-profile-form" [formGroup]="form" (ngSubmit)="save()">
+    <div class="two-columns">
+      <mat-form-field appearance="outline"><mat-label>{{ 'testers.profile.displayName' | translate }}</mat-label><input matInput formControlName="displayName" maxlength="80" autocomplete="nickname" /><mat-error>{{ 'testers.profile.nameError' | translate }}</mat-error></mat-form-field>
+      <mat-form-field appearance="outline"><mat-label>{{ 'testers.profile.city' | translate }}</mat-label><input matInput formControlName="city" maxlength="100" autocomplete="address-level2" /><mat-error>{{ 'testers.profile.cityError' | translate }}</mat-error></mat-form-field>
+    </div>
+    <mat-form-field appearance="outline"><mat-label>{{ 'testers.profile.bio' | translate }}</mat-label><textarea matInput formControlName="bio" rows="3" maxlength="1200" [placeholder]="'testers.profile.bioPlaceholder' | translate"></textarea><mat-hint>{{ 'testers.profile.bioHint' | translate }}</mat-hint><mat-error>{{ 'testers.profile.bioError' | translate }}</mat-error></mat-form-field>
+    <div class="two-columns">
+      <mat-form-field appearance="outline"><mat-label>{{ 'testers.profile.skills' | translate }}</mat-label><input matInput formControlName="skills" [placeholder]="'testers.profile.skillsPlaceholder' | translate" /><mat-hint>{{ 'testers.profile.tagsHint' | translate }}</mat-hint><mat-error>{{ 'testers.profile.tagsError' | translate }}</mat-error></mat-form-field>
+      <mat-form-field appearance="outline"><mat-label>{{ 'testers.profile.resources' | translate }}</mat-label><input matInput formControlName="resources" [placeholder]="'testers.profile.resourcesPlaceholder' | translate" /><mat-hint>{{ 'testers.profile.tagsHint' | translate }}</mat-hint><mat-error>{{ 'testers.profile.tagsError' | translate }}</mat-error></mat-form-field>
+    </div>
+    <mat-form-field appearance="outline"><mat-label>{{ 'testers.profile.interests' | translate }}</mat-label><input matInput formControlName="interests" [placeholder]="'testers.profile.interestsPlaceholder' | translate" /><mat-hint>{{ 'testers.profile.tagsHint' | translate }}</mat-hint><mat-error>{{ 'testers.profile.tagsError' | translate }}</mat-error></mat-form-field>
+    <mat-form-field appearance="outline"><mat-label>{{ 'testers.profile.accessibility' | translate }}</mat-label><textarea matInput formControlName="accessibilityNeeds" rows="2" maxlength="600"></textarea><mat-hint>{{ 'testers.profile.accessibilityHint' | translate }}</mat-hint><mat-error>{{ 'testers.profile.accessibilityError' | translate }}</mat-error></mat-form-field>
+    <mat-form-field appearance="outline"><mat-label>{{ 'testers.profile.availability' | translate }}</mat-label><mat-select formControlName="availability"><mat-option value="remote">{{ 'testers.availability.remote' | translate }}</mat-option><mat-option value="onsite">{{ 'testers.availability.onsite' | translate }}</mat-option><mat-option value="hybrid">{{ 'testers.availability.hybrid' | translate }}</mat-option></mat-select></mat-form-field>
+    <div class="visibility-row"><mat-slide-toggle formControlName="isActive">{{ 'testers.profile.active' | translate }}</mat-slide-toggle><p>{{ 'testers.profile.activeHint' | translate }}</p></div>
+    <div class="consent"><mat-checkbox formControlName="consent">{{ 'testers.profile.consent' | translate }}</mat-checkbox>@if (form.controls.consent.touched && form.controls.consent.invalid) { <p class="field-error">{{ 'testers.profile.consentError' | translate }}</p> }</div>
+  </form>
+  <details class="access-panel">
+    <summary><mat-icon aria-hidden="true">key</mat-icon>{{ 'testers.access.title' | translate }}</summary>
+    <p>{{ 'testers.access.description' | translate }}</p>
+    <button mat-stroked-button type="button" (click)="keyVisible.set(!keyVisible())">{{ (keyVisible() ? 'testers.access.hide' : 'testers.access.reveal') | translate }}</button>
+    @if (keyVisible()) {
+      <div class="key-row"><mat-form-field appearance="outline"><mat-label>{{ 'testers.access.keyLabel' | translate }}</mat-label><input matInput readonly [value]="key" /></mat-form-field><button mat-icon-button type="button" [cdkCopyToClipboard]="key" (cdkCopyToClipboardCopied)="onCopied($event)" [attr.aria-label]="'testers.access.copy' | translate"><mat-icon>content_copy</mat-icon></button></div>
+      @if (copied()) { <p role="status">{{ 'testers.access.copied' | translate }}</p> }
+      @if (copyFailed()) { <p role="alert">{{ 'testers.access.copyFailed' | translate }}</p> }
+    }
+    <h3>{{ 'testers.access.restoreTitle' | translate }}</h3><p>{{ 'testers.access.restoreHint' | translate }}</p>
+    <mat-form-field appearance="outline"><mat-label>{{ 'testers.access.restoreLabel' | translate }}</mat-label><input matInput [formControl]="restoreControl" type="password" autocomplete="off" maxlength="64" /><mat-error>{{ 'testers.access.invalid' | translate }}</mat-error></mat-form-field>
+    <button mat-stroked-button type="button" [disabled]="saving() || restoring()" (click)="restore()">{{ (restoring() ? 'testers.access.restoring' : 'testers.access.restore') | translate }}</button>
+  </details>
+  @if (errorKey(); as error) { <p class="error-message" role="alert">{{ error | translate }}</p> }
+</mat-dialog-content>
+<mat-dialog-actions align="end"><button mat-button type="button" mat-dialog-close [disabled]="saving() || restoring()">{{ 'testers.cancel' | translate }}</button><button mat-flat-button type="submit" form="tester-profile-form" [disabled]="saving() || restoring()"><mat-icon>check</mat-icon>{{ (saving() ? 'testers.profile.saving' : 'testers.profile.save') | translate }}</button></mat-dialog-actions>

@@ -12,6 +12,8 @@
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f postgres",
+    "db:migrate": "node scripts/testers-db.mjs migrate",
+    "db:seed": "node scripts/testers-db.mjs seed",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "test": "turbo run test",

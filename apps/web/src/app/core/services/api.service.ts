@@ -22,6 +22,17 @@ export class ApiService {
     return this.config.apiUrl;
   }
 
+  request<T>(
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    path: string,
+    schema: z.ZodType<T>,
+    options: { body?: unknown; headers?: Record<string, string> } = {},
+  ): Observable<T> {
+    return this.http.request<unknown>(method, `${this.baseUrl}${path}`, options).pipe(
+      map((body) => z.object({ success: z.literal(true), data: schema }).parse(body).data),
+    );
+  }
+
   matchInnovations(description: string): Observable<MatchmakingData> {
     const input = MatchmakingRequestSchema.parse({ description });
     return this.http
