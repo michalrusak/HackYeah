@@ -1,6 +1,8 @@
 .layout {
   min-height: 100vh;
 }
+
+/* Skip link jest widoczny dopiero po otrzymaniu fokusu (WCAG 2.4.1). */
 .skip-link {
   position: fixed;
   top: -100px;
@@ -11,16 +13,24 @@
   color: #003366;
   border: 2px solid #003366;
   border-radius: 6px;
+  text-decoration: none;
 }
-.skip-link:focus {
+
+.skip-link:focus,
+.skip-link:focus-visible {
   top: 12px;
 }
 .header {
-  justify-content: space-between;
+  display: flex;
+  gap: 16px;
   padding-inline: 24px;
   background: transparent;
   border-bottom: 1px solid var(--mat-sys-outline-variant, #c4c6d0);
+  height: auto;
+  min-height: 64px;
+  flex-wrap: wrap;
 }
+
 .brand {
   display: inline-flex;
   align-items: center;
@@ -28,16 +38,54 @@
   color: inherit;
   text-decoration: none;
   font-size: 18px;
+  font-weight: 600;
   min-width: 0;
   white-space: normal;
   line-height: 1.4;
 }
+
 .brand mat-icon {
   flex-shrink: 0;
 }
+
 .header > button {
   flex-shrink: 0;
 }
+
+.main-nav {
+  flex: 1;
+}
+
+.main-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.main-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.main-nav a:hover {
+  background: var(--mat-sys-surface-container-high, #e5e6ea);
+}
+
+.main-nav a.active {
+  background: var(--mat-sys-secondary-container, #dce2f9);
+  color: var(--mat-sys-on-secondary-container, #131c2b);
+  font-weight: 600;
+}
+
 .page-content {
   padding: 24px;
   max-width: 1200px;
@@ -45,6 +93,22 @@
   margin: 0 auto;
   box-sizing: border-box;
 }
+
+.page-content:focus {
+  outline: none;
+}
+
+@media (max-width: 720px) {
+  .header {
+    padding-block: 8px;
+  }
+
+  .main-nav {
+    order: 3;
+    flex-basis: 100%;
+  }
+}
+
 @media (max-width: 600px) {
   .brand {
     font-size: 16px;

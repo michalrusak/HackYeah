@@ -1,9 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
+import { DomainExceptionFilter } from './shared/filters/domain-exception.filter.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
+  app.useGlobalFilters(new DomainExceptionFilter());
   app.enableCors({
     origin:
       process.env.WEB_ORIGIN ??

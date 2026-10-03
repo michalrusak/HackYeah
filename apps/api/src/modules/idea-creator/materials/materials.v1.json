@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "materials": [
+    {
+      "id": "canva-innowacji-online",
+      "title": "Canva innowacji społecznej — wersja interaktywna",
+      "description": "Wypełnij planszę bezpośrednio w aplikacji. Treść zapisuje się przy Twojej fiszce, a asystent może zaproponować pierwszą wersję każdego pola.",
+      "kind": "canvas",
+      "format": "online",
+      "url": "/pomysly",
+      "pending": false
+    },
+    {
+      "id": "canva-innowacji-plansza",
+      "title": "Canva innowacji społecznej — plansza do druku",
+      "description": "Plansza w formacie A1 do pracy warsztatowej z zespołem. Plik udostępniany przez ROPS Kraków uczestnikom HackYeah.",
+      "kind": "canvas",
+      "format": "PDF",
+      "url": "/materials/canva-innowacji-spolecznych.pdf",
+      "pending": true
+    },
+    {
+      "id": "przewodnik-prototypowania",
+      "title": "Jak przetestować pomysł w mikroskali",
+      "description": "Krótki przewodnik po planowaniu testu: dobór uczestników, czas trwania, wskaźniki i najczęstsze błędy pierwszego prototypu.",
+      "kind": "guide",
+      "format": "PDF",
+      "url": "/materials/prototypowanie-w-mikroskali.pdf",
+      "pending": true
+    },
+    {
+      "id": "szablon-wywiadu",
+      "title": "Szablon rozmowy z odbiorcą",
+      "description": "Lista pytań do rozmowy z przyszłym odbiorcą rozwiązania, pomagająca odróżnić realną potrzebę od własnego założenia.",
+      "kind": "template",
+      "format": "PDF",
+      "url": "/materials/szablon-rozmowy-z-odbiorca.pdf",
+      "pending": true
+    }
+  ]
+}

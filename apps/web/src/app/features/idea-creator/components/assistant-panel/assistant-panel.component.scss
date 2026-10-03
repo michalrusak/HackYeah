@@ -1,0 +1,139 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.assistant {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.assistant-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 18px;
+}
+
+.assistant-intro {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+  font-size: 14px;
+}
+
+.tab-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.chat {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+
+.chat li {
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: var(--mat-sys-surface-container, #f1f1f5);
+}
+
+.chat li.from-user {
+  background: var(--mat-sys-secondary-container, #dce2f9);
+}
+
+.chat li.empty {
+  background: none;
+  padding: 0;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+}
+
+.chat .who {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.chat p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.follow-ups p {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.composer mat-form-field {
+  width: 100%;
+}
+
+.privacy,
+.hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+}
+
+.status {
+  margin: 0;
+  font-size: 14px;
+}
+
+.variants {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.variants h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.variants p {
+  margin: 0 0 6px;
+}
+
+.variants .meta {
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+}
+
+.error {
+  margin: 0;
+  color: var(--mat-sys-error, #b3261e);
+  font-weight: 600;
+}
+
+/* Powiększenie do 200% nie może odcinać treści panelu. */
+@media (max-height: 600px) {
+  .chat {
+    max-height: 30vh;
+  }
+}

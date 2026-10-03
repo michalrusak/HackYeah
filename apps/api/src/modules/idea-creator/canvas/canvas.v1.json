@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "title": "Canva innowacji społecznej",
+  "description": "Plansza prowadzi od problemu do warunków skalowania. Wypełniaj ją po kolei — każde pole ma odpowiadać na jedno pytanie, bez deklaracji i ogólników.",
+  "fields": [
+    {
+      "id": "problem",
+      "title": "Problem społeczny",
+      "question": "Jaki problem chcesz rozwiązać i skąd wiesz, że istnieje?",
+      "hint": "Oprzyj się na obserwacji albo rozmowie z odbiorcą, nie na przypuszczeniu.",
+      "maxLength": 800,
+      "column": 1,
+      "order": 1
+    },
+    {
+      "id": "odbiorcy",
+      "title": "Odbiorcy i ich potrzeby",
+      "question": "Kto konkretnie odczuwa ten problem i czego naprawdę potrzebuje?",
+      "hint": "Opisz jedną grupę. Im węziej, tym łatwiej przetestować.",
+      "maxLength": 800,
+      "column": 1,
+      "order": 2
+    },
+    {
+      "id": "obecne-rozwiazania",
+      "title": "Co już istnieje",
+      "question": "Jak ten problem jest rozwiązywany dzisiaj i dlaczego to nie wystarcza?",
+      "hint": "Wymień istniejące usługi i wskaż ich konkretne ograniczenie.",
+      "maxLength": 800,
+      "column": 1,
+      "order": 3
+    },
+    {
+      "id": "istota",
+      "title": "Istota rozwiązania",
+      "question": "Na czym polega Twoja innowacja w trzech zdaniach?",
+      "hint": "Napisz, co się wydarzy i kto to zrobi.",
+      "maxLength": 800,
+      "column": 2,
+      "order": 4
+    },
+    {
+      "id": "nowosc",
+      "title": "Co jest w tym nowego",
+      "question": "Czym to się różni od rozwiązań, które już działają?",
+      "hint": "Jedna wyraźna różnica jest mocniejsza niż pięć drobnych.",
+      "maxLength": 800,
+      "column": 2,
+      "order": 5
+    },
+    {
+      "id": "wartosc",
+      "title": "Wartość dla odbiorcy",
+      "question": "Co zmieni się w życiu odbiorcy, jeśli rozwiązanie zadziała?",
+      "hint": "Opisz zmianę z perspektywy odbiorcy, nie instytucji.",
+      "maxLength": 800,
+      "column": 2,
+      "order": 6
+    },
+    {
+      "id": "zasoby",
+      "title": "Zasoby i partnerzy",
+      "question": "Czego potrzebujesz i kto musi się zaangażować?",
+      "hint": "Ludzie, miejsce, sprzęt, zgody formalne.",
+      "maxLength": 800,
+      "column": 3,
+      "order": 7
+    },
+    {
+      "id": "test",
+      "title": "Test w mikroskali",
+      "question": "Jak sprawdzisz rozwiązanie najmniejszym możliwym kosztem?",
+      "hint": "Podaj liczbę uczestników, czas trwania i to, co obserwujesz.",
+      "maxLength": 800,
+      "column": 3,
+      "order": 8
+    },
+    {
+      "id": "skalowanie",
+      "title": "Trwałość i skalowanie",
+      "question": "Co musi być prawdą, żeby rozwiązanie działało dalej bez Ciebie?",
+      "hint": "Kto przejmie prowadzenie i z czego będzie finansowane.",
+      "maxLength": 800,
+      "column": 3,
+      "order": 9
+    }
+  ]
+}

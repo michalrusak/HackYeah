@@ -1,0 +1,120 @@
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" />
+  <p role="status">{{ "ideaCreator.application.loading" | translate }}</p>
+}
+
+@if (errorKey(); as key) {
+  <p class="error" role="alert">{{ key | translate }}</p>
+}
+
+@if (data(); as current) {
+  <section class="application" aria-labelledby="application-title">
+    <header class="intro">
+      <a mat-button [routerLink]="['/pomysly', current.idea.id]">
+        <mat-icon aria-hidden="true">arrow_back</mat-icon>
+        {{ "ideaCreator.application.backToIdea" | translate }}
+      </a>
+      <span class="eyebrow">{{ current.call.name }}</span>
+      <h1 id="application-title">
+        {{ "ideaCreator.application.title" | translate }}
+      </h1>
+      <p>
+        {{
+          "ideaCreator.application.subtitle"
+            | translate: { idea: current.idea.title }
+        }}
+      </p>
+    </header>
+
+    @if (submitted()) {
+      <mat-card class="submitted-notice">
+        <mat-card-content>
+          <h2>{{ "ideaCreator.application.submittedTitle" | translate }}</h2>
+          <p>{{ "ideaCreator.application.submittedDescription" | translate }}</p>
+        </mat-card-content>
+      </mat-card>
+    } @else {
+      <div class="toolbar">
+        <button
+          mat-flat-button
+          type="button"
+          (click)="generate()"
+          [disabled]="generating()"
+        >
+          <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+          {{ "ideaCreator.application.generate" | translate }}
+        </button>
+        <p class="save-state" role="status">
+          @switch (saveState()) {
+            @case ("saving") {
+              {{ "ideaCreator.application.saving" | translate }}
+            }
+            @case ("saved") {
+              {{ "ideaCreator.application.saved" | translate }}
+            }
+            @case ("error") {
+              {{ "ideaCreator.application.saveFailed" | translate }}
+            }
+          }
+        </p>
+      </div>
+      <p class="hint">{{ "ideaCreator.application.generateHint" | translate }}</p>
+    }
+
+    @if (generating()) {
+      <mat-progress-bar mode="indeterminate" />
+      <p class="status" role="status">
+        {{ "ideaCreator.application.generating" | translate }}
+      </p>
+    }
+
+    <form [formGroup]="form" class="sections">
+      @for (section of sections(); track section.id) {
+        <mat-card>
+          <mat-card-content>
+            <h2>{{ section.title }}</h2>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ section.question }}</mat-label>
+              <textarea
+                matInput
+                rows="8"
+                [formControlName]="section.id"
+                [maxlength]="section.maxLength"
+                [required]="section.required"
+                [attr.aria-describedby]="section.id + '-hint'"
+              ></textarea>
+            </mat-form-field>
+            <p [id]="section.id + '-hint'" class="section-hint">
+              {{ section.help }}
+              <span class="counter">
+                {{
+                  "ideaCreator.application.remaining"
+                    | translate: { count: remaining(section) }
+                }}
+              </span>
+            </p>
+          </mat-card-content>
+        </mat-card>
+      }
+    </form>
+
+    <div class="actions">
+      <button mat-stroked-button type="button" (click)="exportMarkdown()">
+        <mat-icon aria-hidden="true">download</mat-icon>
+        {{ "ideaCreator.application.export" | translate }}
+      </button>
+      @if (!submitted()) {
+        <button
+          mat-flat-button
+          type="button"
+          (click)="submit()"
+          [disabled]="submitting()"
+        >
+          <mat-icon aria-hidden="true">send</mat-icon>
+          {{ "ideaCreator.application.submit" | translate }}
+        </button>
+      }
+    </div>
+    <p class="hint">{{ "ideaCreator.application.submitHint" | translate }}</p>
+  </section>
+}

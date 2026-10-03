@@ -1,0 +1,136 @@
+<div class="assistant">
+  <h2 class="assistant-title">
+    <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+    {{ "ideaCreator.assistant.title" | translate }}
+  </h2>
+  <p class="assistant-intro">{{ "ideaCreator.assistant.intro" | translate }}</p>
+
+  <mat-tab-group [attr.aria-label]="'ideaCreator.assistant.title' | translate">
+    <mat-tab [label]="'ideaCreator.assistant.chatTab' | translate">
+      <div class="tab-body">
+        <ol class="chat" aria-live="polite">
+          @for (entry of entries(); track $index) {
+            <li [class.from-user]="entry.role === 'user'">
+              <span class="who">
+                {{
+                  (entry.role === "user"
+                    ? "ideaCreator.assistant.you"
+                    : "ideaCreator.assistant.name"
+                  ) | translate
+                }}
+              </span>
+              <p>{{ entry.content }}</p>
+            </li>
+          } @empty {
+            <li class="empty">
+              {{ "ideaCreator.assistant.chatEmpty" | translate }}
+            </li>
+          }
+        </ol>
+
+        @if (chatLoading()) {
+          <mat-progress-bar mode="indeterminate" />
+          <p class="status" role="status">
+            {{ "ideaCreator.assistant.thinking" | translate }}
+          </p>
+        }
+
+        @if (followUps().length > 0) {
+          <div class="follow-ups">
+            <p id="follow-ups-label">
+              {{ "ideaCreator.assistant.followUps" | translate }}
+            </p>
+            <mat-chip-set aria-labelledby="follow-ups-label">
+              @for (question of followUps(); track question) {
+                <mat-chip-option
+                  [selectable]="true"
+                  (click)="send(question)"
+                  (keydown.enter)="send(question)"
+                >
+                  {{ question }}
+                </mat-chip-option>
+              }
+            </mat-chip-set>
+          </div>
+        }
+
+        <form class="composer" (ngSubmit)="send()">
+          <mat-form-field appearance="outline">
+            <mat-label>{{
+              "ideaCreator.assistant.messageLabel" | translate
+            }}</mat-label>
+            <textarea
+              matInput
+              rows="3"
+              [formControl]="message"
+              [attr.aria-describedby]="'assistant-privacy'"
+            ></textarea>
+          </mat-form-field>
+          <button
+            mat-flat-button
+            type="submit"
+            [disabled]="chatLoading() || message.invalid"
+          >
+            <mat-icon aria-hidden="true">send</mat-icon>
+            {{ "ideaCreator.assistant.send" | translate }}
+          </button>
+        </form>
+        <p id="assistant-privacy" class="privacy">
+          {{ "ideaCreator.assistant.privacy" | translate }}
+        </p>
+      </div>
+    </mat-tab>
+
+    <mat-tab [label]="'ideaCreator.assistant.variantsTab' | translate">
+      <div class="tab-body">
+        <p>{{ "ideaCreator.assistant.variantsIntro" | translate }}</p>
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="loadVariants()"
+          [disabled]="variantsLoading() || !canSuggestVariants()"
+        >
+          <mat-icon aria-hidden="true">lightbulb</mat-icon>
+          {{ "ideaCreator.assistant.variantsAction" | translate }}
+        </button>
+        @if (!canSuggestVariants()) {
+          <p class="hint">
+            {{ "ideaCreator.assistant.variantsNeedsIdea" | translate }}
+          </p>
+        }
+        @if (variantsLoading()) {
+          <mat-progress-bar mode="indeterminate" />
+          <p class="status" role="status">
+            {{ "ideaCreator.assistant.thinking" | translate }}
+          </p>
+        }
+        <ul class="variants" aria-live="polite">
+          @for (variant of variants(); track variant.title) {
+            <li>
+              <h3>{{ variant.title }}</h3>
+              <p>{{ variant.description }}</p>
+              <p class="meta">
+                <strong
+                  >{{
+                    "ideaCreator.assistant.whyUnusual" | translate
+                  }}:</strong
+                >
+                {{ variant.whyUnusual }}
+              </p>
+              <p class="meta">
+                <strong
+                  >{{ "ideaCreator.assistant.firstTest" | translate }}:</strong
+                >
+                {{ variant.firstTest }}
+              </p>
+            </li>
+          }
+        </ul>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  @if (errorKey(); as key) {
+    <p class="error" role="alert">{{ key | translate }}</p>
+  }
+</div>

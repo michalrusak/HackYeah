@@ -181,6 +181,9 @@ export const OpenRouterCompletionSchema = z.object({
     .optional(),
 });
 
+export type Audience = z.infer<typeof AudienceSchema>;
+export type SocialArea = z.infer<typeof SocialAreaSchema>;
+export type Need = z.infer<typeof NeedSchema>;
 export type MatchmakingRequest = z.infer<typeof MatchmakingRequestSchema>;
 export type Interpretation = z.infer<typeof InterpretationSchema>;
 export type Innovation = z.infer<typeof InnovationSchema>;

@@ -1,0 +1,275 @@
+<section class="new-idea" aria-labelledby="new-idea-title">
+  <header class="intro">
+    <span class="eyebrow">{{ "ideaCreator.eyebrow" | translate }}</span>
+    <h1 id="new-idea-title">{{ "ideaCreator.new.title" | translate }}</h1>
+    <p>{{ "ideaCreator.new.subtitle" | translate }}</p>
+  </header>
+
+  <p class="visually-hidden" aria-live="polite">{{ stepAnnouncement() }}</p>
+
+  @if (errorKey(); as key) {
+    <p class="error" role="alert">{{ key | translate }}</p>
+  }
+
+  <mat-stepper
+    orientation="vertical"
+    linear="false"
+    (selectionChange)="onStepChange($event)"
+  >
+    <mat-step [label]="'ideaCreator.new.step1' | translate">
+      <h2 #stepHeading tabindex="-1" class="step-heading">
+        {{ "ideaCreator.new.step1" | translate }}
+      </h2>
+      <form [formGroup]="seedForm">
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>{{ "ideaCreator.new.seedLabel" | translate }}</mat-label>
+          <textarea
+            matInput
+            rows="3"
+            formControlName="seed"
+            [placeholder]="'ideaCreator.new.seedPlaceholder' | translate"
+            aria-describedby="seed-hint"
+          ></textarea>
+        </mat-form-field>
+        <p id="seed-hint" class="hint">
+          {{ "ideaCreator.new.seedHint" | translate }}
+        </p>
+        <button
+          mat-flat-button
+          type="button"
+          (click)="expandWithAssistant()"
+          [disabled]="expanding() || seedForm.controls.seed.value.length < 10"
+        >
+          <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+          {{ "ideaCreator.new.expand" | translate }}
+        </button>
+        @if (expanding()) {
+          <mat-progress-bar mode="indeterminate" />
+          <p class="status" role="status">
+            {{ "ideaCreator.new.expanding" | translate }}
+          </p>
+        }
+      </form>
+      <div class="step-actions">
+        <button mat-stroked-button matStepperNext type="button">
+          {{ "ideaCreator.new.next" | translate }}
+        </button>
+      </div>
+    </mat-step>
+
+    <mat-step [label]="'ideaCreator.new.step2' | translate">
+      <h2 #stepHeading tabindex="-1" class="step-heading">
+        {{ "ideaCreator.new.step2" | translate }}
+      </h2>
+      <form [formGroup]="coreForm" class="fields">
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>{{ "ideaCreator.fields.title" | translate }}</mat-label>
+          <input matInput formControlName="title" required />
+          @if (coreForm.controls.title.touched && coreForm.controls.title.invalid) {
+            <mat-error>{{
+              "ideaCreator.new.errors.title" | translate
+            }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>{{ "ideaCreator.fields.essence" | translate }}</mat-label>
+          <textarea
+            matInput
+            rows="3"
+            formControlName="essence"
+            required
+          ></textarea>
+          <mat-hint>{{ "ideaCreator.fields.essenceHint" | translate }}</mat-hint>
+          @if (
+            coreForm.controls.essence.touched && coreForm.controls.essence.invalid
+          ) {
+            <mat-error>{{
+              "ideaCreator.new.errors.essence" | translate
+            }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>{{ "ideaCreator.fields.problem" | translate }}</mat-label>
+          <textarea
+            matInput
+            rows="4"
+            formControlName="problem"
+            required
+          ></textarea>
+          <mat-hint>{{ "ideaCreator.fields.problemHint" | translate }}</mat-hint>
+          @if (
+            coreForm.controls.problem.touched && coreForm.controls.problem.invalid
+          ) {
+            <mat-error>{{
+              "ideaCreator.new.errors.problem" | translate
+            }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>{{
+            "ideaCreator.fields.targetAudience" | translate
+          }}</mat-label>
+          <textarea
+            matInput
+            rows="2"
+            formControlName="targetAudience"
+            required
+          ></textarea>
+          @if (
+            coreForm.controls.targetAudience.touched &&
+            coreForm.controls.targetAudience.invalid
+          ) {
+            <mat-error>{{
+              "ideaCreator.new.errors.targetAudience" | translate
+            }}</mat-error>
+          }
+        </mat-form-field>
+      </form>
+      <div class="step-actions">
+        <button mat-button matStepperPrevious type="button">
+          {{ "ideaCreator.new.back" | translate }}
+        </button>
+        <button mat-stroked-button matStepperNext type="button">
+          {{ "ideaCreator.new.next" | translate }}
+        </button>
+      </div>
+    </mat-step>
+
+    <mat-step [label]="'ideaCreator.new.step3' | translate">
+      <h2 #stepHeading tabindex="-1" class="step-heading">
+        {{ "ideaCreator.new.step3" | translate }}
+      </h2>
+      <form [formGroup]="contextForm" class="fields">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "ideaCreator.fields.stage" | translate }}</mat-label>
+          <mat-select formControlName="stage">
+            @for (stage of stages; track stage) {
+              <mat-option [value]="stage">{{
+                "ideaCreator.stages." + stage | translate
+              }}</mat-option>
+            }
+          </mat-select>
+          <mat-hint>{{ "ideaCreator.fields.stageHint" | translate }}</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "ideaCreator.fields.kind" | translate }}</mat-label>
+          <mat-select formControlName="kind">
+            @for (kind of kinds; track kind) {
+              <mat-option [value]="kind">{{
+                "ideaCreator.kinds." + kind | translate
+              }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "ideaCreator.fields.region" | translate }}</mat-label>
+          <input matInput formControlName="region" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ "ideaCreator.fields.contact" | translate }}</mat-label>
+          <input matInput type="email" formControlName="contactEmail" />
+          <mat-hint>{{ "ideaCreator.fields.contactHint" | translate }}</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>{{
+            "ideaCreator.fields.description" | translate
+          }}</mat-label>
+          <textarea matInput rows="4" formControlName="description"></textarea>
+        </mat-form-field>
+      </form>
+      <div class="step-actions">
+        <button mat-button matStepperPrevious type="button">
+          {{ "ideaCreator.new.back" | translate }}
+        </button>
+        <button mat-stroked-button matStepperNext type="button">
+          {{ "ideaCreator.new.next" | translate }}
+        </button>
+      </div>
+    </mat-step>
+
+    <mat-step [label]="'ideaCreator.new.step4' | translate">
+      <h2 #stepHeading tabindex="-1" class="step-heading">
+        {{ "ideaCreator.new.step4" | translate }}
+      </h2>
+      <p class="hint">{{ "ideaCreator.new.tagsHint" | translate }}</p>
+      <form [formGroup]="tagsForm" class="fields">
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>{{ "ideaCreator.fields.audiences" | translate }}</mat-label>
+          <mat-select formControlName="audiences" multiple>
+            @for (audience of audienceOptions; track audience) {
+              <mat-option [value]="audience">{{ audience }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>{{ "ideaCreator.fields.areas" | translate }}</mat-label>
+          <mat-select formControlName="areas" multiple>
+            @for (area of areaOptions; track area) {
+              <mat-option [value]="area">{{ area }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>{{ "ideaCreator.fields.needs" | translate }}</mat-label>
+          <mat-select formControlName="needs" multiple>
+            @for (need of needOptions; track need) {
+              <mat-option [value]="need">{{ need }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </form>
+
+      @if (nextSteps().length > 0) {
+        <mat-card class="next-steps">
+          <mat-card-content>
+            <h3>{{ "ideaCreator.new.nextSteps" | translate }}</h3>
+            <ul>
+              @for (step of nextSteps(); track step) {
+                <li>{{ step }}</li>
+              }
+            </ul>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      @if (saving()) {
+        <mat-progress-bar mode="indeterminate" />
+        <p class="status" role="status">
+          {{ "ideaCreator.new.saving" | translate }}
+        </p>
+      }
+
+      <div class="step-actions">
+        <button mat-button matStepperPrevious type="button">
+          {{ "ideaCreator.new.back" | translate }}
+        </button>
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="save(false)"
+          [disabled]="saving()"
+        >
+          {{ "ideaCreator.new.saveDraft" | translate }}
+        </button>
+        <button
+          mat-flat-button
+          type="button"
+          (click)="save(true)"
+          [disabled]="saving()"
+        >
+          {{ "ideaCreator.new.publish" | translate }}
+        </button>
+      </div>
+      <p class="hint">{{ "ideaCreator.new.tokenNotice" | translate }}</p>
+    </mat-step>
+  </mat-stepper>
+</section>

@@ -1,0 +1,91 @@
+<section class="canvas-page" aria-labelledby="canvas-title">
+  <header class="intro">
+    <a mat-button [routerLink]="['/pomysly', ideaId()]">
+      <mat-icon aria-hidden="true">arrow_back</mat-icon>
+      {{ "ideaCreator.canvas.back" | translate }}
+    </a>
+    <h1 id="canvas-title">{{ title() }}</h1>
+    <p>{{ description() }}</p>
+  </header>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+    <p role="status">{{ "ideaCreator.canvas.loading" | translate }}</p>
+  }
+
+  @if (errorKey(); as key) {
+    <p class="error" role="alert">{{ key | translate }}</p>
+  }
+
+  @if (!loading() && !isOwner()) {
+    <p class="hint">{{ "ideaCreator.canvas.readOnly" | translate }}</p>
+  }
+
+  @if (isOwner()) {
+    <div class="toolbar">
+      <button
+        mat-flat-button
+        type="button"
+        (click)="suggest()"
+        [disabled]="suggesting()"
+      >
+        <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+        {{ "ideaCreator.canvas.suggest" | translate }}
+      </button>
+      <p class="save-state" role="status">
+        @switch (saveState()) {
+          @case ("saving") {
+            {{ "ideaCreator.canvas.saving" | translate }}
+          }
+          @case ("saved") {
+            {{ "ideaCreator.canvas.saved" | translate }}
+          }
+          @case ("error") {
+            {{ "ideaCreator.canvas.saveFailed" | translate }}
+          }
+        }
+      </p>
+    </div>
+    <p class="hint">{{ "ideaCreator.canvas.suggestHint" | translate }}</p>
+  }
+
+  @if (suggesting()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  <form [formGroup]="form" class="board">
+    @for (group of columns(); track group.column) {
+      <fieldset class="column">
+        <legend class="visually-hidden">
+          {{ "ideaCreator.canvas.column" | translate: { number: group.column } }}
+        </legend>
+        @for (field of group.fields; track field.id) {
+          <mat-card class="field-card">
+            <mat-card-content>
+              <h2>{{ field.title }}</h2>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ field.question }}</mat-label>
+                <textarea
+                  matInput
+                  rows="5"
+                  [formControlName]="field.id"
+                  [maxlength]="field.maxLength"
+                  [attr.aria-describedby]="field.id + '-hint'"
+                ></textarea>
+              </mat-form-field>
+              <p [id]="field.id + '-hint'" class="field-hint">
+                {{ field.hint }}
+                <span class="counter">
+                  {{
+                    "ideaCreator.canvas.remaining"
+                      | translate: { count: remaining(field) }
+                  }}
+                </span>
+              </p>
+            </mat-card-content>
+          </mat-card>
+        }
+      </fieldset>
+    }
+  </form>
+</section>
