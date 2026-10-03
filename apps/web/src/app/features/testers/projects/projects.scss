@@ -1,30 +1,142 @@
-:host { display: block; }
-.heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 24px 0; }
-.heading h2, .heading p { margin: 0 0 8px; }
-.dialog-heading { display: flex; align-items: center; padding-right: 16px; gap: 8px; }
-.dialog-heading h2 { min-width: 0; flex: 1; overflow-wrap: anywhere; }
-.dialog-heading > button { flex-shrink: 0; }
-p { line-height: 1.6; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 16px; }
-.card, .empty, .feedback { border: 1px solid var(--mat-sys-outline-variant, #a9b5b0); border-radius: 14px; padding: 20px; }
-.card { display: flex; flex-direction: column; align-items: start; gap: 12px; background: var(--tester-card); }
-.card h3, .card p { margin: 0; }
-.card button { margin-top: auto; }
-h3, p, .meta { overflow-wrap: anywhere; }
-.meta { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 0.875rem; line-height: 1.5; }
-.description { white-space: pre-wrap; }
-.actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
-button { min-height: 44px; }
-.error { color: #8b3024; background: #fff1ee; border: 1px solid #dc9b91; border-radius: 8px; padding: 12px; }
-.notice { padding: 12px; border-left: 4px solid #0b7160; background: var(--tester-soft); line-height: 1.6; }
-mat-form-field { width: 100%; margin-bottom: 20px; }
-mat-hint, mat-error { font-size: 0.875rem; line-height: 1.5; }
-textarea { resize: vertical; }
-.two-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
-legend { font-size: 1.125rem; font-weight: 600; margin-bottom: 16px; }
-mat-dialog-actions { padding: 16px 24px; gap: 8px; }
-.feedback { margin: 16px 0; }
-.feedback h4 { margin: 0 0 8px; }
-.section { margin: 28px 0; }
-@media (max-width: 600px) { .two-columns { grid-template-columns: 1fr; gap: 0; } }
+:host {
+  display: block;
+}
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 24px 0;
+}
+.heading h2,
+.heading p {
+  margin: 0 0 8px;
+}
+.dialog-heading {
+  display: flex;
+  align-items: center;
+  padding-right: 16px;
+  gap: 8px;
+}
+.dialog-heading h2 {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.dialog-heading > button {
+  flex-shrink: 0;
+}
+p {
+  line-height: 1.6;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+}
+.card,
+.empty,
+.feedback {
+  border: 1px solid var(--mat-sys-outline-variant, #a9b5b0);
+  border-radius: 14px;
+  padding: 20px;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 12px;
+  background: var(--tester-card);
+}
+.card h3,
+.card p {
+  margin: 0;
+}
+.card button {
+  margin-top: auto;
+}
+h3,
+p,
+.meta {
+  overflow-wrap: anywhere;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.description {
+  white-space: pre-wrap;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+button {
+  min-height: 44px;
+}
+.error {
+  color: #8b3024;
+  background: #fff1ee;
+  border: 1px solid #dc9b91;
+  border-radius: 8px;
+  padding: 12px;
+}
+.notice {
+  padding: 12px;
+  border-left: 4px solid #0b7160;
+  background: var(--tester-soft);
+  line-height: 1.6;
+}
+mat-form-field {
+  width: 100%;
+  margin-bottom: 20px;
+}
+mat-hint,
+mat-error {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+textarea {
+  resize: vertical;
+}
+.two-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+legend {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+mat-dialog-actions {
+  padding: 16px 24px;
+  gap: 8px;
+}
+.feedback {
+  margin: 16px 0;
+}
+.feedback h4 {
+  margin: 0 0 8px;
+}
+.section {
+  margin: 28px 0;
+}
+@media (max-width: 600px) {
+  .two-columns {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

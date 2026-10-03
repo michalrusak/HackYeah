@@ -10,6 +10,7 @@ import { MatchmakingModule } from './modules/matchmaking/matchmaking.module.js';
 import { TestersModule } from './modules/testers/testers.module.js';
 import { IdeaCreatorModule } from './modules/idea-creator/idea-creator.module.js';
 import { ContactModule } from './modules/contact/contact.module.js';
+import { TesterProjectsModule } from './modules/tester-projects/tester-projects.module.js';
 
 const isTestEnv = process.env.NODE_ENV === 'test';
 
@@ -29,7 +30,7 @@ const isTestEnv = process.env.NODE_ENV === 'test';
     ...(isTestEnv ? [] : [PrismaModule, IdeaCreatorModule, ContactModule]),
     HealthModule,
     MatchmakingModule,
-    ...(isTestEnv ? [] : [TestersModule]),
+    ...(isTestEnv ? [] : [TestersModule, TesterProjectsModule]),
   ],
   controllers: [AppController],
   providers: [

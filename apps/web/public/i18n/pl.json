@@ -368,8 +368,8 @@
     "aiBadge": "DOPASOWANIE AI",
     "queryLabel": "Osoby, umiejętności lub zasoby",
     "queryPlaceholder": "Szukam osoby z mocnym komputerem, która przetestuje aplikację do projektowania przestrzeni dostępnych dla wszystkich…",
-    "queryError": "Opisz wymagania w 8–2000 znakach.",
-    "examplesLabel": "Inspiracja na początek:",
+    "queryError": "Wpisz słowo lub opis zawierający od 2 do 2000 znaków.",
+    "examplesLabel": "Wypróbuj słowo:",
     "examples": {
       "accessibility": {
         "label": "Dostępność",
@@ -384,7 +384,6 @@
         "query": "Szukamy osób z doświadczeniem w wolontariacie i organizowaniu lokalnych spotkań, które pomogą przetestować pomysł na integrację sąsiedzką i działania międzypokoleniowe."
       }
     },
-    "searchPrivacy": "Zapytanie i publiczne profile analizuje AI przez OpenRouter. Nie wpisuj cudzych danych ani informacji poufnych. Poszukiwania zapisujemy na koncie, a przed zalogowaniem — dla tej przeglądarki.",
     "search": "Znajdź testerów",
     "searching": "Szukamy dopasowań…",
     "searchingDetail": "Analizujemy wymagania i porównujemy je z profilami społeczności. To może potrwać do 30 sekund.",
@@ -417,8 +416,8 @@
     "catalogDescription": "Doświadczenia, umiejętności i zasoby, które mogą wesprzeć Twoją inicjatywę. Wyszukaj wymaganie, aby zobaczyć dopasowania i wybrać osoby do testu.",
     "emptyCatalogTitle": "Zacznijmy od Ciebie",
     "emptyCatalogDescription": "Społeczność czeka na pierwszych testerów. Dodaj swój profil i opowiedz, w czym możesz pomóc.",
-    "demo": "Demo",
-    "demoNote": "Profile oznaczone „Demo” są fikcyjnymi przykładami zapisanymi w bazie danych.",
+    "demo": "Profil przykładowy",
+    "demoNote": "Profile przykładowe przedstawiają fikcyjne osoby i zasoby. Służą do poznania możliwości narzędzia.",
     "footer": "Tworzymy innowacje razem.",
     "availability": {
       "remote": "Współpraca zdalna",
@@ -514,5 +513,115 @@
       "rateLimit": "Zbyt wiele prób. Odczekaj chwilę i spróbuj ponownie.",
       "generic": "Nie udało się połączyć z usługą. Sprawdź połączenie i spróbuj ponownie."
     }
+  },
+  "projects": {
+    "tabs": {
+      "search": "Szukaj testerów",
+      "announcements": "Ogłoszenia do testów",
+      "activity": "Moja aktywność"
+    },
+    "create": "Dodaj ogłoszenie",
+    "createTitle": "Nowe ogłoszenie do testów",
+    "editTitle": "Edytuj ogłoszenie",
+    "save": "Zapisz zmiany",
+    "publish": "Opublikuj ogłoszenie",
+    "saving": "Zapisujemy…",
+    "loading": "Wczytujemy ogłoszenia…",
+    "details": "Zobacz szczegóły",
+    "manage": "Zarządzaj ogłoszeniem",
+    "editAndClose": "Edytuj lub zamknij nabór",
+    "catalogTitle": "Pomóż przetestować nowy pomysł",
+    "catalogIntro": "Przeglądaj pomysły, prototypy i gotowe rozwiązania. Zgłoś udział w teście albo opublikuj własne ogłoszenie.",
+    "activityTitle": "Twoje ogłoszenia i testy",
+    "activityIntro": "W jednym miejscu sprawdzisz swoje ogłoszenia, zgłoszenia do testów i dodane opinie.",
+    "emptyCatalog": "Nie ma jeszcze ogłoszeń. Dodaj pierwsze i opisz, co chcesz przetestować.",
+    "loadMore": "Pokaż kolejne ogłoszenia",
+    "loadMoreProfiles": "Pokaż kolejne profile",
+    "loginActivity": "Zaloguj się, aby zobaczyć swoją aktywność na każdym urządzeniu.",
+    "authored": "Moje ogłoszenia",
+    "joined": "Moje zgłoszenia do testów",
+    "myOpinions": "Moje opinie",
+    "emptyAuthored": "Nie masz jeszcze własnych ogłoszeń.",
+    "emptyJoined": "Nie zgłoszono jeszcze udziału w żadnym teście.",
+    "emptyOpinions": "Nie dodano jeszcze opinii. Możesz ocenić test po zaakceptowaniu Twojego zgłoszenia.",
+    "organizer": "Organizator: {{name}}",
+    "applicationCount": "Liczba zgłoszeń: {{count}}",
+    "ratingValue": "Ocena: {{rating}} z 5",
+    "averageRating": "Średnia ocena: {{rating}} z 5 · Liczba opinii: {{count}}",
+    "rateOrDetails": "Szczegóły i moja opinia",
+    "editOpinion": "Edytuj opinię",
+    "formIntro": "Ogłoszenie będzie publiczne. Opisz cel testu, potrzebne osoby i sposób współpracy. Nie podawaj danych kontaktowych ani poufnych informacji.",
+    "loginDraft": "Możesz teraz wypełnić formularz. Przed publikacją poprosimy Cię o zalogowanie lub utworzenie konta. Wpisane dane pozostaną w formularzu.",
+    "organizerHint": "Publiczna nazwa osoby lub organizacji. Nie musi być taka sama jak login.",
+    "descriptionHint": "Napisz, co będzie testowane, jak wygląda udział i czego oczekujesz. Od 20 do 4000 znaków.",
+    "fields": {
+      "organizerName": "Nazwa organizatora",
+      "title": "Tytuł ogłoszenia",
+      "description": "Co chcesz przetestować?",
+      "requirements": "Kogo lub czego potrzebujesz?",
+      "location": "Miejscowość lub miejsce testu (opcjonalnie)",
+      "mode": "Forma współpracy",
+      "stage": "Etap rozwoju",
+      "status": "Nabór do testu"
+    },
+    "stages": {
+      "idea": "Pomysł",
+      "prototype": "Prototyp",
+      "solution": "Gotowe rozwiązanie"
+    },
+    "status": {
+      "open": "Nabór otwarty",
+      "closed": "Nabór zamknięty"
+    },
+    "validation": "Sprawdź oznaczone pola i popraw wskazane informacje.",
+    "errors": {
+      "organizerName": "Wpisz od 2 do 100 znaków.",
+      "title": "Wpisz tytuł zawierający 5–160 znaków.",
+      "description": "Opisz test w 20–4000 znakach.",
+      "requirements": "Opisz wymagania w 5–2000 znakach.",
+      "location": "Użyj maksymalnie 160 znaków."
+    },
+    "noMatchHint": "Nie ma odpowiedniej osoby? Dodaj ogłoszenie, aby testerzy mogli zgłosić się sami. Twoje wymagania przeniesiemy do formularza.",
+    "applicants": "Osoby zgłoszone do testu",
+    "applicantsHint": "Sprawdź profil i wiadomość, a następnie przyjmij lub odrzuć zgłoszenie. Dane zgłoszeń widzi organizator.",
+    "noApplications": "Jeszcze nikt nie zgłosił udziału.",
+    "accept": "Przyjmij do testu",
+    "decline": "Odrzuć zgłoszenie",
+    "decisionSaved": "Zapisano decyzję dotyczącą zgłoszenia.",
+    "applicationStatus": {
+      "pending": "Zgłoszenie oczekuje na decyzję",
+      "accepted": "Przyjęto do testu",
+      "declined": "Zgłoszenie odrzucone",
+      "withdrawn": "Zgłoszenie wycofane"
+    },
+    "withdraw": "Wycofaj zgłoszenie",
+    "withdrawn": "Zgłoszenie zostało wycofane.",
+    "applyTitle": "Chcesz wziąć udział?",
+    "applyHint": "Organizator zobaczy Twój profil testera. Jeśli jeszcze go nie masz, uzupełnisz go przed wysłaniem zgłoszenia.",
+    "message": "Wiadomość do organizatora (opcjonalnie)",
+    "messageError": "Użyj maksymalnie 1000 znaków.",
+    "apply": "Zgłoś udział",
+    "loginToApply": "Zaloguj się i zgłoś udział",
+    "applied": "Zgłoszenie wysłane. Jego status sprawdzisz w zakładce „Moja aktywność”.",
+    "feedbackTitle": "Oceń test i podziel się doświadczeniem",
+    "feedbackHint": "Opinia będzie publiczna pod nazwą z Twojego profilu. Możesz ją później edytować. Dodaj ją po wypróbowaniu rozwiązania.",
+    "rating": "Twoja ocena (1–5)",
+    "ratings": {
+      "1": "1 — bardzo słabo",
+      "2": "2 — słabo",
+      "3": "3 — przeciętnie",
+      "4": "4 — dobrze",
+      "5": "5 — bardzo dobrze"
+    },
+    "review": "Twoja opinia",
+    "improvement": "Pomysł na usprawnienie (opcjonalnie)",
+    "improvementTitle": "Pomysł na usprawnienie",
+    "saveFeedback": "Zapisz opinię",
+    "feedbackSaved": "Opinia została zapisana. Możesz wrócić do jej edycji.",
+    "feedbackError": "Wybierz ocenę od 1 do 5 i napisz opinię zawierającą 10–3000 znaków.",
+    "reviewError": "Napisz opinię w 10–3000 znakach.",
+    "improvementError": "Użyj maksymalnie 2000 znaków.",
+    "opinions": "Opinie uczestników",
+    "noOpinions": "Nie ma jeszcze opinii o tym teście."
   }
 }

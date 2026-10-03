@@ -68,13 +68,11 @@ describe('TestersComponent', () => {
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(TestersComponent);
     root = fixture.nativeElement;
-    http
-      .expectOne('/api/auth/me')
-      .flush(
-        createApiSuccess({
-          user: { id: '12345678-1234-4123-8123-123456789010', login: 'tester' },
-        }),
-      );
+    http.expectOne('/api/auth/me').flush(
+      createApiSuccess({
+        user: { id: '12345678-1234-4123-8123-123456789010', login: 'tester' },
+      }),
+    );
     http
       .expectOne('/api/testers/profiles')
       .flush(createApiSuccess({ profiles: [profile], total: 1, limit: 100 }));
@@ -105,7 +103,7 @@ describe('TestersComponent', () => {
   });
 
   it('validates requirements before calling AI', () => {
-    for (const value of ['', '       ', 'krótki', 'x'.repeat(2001)]) {
+    for (const value of ['', '       ', 'x', 'x'.repeat(2001)]) {
       fixture.componentInstance.query.setValue(value);
       fixture.componentInstance.search();
       expect(fixture.componentInstance.query.invalid).toBeTrue();

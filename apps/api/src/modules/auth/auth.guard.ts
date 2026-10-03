@@ -35,7 +35,8 @@ export class TesterAuthGuard implements CanActivate {
       request.testerAccountId = account.id;
       return true;
     }
-    if (this.reflector.get<boolean>(OPTIONAL_ACCOUNT, context.getHandler())) return true;
+    if (this.reflector.get<boolean>(OPTIONAL_ACCOUNT, context.getHandler()))
+      return true;
     const requiresAccount = this.reflector.getAllAndOverride<boolean>(
       REQUIRE_ACCOUNT,
       [context.getHandler(), context.getClass()],

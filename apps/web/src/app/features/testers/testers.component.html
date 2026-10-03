@@ -71,282 +71,323 @@
     <p class="error-state" role="alert">{{ error | translate }}</p>
   }
 
-  <mat-tab-group [selectedIndex]="selectedTab()" (selectedIndexChange)="selectedTab.set($event)" [preserveContent]="true" animationDuration="0ms"><mat-tab [label]="'projects.tabs.search' | translate">
-  <section class="search-panel" aria-labelledby="search-title">
-    <div class="panel-heading">
-      <span class="search-icon"
-        ><mat-icon aria-hidden="true">person_search</mat-icon></span
-      >
-      <div>
-        <h2 id="search-title">{{ "testers.searchTitle" | translate }}</h2>
-        <p>{{ "testers.searchDescription" | translate }}</p>
-      </div>
-      <span class="ai-badge"
-        ><mat-icon aria-hidden="true">auto_awesome</mat-icon
-        >{{ "testers.aiBadge" | translate }}</span
-      >
-    </div>
-    <form [formGroup]="form" (ngSubmit)="search()">
-      <mat-form-field
-        appearance="outline"
-        subscriptSizing="dynamic"
-        class="query-field"
-        ><mat-label>{{ "testers.queryLabel" | translate }}</mat-label
-        ><textarea
-          matInput
-          formControlName="query"
-          rows="3"
-          maxlength="2000"
-          required
-
-          [readonly]="busy() || !!assigning()"
-          [placeholder]="'testers.queryPlaceholder' | translate"
-        ></textarea
-        ><mat-hint align="end">{{ query.value.length }} / 2000</mat-hint
-        ><mat-error>{{
-          "testers.queryError" | translate
-        }}</mat-error></mat-form-field
-      >
-      <div class="examples">
-        <span>{{ "testers.examplesLabel" | translate }}</span>
-        @for (example of examples; track example.key) {
-          <button
-            type="button"
-            [disabled]="busy() || !!assigning()"
-            (click)="useExample(example.key)"
+  <mat-tab-group
+    [selectedIndex]="selectedTab()"
+    (selectedIndexChange)="selectedTab.set($event)"
+    [preserveContent]="true"
+    animationDuration="0ms"
+    ><mat-tab [label]="'projects.tabs.search' | translate">
+      <section class="search-panel" aria-labelledby="search-title">
+        <div class="panel-heading">
+          <span class="search-icon"
+            ><mat-icon aria-hidden="true">person_search</mat-icon></span
           >
-            <mat-icon aria-hidden="true">{{ example.icon }}</mat-icon
-            >{{ "testers.examples." + example.key + ".label" | translate }}
-          </button>
-        }
-      </div>
-      <div class="search-footer">
-        <button
-          mat-flat-button
-          type="submit"
-          [disabled]="
-            busy() || initialLoading() || !!initialError() || !!assigning()
-          "
-        >
-          <mat-icon>{{
-            searching() ? "hourglass_top" : "auto_awesome"
-          }}</mat-icon
-          >{{
-            (searching() ? "testers.searching" : "testers.search") | translate
-          }}
-        </button>
-      </div>
-    </form>
-  </section>
-
-  @if (initialLoading() || busy()) {
-    <div class="loading-state" role="status">
-      <mat-progress-bar
-        mode="indeterminate"
-        [attr.aria-label]="'testers.loading' | translate"
-      />
-      <p>
-        {{
-          (searching() ? "testers.searchingDetail" : "testers.loading")
-            | translate
-        }}
-      </p>
-    </div>
-  }
-  @if (initialError(); as error) {
-    <div class="error-state" role="alert">
-      <mat-icon aria-hidden="true">error_outline</mat-icon>
-      <p>{{ error | translate }}</p>
-      <button mat-button type="button" (click)="load()">
-        {{ "testers.retry" | translate }}
-      </button>
-    </div>
-  }
-  @if (searchError(); as error) {
-    <div class="error-state" role="alert">
-      <mat-icon aria-hidden="true">error_outline</mat-icon>
-      <p>{{ error | translate }}</p>
-      <button mat-button type="button" (click)="search()">
-        {{ "testers.retry" | translate }}
-      </button>
-    </div>
-  }
-
-  @if (history().length) {
-    <details class="history-panel">
-      <summary>
-        <mat-icon aria-hidden="true">history</mat-icon
-        ><span>{{ "testers.history.title" | translate }}</span
-        ><span class="history-count">{{ history().length }}</span
-        ><mat-icon class="expand-icon" aria-hidden="true">expand_more</mat-icon>
-      </summary>
-      <div class="history-list">
-        @for (item of history(); track item.id) {
-          <button
-            type="button"
-            [disabled]="busy() || !!assigning()"
-            [class.current]="result()?.id === item.id"
-            (click)="openSearch(item.id)"
+          <div>
+            <h2 id="search-title">{{ "testers.searchTitle" | translate }}</h2>
+            <p>{{ "testers.searchDescription" | translate }}</p>
+          </div>
+          <span class="ai-badge"
+            ><mat-icon aria-hidden="true">auto_awesome</mat-icon
+            >{{ "testers.aiBadge" | translate }}</span
           >
-            <div>
-              <strong>{{ item.query }}</strong
-              ><span
-                >{{ item.createdAt | date: "dd.MM.yyyy, HH:mm" }} ·
-                {{
-                  "testers.history.details"
-                    | translate
-                      : {
-                          matches: item.matchCount,
-                          assigned: item.assignedCount,
-                        }
-                }}</span
+        </div>
+        <form [formGroup]="form" (ngSubmit)="search()">
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="query-field"
+            ><mat-label>{{ "testers.queryLabel" | translate }}</mat-label
+            ><textarea
+              matInput
+              formControlName="query"
+              rows="3"
+              maxlength="2000"
+              required
+              [readonly]="busy() || !!assigning()"
+              [placeholder]="'testers.queryPlaceholder' | translate"
+            ></textarea
+            ><mat-hint align="end">{{ query.value.length }} / 2000</mat-hint
+            ><mat-error>{{
+              "testers.queryError" | translate
+            }}</mat-error></mat-form-field
+          >
+          <div class="examples">
+            <span>{{ "testers.examplesLabel" | translate }}</span>
+            @for (example of examples; track example.key) {
+              <button
+                type="button"
+                [disabled]="busy() || !!assigning()"
+                (click)="useExample(example.key)"
               >
-            </div>
-            <mat-icon aria-hidden="true">arrow_forward</mat-icon>
-          </button>
-        }
-      </div>
-    </details>
-  }
+                <mat-icon aria-hidden="true">{{ example.icon }}</mat-icon
+                >{{ "testers.examples." + example.key + ".label" | translate }}
+              </button>
+            }
+          </div>
+          <div class="search-footer">
+            <button
+              mat-flat-button
+              type="submit"
+              [disabled]="
+                busy() || initialLoading() || !!initialError() || !!assigning()
+              "
+            >
+              <mat-icon>{{
+                searching() ? "hourglass_top" : "auto_awesome"
+              }}</mat-icon
+              >{{
+                (searching() ? "testers.searching" : "testers.search")
+                  | translate
+              }}
+            </button>
+          </div>
+        </form>
+      </section>
 
-  @if (result(); as searchResult) {
-    <section class="results" aria-labelledby="results-title">
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow">{{
-            "testers.resultsEyebrow" | translate
-          }}</span>
-          <h2 id="results-title">
-            {{ "testers.resultsTitle" | translate }}
-            <span class="count-badge">{{ searchResult.matches.length }}</span>
-          </h2>
-        </div>
-        <button
-          mat-button
-          type="button"
-          (click)="showCatalog()"
-          [disabled]="busy() || !!assigning()"
-        >
-          <mat-icon>arrow_back</mat-icon>{{ "testers.showCatalog" | translate }}
-        </button>
-      </div>
-      <div class="interpretation">
-        <mat-icon aria-hidden="true">auto_awesome</mat-icon>
-        <div>
-          <p>{{ searchResult.summary }}</p>
-          <span>{{
-            "testers.candidateCount"
-              | translate
-                : {
-                    count: searchResult.candidateCount,
-                    total: searchResult.totalProfiles,
-                  }
-          }}</span>
-        </div>
-      </div>
-      <div class="results-meta">
-        <p>{{ "testers.scoreNote" | translate }}</p>
-        <span role="status"
-          ><mat-icon aria-hidden="true">group_add</mat-icon
-          >{{
-            "testers.assignedCount"
-              | translate: { count: searchResult.assignedProfileIds.length }
-          }}</span
-        >
-      </div>
-      @if (searchResult.staleMatchCount > 0) {
-        <p class="assignment-note stale-note" role="status">
-          <mat-icon aria-hidden="true">update</mat-icon
-          >{{ "testers.staleMatches" | translate }}
-        </p>
-      }
-      @if (assignmentError(); as error) {
-        <p class="error-state" role="alert">{{ error | translate }}</p>
-      }
-      <div class="profile-grid">
-        @for (match of searchResult.matches; track match.profile.id) {
-          <app-tester-card
-            [profile]="match.profile"
-            [match]="match"
-            [assigned]="
-              searchResult.assignedProfileIds.includes(match.profile.id)
-            "
-            [busy]="!!assigning() || busy()"
-            (toggleAssignment)="toggleAssignment(match.profile.id)"
+      @if (initialLoading() || busy()) {
+        <div class="loading-state" role="status">
+          <mat-progress-bar
+            mode="indeterminate"
+            [attr.aria-label]="'testers.loading' | translate"
           />
-        }
-      </div>
-      @if (!searchResult.matches.length) {
-        <div class="empty-state">
-          <mat-icon aria-hidden="true">person_search</mat-icon>
-          <h3>
-            {{
-              (searchResult.staleMatchCount > 0
-                ? "testers.staleResultsTitle"
-                : "testers.emptyResultsTitle"
-              ) | translate
-            }}
-          </h3>
           <p>
             {{
-              (searchResult.staleMatchCount > 0
-                ? "testers.staleResultsDescription"
-                : "testers.emptyResultsDescription"
-              ) | translate
+              (searching() ? "testers.searchingDetail" : "testers.loading")
+                | translate
             }}
           </p>
         </div>
       }
-      @if (!searchResult.matches.length) { <div class="empty-project-action"><p>{{ 'projects.noMatchHint' | translate }}</p><button mat-flat-button type="button" (click)="newProject()">{{ 'projects.create' | translate }}</button></div> }
-      <p class="assignment-note">
-        <mat-icon aria-hidden="true">info_outline</mat-icon
-        >{{ "testers.assignmentNote" | translate }}
-      </p>
-    </section>
-  } @else if (!initialLoading() && !initialError() && !busy()) {
-    <section class="catalog" aria-labelledby="catalog-title">
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow">{{
-            "testers.catalogEyebrow" | translate
-          }}</span>
-          <h2 id="catalog-title">{{ "testers.catalogTitle" | translate }}</h2>
-        </div>
-        <span class="catalog-count">{{
-          "testers.catalogCount"
-            | translate: { count: profiles().length, total: total() }
-        }}</span>
-      </div>
-      <p class="catalog-description">
-        {{ "testers.catalogDescription" | translate }}
-      </p>
-      <div class="profile-grid">
-        @for (profile of profiles(); track profile.id) {
-          <app-tester-card [profile]="profile" />
-        }
-      </div>
-      @if (catalogError(); as error) { <p class="error-state" role="alert">{{ error | translate }}</p> } @if (moreProfiles()) { <button mat-stroked-button type="button" [disabled]="catalogLoading()" (click)="loadMoreProfiles()">{{ (catalogLoading() ? 'testers.loading' : 'projects.loadMoreProfiles') | translate }}</button> }
-      @if (!profiles().length) {
-        <div class="empty-state">
-          <mat-icon aria-hidden="true">groups</mat-icon>
-          <h3>{{ "testers.emptyCatalogTitle" | translate }}</h3>
-          <p>{{ "testers.emptyCatalogDescription" | translate }}</p>
-          <button mat-flat-button type="button" (click)="editProfile()">
-            {{ "testers.addProfile" | translate }}
+      @if (initialError(); as error) {
+        <div class="error-state" role="alert">
+          <mat-icon aria-hidden="true">error_outline</mat-icon>
+          <p>{{ error | translate }}</p>
+          <button mat-button type="button" (click)="load()">
+            {{ "testers.retry" | translate }}
           </button>
         </div>
       }
-    </section>
-  }
-  <p class="visually-hidden" role="status">
-    @if (result(); as currentResult) {
-      {{
-        "testers.resultsAnnouncement"
-          | translate: { count: currentResult.matches.length }
-      }}
-    }
-  </p>
-  </mat-tab><mat-tab [label]="'projects.tabs.announcements' | translate"><ng-template matTabContent><app-tester-projects /></ng-template></mat-tab><mat-tab [label]="'projects.tabs.activity' | translate"><ng-template matTabContent><app-tester-projects mode="activity" /></ng-template></mat-tab></mat-tab-group>
+      @if (searchError(); as error) {
+        <div class="error-state" role="alert">
+          <mat-icon aria-hidden="true">error_outline</mat-icon>
+          <p>{{ error | translate }}</p>
+          <button mat-button type="button" (click)="search()">
+            {{ "testers.retry" | translate }}
+          </button>
+        </div>
+      }
+
+      @if (history().length) {
+        <details class="history-panel">
+          <summary>
+            <mat-icon aria-hidden="true">history</mat-icon
+            ><span>{{ "testers.history.title" | translate }}</span
+            ><span class="history-count">{{ history().length }}</span
+            ><mat-icon class="expand-icon" aria-hidden="true"
+              >expand_more</mat-icon
+            >
+          </summary>
+          <div class="history-list">
+            @for (item of history(); track item.id) {
+              <button
+                type="button"
+                [disabled]="busy() || !!assigning()"
+                [class.current]="result()?.id === item.id"
+                (click)="openSearch(item.id)"
+              >
+                <div>
+                  <strong>{{ item.query }}</strong
+                  ><span
+                    >{{ item.createdAt | date: "dd.MM.yyyy, HH:mm" }} ·
+                    {{
+                      "testers.history.details"
+                        | translate
+                          : {
+                              matches: item.matchCount,
+                              assigned: item.assignedCount,
+                            }
+                    }}</span
+                  >
+                </div>
+                <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+              </button>
+            }
+          </div>
+        </details>
+      }
+
+      @if (result(); as searchResult) {
+        <section class="results" aria-labelledby="results-title">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">{{
+                "testers.resultsEyebrow" | translate
+              }}</span>
+              <h2 id="results-title">
+                {{ "testers.resultsTitle" | translate }}
+                <span class="count-badge">{{
+                  searchResult.matches.length
+                }}</span>
+              </h2>
+            </div>
+            <button
+              mat-button
+              type="button"
+              (click)="showCatalog()"
+              [disabled]="busy() || !!assigning()"
+            >
+              <mat-icon>arrow_back</mat-icon
+              >{{ "testers.showCatalog" | translate }}
+            </button>
+          </div>
+          <div class="interpretation">
+            <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+            <div>
+              <p>{{ searchResult.summary }}</p>
+              <span>{{
+                "testers.candidateCount"
+                  | translate
+                    : {
+                        count: searchResult.candidateCount,
+                        total: searchResult.totalProfiles,
+                      }
+              }}</span>
+            </div>
+          </div>
+          <div class="results-meta">
+            <p>{{ "testers.scoreNote" | translate }}</p>
+            <span role="status"
+              ><mat-icon aria-hidden="true">group_add</mat-icon
+              >{{
+                "testers.assignedCount"
+                  | translate: { count: searchResult.assignedProfileIds.length }
+              }}</span
+            >
+          </div>
+          @if (searchResult.staleMatchCount > 0) {
+            <p class="assignment-note stale-note" role="status">
+              <mat-icon aria-hidden="true">update</mat-icon
+              >{{ "testers.staleMatches" | translate }}
+            </p>
+          }
+          @if (assignmentError(); as error) {
+            <p class="error-state" role="alert">{{ error | translate }}</p>
+          }
+          <div class="profile-grid">
+            @for (match of searchResult.matches; track match.profile.id) {
+              <app-tester-card
+                [profile]="match.profile"
+                [match]="match"
+                [assigned]="
+                  searchResult.assignedProfileIds.includes(match.profile.id)
+                "
+                [busy]="!!assigning() || busy()"
+                (toggleAssignment)="toggleAssignment(match.profile.id)"
+              />
+            }
+          </div>
+          @if (!searchResult.matches.length) {
+            <div class="empty-state">
+              <mat-icon aria-hidden="true">person_search</mat-icon>
+              <h3>
+                {{
+                  (searchResult.staleMatchCount > 0
+                    ? "testers.staleResultsTitle"
+                    : "testers.emptyResultsTitle"
+                  ) | translate
+                }}
+              </h3>
+              <p>
+                {{
+                  (searchResult.staleMatchCount > 0
+                    ? "testers.staleResultsDescription"
+                    : "testers.emptyResultsDescription"
+                  ) | translate
+                }}
+              </p>
+            </div>
+          }
+          @if (!searchResult.matches.length) {
+            <div class="empty-project-action">
+              <p>{{ "projects.noMatchHint" | translate }}</p>
+              <button mat-flat-button type="button" (click)="newProject()">
+                {{ "projects.create" | translate }}
+              </button>
+            </div>
+          }
+          <p class="assignment-note">
+            <mat-icon aria-hidden="true">info_outline</mat-icon
+            >{{ "testers.assignmentNote" | translate }}
+          </p>
+        </section>
+      } @else if (!initialLoading() && !initialError() && !busy()) {
+        <section class="catalog" aria-labelledby="catalog-title">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">{{
+                "testers.catalogEyebrow" | translate
+              }}</span>
+              <h2 id="catalog-title">
+                {{ "testers.catalogTitle" | translate }}
+              </h2>
+            </div>
+            <span class="catalog-count">{{
+              "testers.catalogCount"
+                | translate: { count: profiles().length, total: total() }
+            }}</span>
+          </div>
+          <p class="catalog-description">
+            {{ "testers.catalogDescription" | translate }}
+          </p>
+          <div class="profile-grid">
+            @for (profile of profiles(); track profile.id) {
+              <app-tester-card [profile]="profile" />
+            }
+          </div>
+          @if (catalogError(); as error) {
+            <p class="error-state" role="alert">{{ error | translate }}</p>
+          }
+          @if (moreProfiles()) {
+            <button
+              mat-stroked-button
+              type="button"
+              [disabled]="catalogLoading()"
+              (click)="loadMoreProfiles()"
+            >
+              {{
+                (catalogLoading()
+                  ? "testers.loading"
+                  : "projects.loadMoreProfiles"
+                ) | translate
+              }}
+            </button>
+          }
+          @if (!profiles().length) {
+            <div class="empty-state">
+              <mat-icon aria-hidden="true">groups</mat-icon>
+              <h3>{{ "testers.emptyCatalogTitle" | translate }}</h3>
+              <p>{{ "testers.emptyCatalogDescription" | translate }}</p>
+              <button mat-flat-button type="button" (click)="editProfile()">
+                {{ "testers.addProfile" | translate }}
+              </button>
+            </div>
+          }
+        </section>
+      }
+      <p class="visually-hidden" role="status">
+        @if (result(); as currentResult) {
+          {{
+            "testers.resultsAnnouncement"
+              | translate: { count: currentResult.matches.length }
+          }}
+        }
+      </p> </mat-tab
+    ><mat-tab [label]="'projects.tabs.announcements' | translate"
+      ><ng-template matTabContent><app-tester-projects /></ng-template></mat-tab
+    ><mat-tab [label]="'projects.tabs.activity' | translate"
+      ><ng-template matTabContent
+        ><app-tester-projects mode="activity" /></ng-template></mat-tab
+  ></mat-tab-group>
   <footer class="page-footer">
     <span
       ><mat-icon aria-hidden="true">diversity_1</mat-icon
