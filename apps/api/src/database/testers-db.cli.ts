@@ -20,7 +20,7 @@ async function main(): Promise<void> {
   try {
     const inserted = await new TesterSeedRepository(prisma).seed();
     console.log(
-      `Dodane fikcyjne profile demonstracyjne: ${inserted}. Istniejące profile zachowano.`,
+      `Dodane fikcyjne profile przykładowe: ${inserted}. Istniejące profile zachowano.`,
     );
   } finally {
     await prisma.onModuleDestroy();

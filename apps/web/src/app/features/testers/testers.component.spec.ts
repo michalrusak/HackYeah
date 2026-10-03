@@ -111,6 +111,52 @@ describe('TestersComponent', () => {
     http.expectNone('/api/testers/search');
   });
 
+  it('accepts a single short word for an AI search', () => {
+    fixture.componentInstance.query.setValue('GPU');
+    fixture.componentInstance.search();
+    http
+      .expectOne('/api/testers/search')
+      .flush(createApiSuccess({ ...search, query: 'GPU' }));
+    expect(fixture.componentInstance.result()?.query).toBe('GPU');
+  });
+
+  it('refreshes profile and history when a nested dialog switches the account', () => {
+    TestBed.inject(AuthService)
+      .login('another-user', 'a secure password')
+      .subscribe();
+    http
+      .expectOne('/api/auth/login')
+      .flush(
+        createApiSuccess({
+          user: {
+            id: '12345678-1234-4123-8123-123456789015',
+            login: 'another-user',
+          },
+        }),
+      );
+    fixture.detectChanges();
+    http
+      .expectOne('/api/testers/profile/me')
+      .flush(createApiSuccess({ profile }));
+    http
+      .expectOne('/api/testers/searches')
+      .flush(createApiSuccess({ searches: [] }));
+    expect(fixture.componentInstance.myProfile()?.id).toBe(profile.id);
+    expect(fixture.componentInstance.history()).toEqual([]);
+  });
+
+  it('advances the server offset even when a catalog page only repeats a shifted profile', () => {
+    fixture.componentInstance.catalogOffset.set(60);
+    fixture.componentInstance.moreProfiles.set(true);
+    fixture.componentInstance.loadMoreProfiles();
+    http
+      .expectOne('/api/testers/profiles?offset=60')
+      .flush(createApiSuccess({ profiles: [profile], total: 61, limit: 60 }));
+    expect(fixture.componentInstance.profiles().length).toBe(1);
+    expect(fixture.componentInstance.catalogOffset()).toBe(61);
+    expect(fixture.componentInstance.moreProfiles()).toBeFalse();
+  });
+
   it('uses the account cookie, prevents duplicate searches and renders real AI explanations', () => {
     submit();
     const request = http.expectOne('/api/testers/search');

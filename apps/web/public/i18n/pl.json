@@ -550,7 +550,7 @@
     "averageRating": "Średnia ocena: {{rating}} z 5 · Liczba opinii: {{count}}",
     "rateOrDetails": "Szczegóły i moja opinia",
     "editOpinion": "Edytuj opinię",
-    "formIntro": "Ogłoszenie będzie publiczne. Opisz cel testu, potrzebne osoby i sposób współpracy. Nie podawaj danych kontaktowych ani poufnych informacji.",
+    "formIntro": "Ogłoszenie będzie publiczne. Opisz cel testu, potrzebne osoby i sposób współpracy.",
     "loginDraft": "Możesz teraz wypełnić formularz. Przed publikacją poprosimy Cię o zalogowanie lub utworzenie konta. Wpisane dane pozostaną w formularzu.",
     "organizerHint": "Publiczna nazwa osoby lub organizacji. Nie musi być taka sama jak login.",
     "descriptionHint": "Napisz, co będzie testowane, jak wygląda udział i czego oczekujesz. Od 20 do 4000 znaków.",
@@ -622,6 +622,7 @@
     "reviewError": "Napisz opinię w 10–3000 znakach.",
     "improvementError": "Użyj maksymalnie 2000 znaków.",
     "opinions": "Opinie uczestników",
-    "noOpinions": "Nie ma jeszcze opinii o tym teście."
+    "noOpinions": "Nie ma jeszcze opinii o tym teście.",
+    "ratingError": "Wybierz ocenę od 1 do 5."
   }
 }

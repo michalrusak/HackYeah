@@ -4,8 +4,10 @@ import {
   DestroyRef,
   ElementRef,
   computed,
+  effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -30,7 +32,7 @@ import {
   type TesterSearchSummary,
   type TesterProject,
 } from '@repo/api-contracts';
-import { forkJoin, of, switchMap } from 'rxjs';
+import { forkJoin, of, Subscription, switchMap } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import {
   AuthDialogComponent,
@@ -107,8 +109,27 @@ export class TestersComponent {
     { key: 'computer', icon: 'computer' },
     { key: 'community', icon: 'groups' },
   ];
+  private observedAccountId: string | null | undefined;
+  private accountRequest: Subscription | null = null;
 
   constructor() {
+    this.service.profileChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((profile) => this.myProfile.set(profile));
+    effect(() => {
+      const accountId = this.auth.user()?.id ?? null;
+      if (this.observedAccountId === accountId) return;
+      const previous = this.observedAccountId;
+      this.observedAccountId = accountId;
+      if (previous === undefined) return;
+      untracked(() => {
+        if (previous || this.result()?.matches.length) this.result.set(null);
+        this.myProfile.set(null);
+        this.history.set([]);
+        this.refreshAccount(accountId);
+      });
+    });
+    this.destroyRef.onDestroy(() => this.accountRequest?.unsubscribe());
     this.query.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
@@ -136,6 +157,7 @@ export class TestersComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ profiles, own, history }) => {
+          this.observedAccountId = this.auth.user()?.id ?? null;
           this.profiles.set(profiles.profiles);
           this.total.set(profiles.total);
           this.catalogOffset.set(profiles.profiles.length);
@@ -329,6 +351,24 @@ export class TestersComponent {
 
   showCatalog(): void {
     this.query.reset();
+  }
+
+  private refreshAccount(accountId: string | null): void {
+    this.accountRequest?.unsubscribe();
+    this.accountRequest = forkJoin({
+      own: accountId ? this.service.myProfile() : of({ profile: null }),
+      history: this.service.searches(),
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ({ own, history }) => {
+          if ((this.auth.user()?.id ?? null) === accountId) {
+            this.myProfile.set(own.profile);
+            this.history.set(history.searches);
+          }
+        },
+        error: (error: unknown) => this.accountError.set(testerErrorKey(error)),
+      });
   }
 
   loadMoreProfiles(): void {

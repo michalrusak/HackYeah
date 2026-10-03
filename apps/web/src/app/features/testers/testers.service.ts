@@ -10,11 +10,12 @@ import {
   TesterSearchRequestSchema,
   type MyTesterProfileData,
   type TesterProfileInput,
+  type TesterProfile,
   type TesterProfilesData,
   type TesterSearchData,
   type TesterSearchesData,
 } from '@repo/api-contracts';
-import { Observable, timeout } from 'rxjs';
+import { Observable, Subject, tap, timeout } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -24,6 +25,8 @@ const OWNER_KEY_STORAGE = 'hackyeah.tester-owner-key';
 export class TestersService {
   private readonly api = inject(ApiService);
   private readonly auth = inject(AuthService);
+  private readonly profileUpdates = new Subject<TesterProfile | null>();
+  readonly profileChanges = this.profileUpdates.asObservable();
 
   profiles(offset = 0): Observable<TesterProfilesData> {
     return this.api.request(
@@ -49,7 +52,10 @@ export class TestersService {
         ...this.options(),
         body: TesterProfileInputSchema.parse(input),
       })
-      .pipe(timeout(20000));
+      .pipe(
+        timeout(20000),
+        tap(({ profile }) => this.profileUpdates.next(profile)),
+      );
   }
 
   search(query: string): Observable<TesterSearchData> {

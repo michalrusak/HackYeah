@@ -307,14 +307,12 @@
               </p>
             </div>
           }
-          @if (!searchResult.matches.length) {
-            <div class="empty-project-action">
-              <p>{{ "projects.noMatchHint" | translate }}</p>
-              <button mat-flat-button type="button" (click)="newProject()">
-                {{ "projects.create" | translate }}
-              </button>
-            </div>
-          }
+          <div class="empty-project-action">
+            <p>{{ "projects.noMatchHint" | translate }}</p>
+            <button mat-flat-button type="button" (click)="newProject()">
+              {{ "projects.create" | translate }}
+            </button>
+          </div>
           <p class="assignment-note">
             <mat-icon aria-hidden="true">info_outline</mat-icon
             >{{ "testers.assignmentNote" | translate }}

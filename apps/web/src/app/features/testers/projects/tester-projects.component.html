@@ -87,84 +87,86 @@
         {{ "auth.login" | translate }}
       </button>
     </div>
-  } @else if (activity(); as data) {
-    <section class="section">
-      <h3>{{ "projects.authored" | translate }}</h3>
-      <div class="grid">
-        @for (project of data.projects; track project.id) {
-          <article class="card">
-            <h4>{{ project.title }}</h4>
-            <p>{{ "projects.status." + project.status | translate }}</p>
-            <p>
-              {{
-                "projects.applicationCount"
-                  | translate: { count: project.applicationCount }
-              }}
-            </p>
-            <button mat-stroked-button type="button" (click)="open(project)">
-              {{ "projects.manage" | translate }}
-            </button>
-          </article>
-        } @empty {
-          <p class="empty">{{ "projects.emptyAuthored" | translate }}</p>
-        }
-      </div>
-    </section>
-    <section class="section">
-      <h3>{{ "projects.joined" | translate }}</h3>
-      <div class="grid">
-        @for (item of data.applications; track item.application.id) {
-          <article class="card">
-            <h4>{{ item.project.title }}</h4>
-            <p>
-              {{
-                "projects.applicationStatus." + item.application.status
-                  | translate
-              }}
-            </p>
-            <button
-              mat-stroked-button
-              type="button"
-              (click)="open(item.project)"
-            >
-              {{
-                (item.application.status === "accepted"
-                  ? "projects.rateOrDetails"
-                  : "projects.details"
-                ) | translate
-              }}
-            </button>
-          </article>
-        } @empty {
-          <p class="empty">{{ "projects.emptyJoined" | translate }}</p>
-        }
-      </div>
-    </section>
-    <section class="section">
-      <h3>{{ "projects.myOpinions" | translate }}</h3>
-      <div class="grid">
-        @for (item of data.feedback; track item.feedback.id) {
-          <article class="card">
-            <h4>{{ item.project.title }}</h4>
-            <p>
-              {{
-                "projects.ratingValue"
-                  | translate: { rating: item.feedback.rating }
-              }}
-            </p>
-            <p>{{ item.feedback.review }}</p>
-            <button
-              mat-stroked-button
-              type="button"
-              (click)="open(item.project)"
-            >
-              {{ "projects.editOpinion" | translate }}
-            </button>
-          </article>
-        } @empty {
-          <p class="empty">{{ "projects.emptyOpinions" | translate }}</p>
-        }
-      </div>
-    </section>
+  } @else {
+    @if (activity(); as data) {
+      <section class="section">
+        <h3>{{ "projects.authored" | translate }}</h3>
+        <div class="grid">
+          @for (project of data.projects; track project.id) {
+            <article class="card">
+              <h4>{{ project.title }}</h4>
+              <p>{{ "projects.status." + project.status | translate }}</p>
+              <p>
+                {{
+                  "projects.applicationCount"
+                    | translate: { count: project.applicationCount }
+                }}
+              </p>
+              <button mat-stroked-button type="button" (click)="open(project)">
+                {{ "projects.manage" | translate }}
+              </button>
+            </article>
+          } @empty {
+            <p class="empty">{{ "projects.emptyAuthored" | translate }}</p>
+          }
+        </div>
+      </section>
+      <section class="section">
+        <h3>{{ "projects.joined" | translate }}</h3>
+        <div class="grid">
+          @for (item of data.applications; track item.application.id) {
+            <article class="card">
+              <h4>{{ item.project.title }}</h4>
+              <p>
+                {{
+                  "projects.applicationStatus." + item.application.status
+                    | translate
+                }}
+              </p>
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="open(item.project)"
+              >
+                {{
+                  (item.application.status === "accepted"
+                    ? "projects.rateOrDetails"
+                    : "projects.details"
+                  ) | translate
+                }}
+              </button>
+            </article>
+          } @empty {
+            <p class="empty">{{ "projects.emptyJoined" | translate }}</p>
+          }
+        </div>
+      </section>
+      <section class="section">
+        <h3>{{ "projects.myOpinions" | translate }}</h3>
+        <div class="grid">
+          @for (item of data.feedback; track item.feedback.id) {
+            <article class="card">
+              <h4>{{ item.project.title }}</h4>
+              <p>
+                {{
+                  "projects.ratingValue"
+                    | translate: { rating: item.feedback.rating }
+                }}
+              </p>
+              <p>{{ item.feedback.review }}</p>
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="open(item.project)"
+              >
+                {{ "projects.editOpinion" | translate }}
+              </button>
+            </article>
+          } @empty {
+            <p class="empty">{{ "projects.emptyOpinions" | translate }}</p>
+          }
+        </div>
+      </section>
+    }
   }
 </section>
