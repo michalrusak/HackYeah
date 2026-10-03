@@ -11,8 +11,20 @@ Komendy działają tak samo na **Windows (PowerShell)**, **macOS** i **Linux (ba
 | Narzędzie | Wersja |
 |-----------|--------|
 | Node.js | ≥ 22 |
-| pnpm | 11.x (zalecane: wersja z `package.json`) |
+| pnpm | 11.x (`corepack enable` → wersja z `package.json`) |
 | Docker | do bazy PostgreSQL |
+
+### `ERR_PNPM_IGNORED_BUILDS` (esbuild / workerd / prisma)
+
+pnpm 11 domyślnie blokuje skrypty `postinstall` zależności. **Zatwierdzone buildy są w repo** — plik `pnpm-workspace.yaml` → sekcja `allowBuilds`.
+
+Po `git pull`:
+
+```bash
+pnpm install
+```
+
+**Nie** uruchamiaj `pnpm approve-builds` — może nadpisać config placeholderami. Jeśli błąd wraca, sprawdź czy `pnpm-workspace.yaml` ma `allowBuilds` z wartościami `true`/`false`, a nie tekstem `set this to true or false`.
 
 ---
 
@@ -40,7 +52,7 @@ Po starcie:
 ```
 HackYeah/
 ├── apps/
-│   ├── api/          NestJS — REST API, TypeORM, PostgreSQL
+│   ├── api/          NestJS — REST API, Prisma, PostgreSQL
 │   └── web/          Angular 19 + Angular Material
 ├── packages/
 │   ├── eslint-config/
@@ -94,7 +106,7 @@ Plik `.env` jest w **rootcie** repozytoria. Turbo ładuje go automatycznie.
 | `PORT` | `3000` | NestJS (`apps/api/src/main.ts`) |
 | `WEB_PORT` | `4200` | Angular (`scripts/web-dev.mjs`) |
 | `API_URL` | `http://localhost:3000` | Frontend → backend |
-| `DATABASE_URL` | `postgresql://hackyeah:hackyeah@localhost:5432/hackyeah` | TypeORM |
+| `DATABASE_URL` | `postgresql://hackyeah:hackyeah@localhost:5432/hackyeah` | Prisma |
 | `POSTGRES_*` | `hackyeah` / `5432` | Docker Compose |
 
 ---
@@ -116,6 +128,16 @@ Domyślne dane logowania:
 
 API **wymaga działającej bazy** — przed `pnpm dev` lub `pnpm start` uruchom `pnpm docker:up`.
 
+Po pierwszym `pnpm docker:up` (lub po zmianie schema):
+
+```bash
+pnpm db:migrate      # dev — tworzy i stosuje migracje
+pnpm db:generate     # tylko regeneracja klienta
+pnpm db:studio       # Prisma Studio (GUI)
+```
+
+Schema: `apps/api/prisma/schema.prisma` · config: `apps/api/prisma7.config.ts` · `DATABASE_URL` z root `.env`.
+
 ---
 
 ## Frontend (Angular)
@@ -135,8 +157,9 @@ pnpm ng generate @angular/material:card moj-komponent
 
 ## Backend (NestJS)
 
-- **NestJS 12** + **TypeORM** + **PostgreSQL**
-- Konfiguracja bazy: `apps/api/src/config/database.config.ts`
+- **NestJS 12** + **Prisma 7** + **PostgreSQL**
+- Schema: `apps/api/prisma/schema.prisma`, config: `apps/api/prisma7.config.ts`
+- Migracje: `pnpm db:migrate`
 - Domyślny endpoint: `GET http://localhost:3000/` → `Hello World!`
 
 ---

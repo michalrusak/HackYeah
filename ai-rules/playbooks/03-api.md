@@ -1,7 +1,7 @@
 # 03 — API (NestJS)
 
 > Attach for backend: `apps/api/**`, `packages/api-contracts/**` (gdy istnieje).
-> **ORM w projekcie: TypeORM** (nie Prisma). Wzorce Repository/Service takie same.
+> **ORM w projekcie: Prisma 7.** Wzorce Repository/Service bez zmian.
 
 ## Architecture overview
 
@@ -11,12 +11,12 @@ HTTP Request
   → Pipe (Zod validation)
   → Controller / route.ts
   → Service (business logic)
-  → Repository (TypeORM / DB queries)
+  → Repository (Prisma / DB queries)
   → map to ApiResponse<T>
   → HTTP Response
 ```
 
-**Hard rule:** Zapytania DB tylko w Repository (TypeORM). Services nie importują `DataSource` / `Repository` bezpośrednio — tylko przez repo class.
+**Hard rule:** Zapytania DB tylko w Repository (Prisma). Services nie importują `PrismaService` bezpośrednio — tylko przez repo class.
 
 ## NestJS folder structure
 
