@@ -21,12 +21,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import {
   TesterSearchRequestSchema,
   type TesterProfile,
   type TesterSearchData,
   type TesterSearchSummary,
+  type TesterProject,
 } from '@repo/api-contracts';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
@@ -39,6 +41,8 @@ import { TesterCardComponent } from './tester-card.component';
 import { TesterProfileDialogComponent } from './tester-profile-dialog.component';
 import { testerErrorKey } from './testers-error';
 import { TestersService } from './testers.service';
+import { TesterProjectsComponent } from './projects/tester-projects.component';
+import { ProjectFormDialogComponent, type ProjectFormData } from './projects/project-form-dialog.component';
 
 @Component({
   selector: 'app-testers',
@@ -52,6 +56,8 @@ import { TestersService } from './testers.service';
     MatProgressBarModule,
     TranslatePipe,
     TesterCardComponent,
+    MatTabsModule,
+    TesterProjectsComponent,
   ],
   templateUrl: './testers.component.html',
   styleUrl: './testers.component.scss',
@@ -70,7 +76,7 @@ export class TestersComponent {
     nonNullable: true,
     validators: [
       Validators.required,
-      Validators.minLength(8),
+      Validators.minLength(2),
       Validators.maxLength(2000),
     ],
   });
@@ -78,6 +84,11 @@ export class TestersComponent {
   readonly profiles = signal<TesterProfile[]>([]);
   readonly myProfile = signal<TesterProfile | null>(null);
   readonly total = signal(0);
+  readonly catalogOffset = signal(0);
+  readonly moreProfiles = signal(false);
+  readonly catalogLoading = signal(false);
+  readonly catalogError = signal<string | null>(null);
+  readonly selectedTab = signal(0);
   readonly history = signal<TesterSearchSummary[]>([]);
   readonly result = signal<TesterSearchData | null>(null);
   readonly initialLoading = signal(true);
@@ -124,6 +135,8 @@ export class TestersComponent {
         next: ({ profiles, own, history }) => {
           this.profiles.set(profiles.profiles);
           this.total.set(profiles.total);
+          this.catalogOffset.set(profiles.profiles.length);
+          this.moreProfiles.set(profiles.profiles.length > 0 && profiles.profiles.length < profiles.total);
           this.myProfile.set(own.profile);
           this.history.set(history.searches);
           this.initialLoading.set(false);
@@ -310,6 +323,20 @@ export class TestersComponent {
 
   showCatalog(): void {
     this.query.reset();
+  }
+
+  loadMoreProfiles(): void {
+    if (this.catalogLoading()) return;
+    this.catalogLoading.set(true); this.catalogError.set(null);
+    const offset = this.catalogOffset();
+    this.service.profiles(offset).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (data) => { this.profiles.update((old) => [...old, ...data.profiles.filter((profile) => !old.some((entry) => entry.id === profile.id))]); this.catalogOffset.set(offset + data.profiles.length); this.moreProfiles.set(data.profiles.length > 0 && offset + data.profiles.length < data.total); this.total.set(data.total); this.catalogLoading.set(false); },
+      error: (error: unknown) => { this.catalogError.set(testerErrorKey(error)); this.catalogLoading.set(false); },
+    });
+  }
+
+  newProject(): void {
+    this.dialog.open<ProjectFormDialogComponent, ProjectFormData, TesterProject>(ProjectFormDialogComponent, { data: { requirements: this.query.value }, width: '720px', maxWidth: 'calc(100vw - 24px)', maxHeight: '94vh', autoFocus: 'dialog' }).afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((project) => { if (project) this.selectedTab.set(2); });
   }
 
   private acceptResult(result: TesterSearchData): void {

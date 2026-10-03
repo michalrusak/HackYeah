@@ -71,6 +71,7 @@
     <p class="error-state" role="alert">{{ error | translate }}</p>
   }
 
+  <mat-tab-group [selectedIndex]="selectedTab()" (selectedIndexChange)="selectedTab.set($event)" [preserveContent]="true" animationDuration="0ms"><mat-tab [label]="'projects.tabs.search' | translate">
   <section class="search-panel" aria-labelledby="search-title">
     <div class="panel-heading">
       <span class="search-icon"
@@ -97,7 +98,7 @@
           rows="3"
           maxlength="2000"
           required
-          aria-describedby="search-privacy"
+
           [readonly]="busy() || !!assigning()"
           [placeholder]="'testers.queryPlaceholder' | translate"
         ></textarea
@@ -120,10 +121,6 @@
         }
       </div>
       <div class="search-footer">
-        <p id="search-privacy">
-          <mat-icon aria-hidden="true">lock_outline</mat-icon
-          >{{ "testers.searchPrivacy" | translate }}
-        </p>
         <button
           mat-flat-button
           type="submit"
@@ -300,6 +297,7 @@
           </p>
         </div>
       }
+      @if (!searchResult.matches.length) { <div class="empty-project-action"><p>{{ 'projects.noMatchHint' | translate }}</p><button mat-flat-button type="button" (click)="newProject()">{{ 'projects.create' | translate }}</button></div> }
       <p class="assignment-note">
         <mat-icon aria-hidden="true">info_outline</mat-icon
         >{{ "testers.assignmentNote" | translate }}
@@ -327,6 +325,7 @@
           <app-tester-card [profile]="profile" />
         }
       </div>
+      @if (catalogError(); as error) { <p class="error-state" role="alert">{{ error | translate }}</p> } @if (moreProfiles()) { <button mat-stroked-button type="button" [disabled]="catalogLoading()" (click)="loadMoreProfiles()">{{ (catalogLoading() ? 'testers.loading' : 'projects.loadMoreProfiles') | translate }}</button> }
       @if (!profiles().length) {
         <div class="empty-state">
           <mat-icon aria-hidden="true">groups</mat-icon>
@@ -347,6 +346,7 @@
       }}
     }
   </p>
+  </mat-tab><mat-tab [label]="'projects.tabs.announcements' | translate"><ng-template matTabContent><app-tester-projects /></ng-template></mat-tab><mat-tab [label]="'projects.tabs.activity' | translate"><ng-template matTabContent><app-tester-projects mode="activity" /></ng-template></mat-tab></mat-tab-group>
   <footer class="page-footer">
     <span
       ><mat-icon aria-hidden="true">diversity_1</mat-icon

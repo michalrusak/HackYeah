@@ -115,7 +115,7 @@ export class TesterProjectsRepository extends TesterProjectsStore {
 
   withProjectLock<T>(id: string, work: (store: TesterProjectsStore) => Promise<T>): Promise<T> {
     return this.prisma.$transaction(async (transaction) => {
-      await transaction.$queryRaw(Prisma.sql`SELECT id FROM tester_projects WHERE id = ${id}::uuid FOR UPDATE`);
+      await transaction.$queryRaw(Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${id}, 0))::text`);
       return work(new TesterProjectsStore(transaction));
     });
   }

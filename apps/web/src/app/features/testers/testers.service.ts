@@ -25,10 +25,10 @@ export class TestersService {
   private readonly api = inject(ApiService);
   private readonly auth = inject(AuthService);
 
-  profiles(): Observable<TesterProfilesData> {
+  profiles(offset = 0): Observable<TesterProfilesData> {
     return this.api.request(
       'GET',
-      '/testers/profiles',
+      offset ? `/testers/profiles?offset=${offset}` : '/testers/profiles',
       TesterProfilesDataSchema,
       this.options(),
     );

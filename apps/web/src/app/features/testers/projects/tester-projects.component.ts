@@ -1,4 +1,4 @@
-import { Component, DestroyRef, effect, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, input, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,6 +10,7 @@ import { projectAccount } from './project-dialog-access';
 import { ProjectFormDialogComponent, type ProjectFormData } from './project-form-dialog.component';
 import { ProjectDetailDialogComponent } from './project-detail-dialog.component';
 import { TesterProjectsService } from './tester-projects.service';
+import { Subscription } from 'rxjs';
 
 @Component({ selector: 'app-tester-projects', imports: [MatButtonModule, TranslatePipe], templateUrl: './tester-projects.component.html', styleUrl: './projects.scss' })
 export class TesterProjectsComponent {
@@ -24,17 +25,20 @@ export class TesterProjectsComponent {
   readonly error = signal<string | null>(null);
   readonly page = signal(1);
   readonly total = signal(0);
+  readonly hasMore = signal(false);
+  private request: Subscription | null = null;
 
-  constructor() { effect(() => { this.mode(); this.auth.user(); this.load(); }); }
+  constructor() { effect(() => { this.mode(); this.auth.user(); this.activity.set(null); this.projects.set([]); untracked(() => this.load()); }); this.destroyRef.onDestroy(() => this.request?.unsubscribe()); }
   load(append = false): void {
+    this.request?.unsubscribe();
     this.error.set(null);
     if (this.mode() === 'activity' && !this.auth.user()) { this.activity.set(null); return; }
     this.loading.set(true);
     if (this.mode() === 'activity') {
-      this.service.activity().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({ next: (data) => { this.activity.set(data); this.loading.set(false); }, error: (error: unknown) => this.failed(error) });
+      this.request = this.service.activity().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({ next: (data) => { this.activity.set(data); this.loading.set(false); }, error: (error: unknown) => this.failed(error) });
     } else {
       const page = append ? this.page() + 1 : 1;
-      this.service.list(page).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({ next: (data) => { this.projects.update((old) => append ? [...old, ...data.projects.filter((project) => !old.some((entry) => entry.id === project.id))] : data.projects); this.page.set(page); this.total.set(data.total); this.loading.set(false); }, error: (error: unknown) => this.failed(error) });
+      this.request = this.service.list(page).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({ next: (data) => { this.projects.update((old) => append ? [...old, ...data.projects.filter((project) => !old.some((entry) => entry.id === project.id))] : data.projects); this.page.set(page); this.total.set(data.total); this.hasMore.set(data.projects.length > 0 && data.page * data.pageSize < data.total); this.loading.set(false); }, error: (error: unknown) => this.failed(error) });
     }
   }
   login(): void { projectAccount(this.dialog, this.auth).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(); }
