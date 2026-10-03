@@ -27,6 +27,7 @@
       "passThroughEnv": [
         "OPENROUTER_API_KEY",
         "OPENROUTER_MODEL",
+        "OPENROUTER_IMAGE_MODEL",
         "API_URL",
         "WEB_API_URL",
         "WEB_ORIGIN",
@@ -40,6 +41,7 @@
       "passThroughEnv": [
         "OPENROUTER_API_KEY",
         "OPENROUTER_MODEL",
+        "OPENROUTER_IMAGE_MODEL",
         "API_URL",
         "WEB_API_URL",
         "WEB_ORIGIN",

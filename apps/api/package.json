@@ -14,6 +14,7 @@
     "db:migrate": "prisma migrate dev --config prisma7.config.ts",
     "db:migrate:deploy": "prisma migrate deploy --config prisma7.config.ts",
     "db:studio": "prisma studio --config prisma7.config.ts",
+    "db:seed": "node prisma/seed.mjs",
     "deploy": "nest deploy",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "dev": "nest start --watch",

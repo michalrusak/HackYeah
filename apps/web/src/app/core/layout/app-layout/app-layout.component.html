@@ -18,12 +18,13 @@
         mobileNavOpen() ? "close" : "menu"
       }}</mat-icon>
     </button>
-    <a class="brand" routerLink="/matchmaking">
+    <a class="brand" routerLink="/matchmaking" (click)="onNavigationClick()">
       <span class="brand-icon"
         ><mat-icon aria-hidden="true">travel_explore</mat-icon></span
       >
       <span>{{ "matchmaking.productName" | translate }}</span>
     </a>
+
     <button
       class="theme-toggle"
       mat-icon-button
@@ -42,6 +43,7 @@
   <mat-sidenav-container
     class="workspace"
     [class.sidebar-pinned]="sidebarPinned()"
+    [class.sidebar-dismissed]="sidebarDismissed()"
   >
     <mat-sidenav
       id="app-sidebar"
@@ -51,6 +53,8 @@
       [autoFocus]="isMobile()"
       [disableClose]="!isMobile()"
       (closedStart)="mobileNavOpen.set(false)"
+      (mouseenter)="sidebarDismissed.set(false)"
+      (focusin)="sidebarDismissed.set(false)"
     >
       <div class="sidebar-body">
         <div class="sidebar-heading">
@@ -66,7 +70,7 @@
               [routerLinkActiveOptions]="{ exact: item.path === '/' }"
               ariaCurrentWhenActive="page"
               [attr.aria-label]="item.labelKey | translate"
-              (click)="mobileNavOpen.set(false)"
+              (click)="onNavigationClick()"
             >
               <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
               <span class="nav-label" aria-hidden="true">{{
@@ -100,7 +104,7 @@
       </div>
     </mat-sidenav>
     <mat-sidenav-content class="workspace-content">
-      <main class="page-content" id="main-content" tabindex="-1">
+      <main #mainContent class="page-content" id="main-content" tabindex="-1">
         <router-outlet />
       </main>
     </mat-sidenav-content>

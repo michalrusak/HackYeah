@@ -1,0 +1,152 @@
+:host {
+  display: block;
+}
+
+.ideas {
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.intro {
+  margin: 12px 0 24px;
+  max-width: 760px;
+}
+
+.eyebrow {
+  color: var(--mat-sys-primary, #005cbb);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.intro h1 {
+  margin: 8px 0;
+}
+
+.intro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.filters .search {
+  grid-column: 1 / -1;
+}
+
+.results-count {
+  margin: 8px 0 16px;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+}
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.idea-card {
+  height: 100%;
+}
+
+.idea-visual {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+  display: block;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--mat-sys-secondary-container, #dce2f9);
+  color: var(--mat-sys-on-secondary-container, #131c2b);
+}
+
+.badge.good-practice {
+  background: var(--mat-sys-tertiary-container, #ffd8e4);
+  color: var(--mat-sys-on-tertiary-container, #31111d);
+}
+
+.badge.subtle {
+  background: var(--mat-sys-surface-container-high, #e5e6ea);
+  color: inherit;
+}
+
+.idea-card h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.idea-card h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.idea-card h2 a:hover,
+.idea-card h2 a:focus-visible {
+  text-decoration: underline;
+}
+
+.essence {
+  margin: 0 0 12px;
+}
+
+.audience {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+}
+
+.audience mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.empty {
+  margin-bottom: 16px;
+}
+
+.error {
+  color: var(--mat-sys-error, #b3261e);
+  font-weight: 600;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

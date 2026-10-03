@@ -1,0 +1,102 @@
+:host {
+  display: block;
+}
+
+.application {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.intro {
+  margin: 12px 0 24px;
+}
+
+.eyebrow {
+  display: block;
+  margin-top: 8px;
+  color: var(--mat-sys-primary, #005cbb);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.intro h1 {
+  margin: 8px 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.toolbar button {
+  min-height: 44px;
+}
+
+.save-state {
+  margin: 0;
+  min-height: 20px;
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+}
+
+.submitted-notice {
+  margin-bottom: 24px;
+}
+
+.submitted-notice h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 16px 0 24px;
+}
+
+.sections h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.sections mat-form-field {
+  width: 100%;
+}
+
+.section-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+}
+
+.counter {
+  display: block;
+  margin-top: 4px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.actions button {
+  min-height: 44px;
+}
+
+.hint,
+.status {
+  color: var(--mat-sys-on-surface-variant, #44474e);
+  font-size: 14px;
+}
+
+.error {
+  color: var(--mat-sys-error, #b3261e);
+  font-weight: 600;
+}

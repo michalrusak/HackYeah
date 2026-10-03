@@ -1,0 +1,53 @@
+<section class="materials" aria-labelledby="materials-title">
+  <header class="intro">
+    <span class="eyebrow">{{ "ideaCreator.eyebrow" | translate }}</span>
+    <h1 id="materials-title">{{ "ideaCreator.materials.title" | translate }}</h1>
+    <p>{{ "ideaCreator.materials.subtitle" | translate }}</p>
+  </header>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+    <p role="status">{{ "ideaCreator.materials.loading" | translate }}</p>
+  }
+
+  @if (errorKey(); as key) {
+    <p class="error" role="alert">{{ key | translate }}</p>
+  }
+
+  <ul class="list">
+    @for (material of materials(); track material.id) {
+      <li>
+        <mat-card>
+          <mat-card-content>
+            <p class="badges">
+              <span class="badge">{{
+                "ideaCreator.materialKinds." + material.kind | translate
+              }}</span>
+              <span class="badge subtle">{{ material.format }}</span>
+            </p>
+            <h2>{{ material.title }}</h2>
+            <p>{{ material.description }}</p>
+            @if (material.pending) {
+              <p class="pending">
+                {{ "ideaCreator.materials.pending" | translate }}
+              </p>
+            } @else if (isInternal(material)) {
+              <a mat-flat-button [routerLink]="material.url">
+                <mat-icon aria-hidden="true">open_in_new</mat-icon>
+                {{ "ideaCreator.materials.open" | translate }}
+              </a>
+            } @else {
+              <a mat-flat-button [href]="material.url" download>
+                <mat-icon aria-hidden="true">download</mat-icon>
+                {{
+                  "ideaCreator.materials.download"
+                    | translate: { format: material.format }
+                }}
+              </a>
+            }
+          </mat-card-content>
+        </mat-card>
+      </li>
+    }
+  </ul>
+</section>

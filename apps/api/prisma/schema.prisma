@@ -7,6 +7,30 @@ datasource db {
   provider = "postgresql"
 }
 
+model Account {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  login        String    @unique @db.VarChar(40)
+  passwordHash String    @map("password_hash") @db.VarChar(255)
+  ownerHash    String    @unique @map("owner_hash") @db.VarChar(64)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  sessions     Session[]
+
+  @@map("accounts")
+}
+
+model Session {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tokenHash String   @unique @map("token_hash") @db.VarChar(64)
+  accountId String   @map("account_id") @db.Uuid
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId, expiresAt])
+  @@map("sessions")
+}
+
 model TesterProfile {
   id                 String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   ownerHash          String             @unique(map: "uq_tester_profiles_owner") @map("owner_hash") @db.VarChar(64)
@@ -54,4 +78,159 @@ model TesterAssignment {
 
   @@unique([searchId, profileId], map: "uq_tester_assignments_search_profile")
   @@map("tester_assignments")
+}
+
+enum IdeaStage {
+  POMYSL
+  PROTOTYP
+  TEST_MIKROSKALA
+  WDROZONE
+  SKALOWANIE
+}
+
+enum IdeaKind {
+  IDEA
+  GOOD_PRACTICE
+}
+
+// Enum zamiast flagi logicznej: moderacja z panelu administratora dołoży tu
+// kolejne wartości bez migracji danych.
+enum IdeaStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+}
+
+enum AssistantMessageRole {
+  USER
+  ASSISTANT
+}
+
+enum AssistantMessageKind {
+  CHAT
+  EXPAND
+  WILDCARD
+}
+
+model Idea {
+  id                   String     @id @default(cuid())
+  title                String
+  essence              String
+  problem              String
+  targetAudience       String
+  description          String     @default("")
+  stage                IdeaStage
+  kind                 IdeaKind   @default(IDEA)
+  status               IdeaStatus @default(DRAFT)
+  region               String     @default("")
+  contactEmail         String?
+  audiences            String[]
+  areas                String[]
+  needs                String[]
+  plainLanguageSummary String?
+  editTokenHash        String
+
+  // Ścieżka JST: samorząd bierze dobrą praktykę jako punkt wyjścia zamiast
+  // tylko ją oglądać.
+  adoptedFromId String?
+  adoptedFrom   Idea?   @relation("IdeaAdoption", fields: [adoptedFromId], references: [id], onDelete: SetNull)
+  adoptions     Idea[]  @relation("IdeaAdoption")
+
+  canvas       IdeaCanvas?
+  visuals      IdeaVisual[]
+  messages     AssistantMessage[]
+  applications Application[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([kind, status])
+  @@index([stage])
+}
+
+model IdeaCanvas {
+  id      String @id @default(cuid())
+  ideaId  String @unique
+  idea    Idea   @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  version Int    @default(1)
+  answers Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model IdeaVisual {
+  id     String @id @default(cuid())
+  ideaId String
+  idea   Idea   @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+
+  prompt String
+  // Opis alternatywny generowany razem z obrazem — bez niego grafika łamie
+  // WCAG 1.1.1, więc pole jest wymagane.
+  altText  String
+  mimeType String
+  data     Bytes
+  model    String
+
+  createdAt DateTime @default(now())
+
+  @@index([ideaId, createdAt])
+}
+
+model GrantCall {
+  id          String   @id @default(cuid())
+  name        String
+  operator    String
+  description String
+  opensAt     DateTime
+  closesAt    DateTime
+  budget      String?
+  maxGrant    String?
+  // Definicja pól wniosku — każdy nabór ma własny zestaw sekcji.
+  sections    Json
+  isPublished Boolean  @default(true)
+
+  applications Application[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isPublished, opensAt])
+}
+
+model Application {
+  id          String    @id @default(cuid())
+  ideaId      String
+  idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  grantCallId String
+  grantCall   GrantCall @relation(fields: [grantCallId], references: [id], onDelete: Cascade)
+
+  answers       Json
+  status        ApplicationStatus @default(DRAFT)
+  editTokenHash String
+  submittedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([grantCallId, status])
+  @@index([ideaId])
+}
+
+model AssistantMessage {
+  id      String  @id @default(cuid())
+  ideaId  String?
+  idea    Idea?   @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  role    AssistantMessageRole
+  kind    AssistantMessageKind @default(CHAT)
+  content String
+
+  createdAt DateTime @default(now())
+
+  @@index([ideaId, createdAt])
 }

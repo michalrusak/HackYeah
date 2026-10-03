@@ -1,0 +1,160 @@
+<section class="ideas" aria-labelledby="ideas-title">
+  <header class="intro">
+    <span class="eyebrow">{{ "ideaCreator.eyebrow" | translate }}</span>
+    <h1 id="ideas-title">{{ "ideaCreator.list.title" | translate }}</h1>
+    <p>{{ "ideaCreator.list.subtitle" | translate }}</p>
+    <div class="intro-actions">
+      <a mat-flat-button routerLink="/pomysly/nowy">
+        <mat-icon aria-hidden="true">add</mat-icon>
+        {{ "ideaCreator.list.create" | translate }}
+      </a>
+      <a mat-stroked-button routerLink="/pomysly/moje">
+        <mat-icon aria-hidden="true">folder_shared</mat-icon>
+        {{ "ideaCreator.list.mine" | translate }}
+      </a>
+      <a mat-stroked-button routerLink="/materialy">
+        <mat-icon aria-hidden="true">menu_book</mat-icon>
+        {{ "ideaCreator.list.materials" | translate }}
+      </a>
+    </div>
+  </header>
+
+  <form class="filters" [formGroup]="filters" aria-labelledby="filters-title">
+    <h2 id="filters-title" class="visually-hidden">
+      {{ "ideaCreator.list.filtersTitle" | translate }}
+    </h2>
+
+    <mat-form-field appearance="outline" class="search">
+      <mat-label>{{ "ideaCreator.list.search" | translate }}</mat-label>
+      <input matInput type="search" formControlName="q" />
+      <mat-icon matSuffix aria-hidden="true">search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "ideaCreator.list.kind" | translate }}</mat-label>
+      <mat-select formControlName="kind">
+        <mat-option value="">{{
+          "ideaCreator.list.any" | translate
+        }}</mat-option>
+        @for (kind of kinds; track kind) {
+          <mat-option [value]="kind">{{
+            "ideaCreator.kinds." + kind | translate
+          }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "ideaCreator.list.stage" | translate }}</mat-label>
+      <mat-select formControlName="stage">
+        <mat-option value="">{{
+          "ideaCreator.list.any" | translate
+        }}</mat-option>
+        @for (stage of stages; track stage) {
+          <mat-option [value]="stage">{{
+            "ideaCreator.stages." + stage | translate
+          }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "ideaCreator.list.audience" | translate }}</mat-label>
+      <mat-select formControlName="audience">
+        <mat-option value="">{{
+          "ideaCreator.list.any" | translate
+        }}</mat-option>
+        @for (audience of audiences; track audience) {
+          <mat-option [value]="audience">{{ audience }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "ideaCreator.list.area" | translate }}</mat-label>
+      <mat-select formControlName="area">
+        <mat-option value="">{{
+          "ideaCreator.list.any" | translate
+        }}</mat-option>
+        @for (area of areas; track area) {
+          <mat-option [value]="area">{{ area }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </form>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  <p class="results-count" role="status">
+    {{ "ideaCreator.list.count" | translate: { count: total() } }}
+  </p>
+
+  @if (errorKey(); as key) {
+    <p class="error" role="alert">{{ key | translate }}</p>
+  }
+
+  @if (isEmpty() && !errorKey()) {
+    <mat-card class="empty">
+      <mat-card-content>
+        <h2>{{ "ideaCreator.list.emptyTitle" | translate }}</h2>
+        <p>{{ "ideaCreator.list.emptyDescription" | translate }}</p>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <ul class="grid">
+    @for (item of items(); track item.id) {
+      <li>
+        <mat-card class="idea-card">
+          @if (visualUrl(item); as url) {
+            <img
+              [src]="url"
+              [alt]="item.visualAltText ?? ''"
+              class="idea-visual"
+              loading="lazy"
+            />
+          }
+          <mat-card-content>
+            <p class="badges">
+              <span class="badge" [class.good-practice]="item.kind === 'GOOD_PRACTICE'">
+                {{ "ideaCreator.kinds." + item.kind | translate }}
+              </span>
+              <span class="badge subtle">
+                {{ "ideaCreator.stages." + item.stage | translate }}
+              </span>
+            </p>
+            <h2>
+              <a [routerLink]="['/pomysly', item.id]">{{ item.title }}</a>
+            </h2>
+            <p class="essence">{{ item.essence }}</p>
+            <p class="audience">
+              <mat-icon aria-hidden="true">group</mat-icon>
+              {{ item.targetAudience }}
+            </p>
+            @if (item.needs.length > 0) {
+              <mat-chip-set
+                [attr.aria-label]="'ideaCreator.detail.needs' | translate"
+              >
+                @for (need of item.needs; track need) {
+                  <mat-chip>{{ need }}</mat-chip>
+                }
+              </mat-chip-set>
+            }
+          </mat-card-content>
+        </mat-card>
+      </li>
+    }
+  </ul>
+
+  @if (total() > pageSize) {
+    <mat-paginator
+      [length]="total()"
+      [pageSize]="pageSize"
+      [pageIndex]="page()"
+      [hidePageSize]="true"
+      (page)="changePage($event)"
+    />
+  }
+</section>

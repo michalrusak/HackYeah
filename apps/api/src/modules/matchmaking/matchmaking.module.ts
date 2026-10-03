@@ -9,5 +9,7 @@ import { OpenRouterService } from './openrouter.service.js';
   imports: [ConfigModule],
   controllers: [MatchmakingController],
   providers: [MatchmakingService, CatalogRepository, OpenRouterService],
+  // Kreator pomysłów podpina opis fiszki do tego samego rankingu.
+  exports: [MatchmakingService],
 })
 export class MatchmakingModule {}

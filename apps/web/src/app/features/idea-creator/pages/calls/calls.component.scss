@@ -1,0 +1,124 @@
+:host {
+  display: block;
+}
+
+.calls {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.intro {
+  margin: 12px 0 24px;
+}
+
+.eyebrow {
+  color: var(--mat-sys-primary, #005cbb);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.intro h1 {
+  margin: 8px 0;
+}
+
+.closed-notice {
+  margin-bottom: 24px;
+}
+
+.closed-notice h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.call-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.badges {
+  margin: 0 0 8px;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-high, #e5e6ea);
+}
+
+.badge.status-open {
+  background: var(--mat-sys-primary-container, #d7e3ff);
+  color: var(--mat-sys-on-primary-container, #001b3f);
+}
+
+.badge.status-upcoming {
+  background: var(--mat-sys-tertiary-container, #ffd8e4);
+  color: var(--mat-sys-on-tertiary-container, #31111d);
+}
+
+.call-list h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.operator {
+  margin: 0 0 12px;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.facts dt {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+}
+
+.facts dd {
+  margin: 4px 0 0;
+  font-weight: 600;
+}
+
+.sections ol {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sections span {
+  display: block;
+  color: var(--mat-sys-on-surface-variant, #44474e);
+  font-size: 14px;
+}
+
+.hint {
+  color: var(--mat-sys-on-surface-variant, #44474e);
+  font-size: 14px;
+}
+
+.error {
+  color: var(--mat-sys-error, #b3261e);
+  font-weight: 600;
+}
+
+a[mat-flat-button],
+a[mat-stroked-button] {
+  min-height: 44px;
+}
