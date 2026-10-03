@@ -49,6 +49,7 @@
       [mode]="isMobile() ? 'over' : 'side'"
       [opened]="!isMobile() || mobileNavOpen()"
       [autoFocus]="isMobile()"
+      [disableClose]="!isMobile()"
       (closedStart)="mobileNavOpen.set(false)"
     >
       <div class="sidebar-body">
@@ -62,6 +63,7 @@
               class="nav-link"
               [routerLink]="item.path"
               routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: item.path === '/' }"
               ariaCurrentWhenActive="page"
               [attr.aria-label]="item.labelKey | translate"
               (click)="mobileNavOpen.set(false)"

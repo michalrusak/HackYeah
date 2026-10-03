@@ -12,6 +12,10 @@
   },
   "header": {
     "openMenu": "Otwórz menu",
+    "closeMenu": "Zamknij menu",
+    "pinMenu": "Przypnij menu",
+    "unpinMenu": "Włącz automatyczne zwijanie",
+    "skipToContent": "Przejdź do treści",
     "mainNav": "Główna nawigacja",
     "search": "Szukaj",
     "searchPlaceholder": "Szukaj...",

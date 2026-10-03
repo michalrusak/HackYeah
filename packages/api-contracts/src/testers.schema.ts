@@ -15,12 +15,12 @@ export const TesterProfileInputSchema = z
     accessibilityNeeds: z.string().trim().max(600).default(""),
     interests: traits,
     availability: TesterAvailabilitySchema,
-    consent: z.literal(true),
-    isActive: z.boolean().default(true),
   })
   .strict();
 export const TesterProfileSchema = TesterProfileInputSchema.extend({
   id: TesterIdSchema,
+  consent: z.boolean(),
+  isActive: z.boolean(),
   isDemo: z.boolean(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),

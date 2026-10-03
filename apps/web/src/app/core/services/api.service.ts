@@ -26,7 +26,11 @@ export class ApiService {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     path: string,
     schema: { parse(value: unknown): T },
-    options: { body?: unknown; headers?: Record<string, string> } = {},
+    options: {
+      body?: unknown;
+      headers?: Record<string, string>;
+      withCredentials?: boolean;
+    } = {},
   ): Observable<T> {
     return this.http
       .request<unknown>(method, `${this.baseUrl}${path}`, options)
