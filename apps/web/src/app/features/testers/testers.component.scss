@@ -1,4 +1,5 @@
 :host {
+  font-size: 14px;
   display: block;
   --tester-card: #fff;
   --tester-border: #dde5e2;
@@ -30,7 +31,6 @@
   align-items: center;
   gap: 8px;
   color: var(--tester-accent);
-  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -63,7 +63,6 @@ h1 > span {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 14px;
   color: var(--tester-muted);
 }
 .hero-note mat-icon {
@@ -97,7 +96,6 @@ h1 > span {
 }
 .join-card p {
   color: #bfd1c9;
-  font-size: 14px;
   line-height: 1.65;
   margin: 0 0 20px;
 }
@@ -109,7 +107,6 @@ h1 > span {
 .community-count {
   display: block;
   text-align: center;
-  font-size: 14px;
   color: #b1c9bc;
   margin-top: 12px;
 }
@@ -133,7 +130,6 @@ h1 > span {
 }
 .panel-heading p {
   margin: 0;
-  font-size: 14px;
   color: var(--tester-muted);
   line-height: 1.5;
 }
@@ -156,7 +152,6 @@ h1 > span {
   border: 1px solid var(--tester-border);
   padding: 6px 9px;
   border-radius: 6px;
-  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.05em;
   color: var(--tester-accent);
@@ -173,7 +168,6 @@ h1 > span {
 textarea {
   resize: vertical;
   line-height: 1.6;
-  font-size: 14px;
 }
 .examples {
   display: flex;
@@ -183,7 +177,6 @@ textarea {
   margin: 4px 0 24px;
 }
 .examples > span {
-  font-size: 14px;
   color: var(--tester-muted);
   margin-right: 4px;
 }
@@ -197,7 +190,6 @@ textarea {
   color: inherit;
   background: transparent;
   font: inherit;
-  font-size: 14px;
   cursor: pointer;
 }
 .examples button:hover {
@@ -221,7 +213,6 @@ textarea {
   max-width: 620px;
   margin: 0;
   color: var(--tester-muted);
-  font-size: 14px;
   line-height: 1.65;
 }
 .search-footer p mat-icon {
@@ -240,7 +231,6 @@ textarea {
   margin-top: 22px;
 }
 .loading-state p {
-  font-size: 14px;
   color: var(--tester-muted);
 }
 .error-state {
@@ -269,7 +259,6 @@ textarea {
   align-items: center;
   gap: 10px;
   padding: 16px 0;
-  font-size: 14px;
 }
 .history-panel summary > mat-icon {
   color: var(--tester-muted);
@@ -285,7 +274,6 @@ textarea {
   color: var(--tester-accent);
   border-radius: 6px;
   padding: 4px 7px;
-  font-size: 14px;
 }
 .expand-icon {
   margin-left: auto;
@@ -322,12 +310,10 @@ textarea {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 14px;
   font-weight: 500;
 }
 .history-list span {
   display: block;
-  font-size: 14px;
   color: var(--tester-muted);
   margin-top: 6px;
 }
@@ -348,11 +334,9 @@ textarea {
 }
 .catalog-count {
   color: var(--tester-muted);
-  font-size: 14px;
 }
 .catalog-description {
   color: var(--tester-muted);
-  font-size: 14px;
   line-height: 1.6;
   margin: 12px 0 23px;
 }
@@ -380,7 +364,6 @@ textarea {
 }
 .interpretation span {
   color: var(--tester-muted);
-  font-size: 14px;
 }
 .results-meta {
   display: flex;
@@ -390,7 +373,6 @@ textarea {
   align-items: center;
 }
 .results-meta p {
-  font-size: 14px;
   line-height: 1.65;
   color: var(--tester-muted);
   margin: 0;
@@ -400,7 +382,6 @@ textarea {
   align-items: center;
   gap: 7px;
   flex-shrink: 0;
-  font-size: 14px;
   color: var(--tester-accent);
 }
 .results-meta mat-icon {
@@ -435,7 +416,6 @@ textarea {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 14px;
   line-height: 1.6;
   color: var(--tester-muted);
   margin-top: 18px;
@@ -455,7 +435,6 @@ textarea {
   padding: 20px 0;
   border-top: 1px solid var(--tester-border);
   color: var(--tester-muted);
-  font-size: 14px;
   line-height: 1.6;
 }
 .page-footer > span:first-child {
@@ -559,9 +538,39 @@ textarea {
   }
 }
 
-.join-card .account-button { color: #fff; margin-top: 12px; min-height: 44px; }
-.join-card .account-status { margin: 16px 0 0; overflow-wrap: anywhere; }
-.examples button, .history-panel summary { min-height: 44px; box-sizing: border-box; }
-.query-field { margin-bottom: 16px; }
-.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
-@media (max-width: 720px) { .join-card { display: block; } .join-card button { margin-top: 16px; } }
+.join-card .account-button {
+  color: #fff;
+  margin-top: 12px;
+  min-height: 44px;
+}
+.join-card .account-status {
+  margin: 16px 0 0;
+  overflow-wrap: anywhere;
+}
+.examples button,
+.history-panel summary {
+  min-height: 44px;
+  box-sizing: border-box;
+}
+.query-field {
+  margin-bottom: 16px;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 720px) {
+  .join-card {
+    display: block;
+  }
+  .join-card button {
+    margin-top: 16px;
+  }
+}

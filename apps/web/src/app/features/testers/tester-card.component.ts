@@ -25,6 +25,9 @@ export class TesterCardComponent {
       .toLocaleUpperCase('pl'),
   );
   readonly traits = computed(() =>
-    [...new Set([...this.profile().skills, ...this.profile().resources])].slice(0, 5),
+    [...new Set([...this.profile().skills, ...this.profile().resources])].slice(
+      0,
+      5,
+    ),
   );
 }

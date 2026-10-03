@@ -35,7 +35,9 @@ export class AuthRepository {
     ]);
   }
 
-  findSession(tokenHash: string): Promise<(Session & { account: Account }) | null> {
+  findSession(
+    tokenHash: string,
+  ): Promise<(Session & { account: Account }) | null> {
     return this.prisma.session.findUnique({
       where: { tokenHash },
       include: { account: true },

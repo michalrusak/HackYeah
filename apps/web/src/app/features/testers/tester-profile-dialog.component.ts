@@ -1,10 +1,12 @@
-import { Component, DestroyRef, ElementRef, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
@@ -119,8 +121,13 @@ export class TesterProfileDialogComponent {
 
   private showValidation(): void {
     this.errorKey.set('testers.profile.validation');
-    const field = Object.entries(this.form.controls).find(([, control]) => control.invalid)?.[0];
-    if (field) this.element.nativeElement.querySelector<HTMLElement>(`[formControlName="${field}"]`)?.focus();
+    const field = Object.entries(this.form.controls).find(
+      ([, control]) => control.invalid,
+    )?.[0];
+    if (field)
+      this.element.nativeElement
+        .querySelector<HTMLElement>(`[formControlName="${field}"]`)
+        ?.focus();
   }
 
   private split(value: string): string[] {

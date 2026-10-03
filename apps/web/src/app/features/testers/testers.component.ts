@@ -1,5 +1,12 @@
 import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, ElementRef, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
@@ -23,7 +30,10 @@ import {
 } from '@repo/api-contracts';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
-import { AuthDialogComponent, type AuthMode } from '../auth/auth-dialog.component';
+import {
+  AuthDialogComponent,
+  type AuthMode,
+} from '../auth/auth-dialog.component';
 import { authErrorKey } from '../auth/auth-error';
 import { TesterCardComponent } from './tester-card.component';
 import { TesterProfileDialogComponent } from './tester-profile-dialog.component';
@@ -98,12 +108,17 @@ export class TestersComponent {
   load(): void {
     this.initialLoading.set(true);
     this.initialError.set(null);
-    this.auth.refresh()
-      .pipe(switchMap(({ user }) => forkJoin({
-        profiles: this.service.profiles(),
-        own: user ? this.service.myProfile() : of({ profile: null }),
-        history: this.service.searches(),
-      })))
+    this.auth
+      .refresh()
+      .pipe(
+        switchMap(({ user }) =>
+          forkJoin({
+            profiles: this.service.profiles(),
+            own: user ? this.service.myProfile() : of({ profile: null }),
+            history: this.service.searches(),
+          }),
+        ),
+      )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ profiles, own, history }) => {
@@ -135,7 +150,9 @@ export class TestersComponent {
     if (!parsed.success) {
       this.query.setErrors({ invalid: true });
       this.query.markAsTouched();
-      this.element.nativeElement.querySelector<HTMLTextAreaElement>('textarea[formControlName="query"]')?.focus();
+      this.element.nativeElement
+        .querySelector<HTMLTextAreaElement>('textarea[formControlName="query"]')
+        ?.focus();
       return;
     }
     this.searching.set(true);
@@ -209,17 +226,16 @@ export class TestersComponent {
       return;
     }
     this.dialog
-      .open<
+      .open<TesterProfileDialogComponent, TesterProfile | null, 'saved'>(
         TesterProfileDialogComponent,
-        TesterProfile | null,
-        'saved'
-      >(TesterProfileDialogComponent, {
-        data: this.myProfile(),
-        width: '720px',
-        maxWidth: 'calc(100vw - 24px)',
-        maxHeight: '94vh',
-        autoFocus: 'dialog',
-      })
+        {
+          data: this.myProfile(),
+          width: '720px',
+          maxWidth: 'calc(100vw - 24px)',
+          maxHeight: '94vh',
+          autoFocus: 'dialog',
+        },
+      )
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((status) => {
@@ -235,46 +251,61 @@ export class TestersComponent {
   }
 
   openAuth(mode: AuthMode = 'login', editAfterLogin = false): void {
-    this.dialog.open<AuthDialogComponent, AuthMode, 'authenticated'>(AuthDialogComponent, {
-      data: mode,
-      width: '480px',
-      maxWidth: 'calc(100vw - 24px)',
-      maxHeight: '94vh',
-      autoFocus: 'first-tabbable',
-      ariaLabelledBy: 'auth-title',
-      ariaDescribedBy: 'auth-intro',
-    }).afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((status) => {
-      if (!status) return;
-      this.result.set(null);
-      this.service.myProfile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: ({ profile }) => {
-          this.myProfile.set(profile);
-          if (editAfterLogin) this.editProfile();
-          this.load();
+    this.dialog
+      .open<AuthDialogComponent, AuthMode, 'authenticated'>(
+        AuthDialogComponent,
+        {
+          data: mode,
+          width: '480px',
+          maxWidth: 'calc(100vw - 24px)',
+          maxHeight: '94vh',
+          autoFocus: 'input[formControlName="login"]',
+          ariaLabelledBy: 'auth-title',
+          ariaDescribedBy: 'auth-intro',
         },
-        error: (error: unknown) => this.accountError.set(testerErrorKey(error)),
+      )
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((status) => {
+        if (!status) return;
+        this.accountError.set(null);
+        this.result.set(null);
+        this.service
+          .myProfile()
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: ({ profile }) => {
+              this.myProfile.set(profile);
+              if (editAfterLogin) this.editProfile();
+              this.load();
+            },
+            error: (error: unknown) =>
+              this.accountError.set(testerErrorKey(error)),
+          });
       });
-    });
   }
 
   logout(): void {
     if (this.signingOut() || this.busy() || this.assigning()) return;
     this.signingOut.set(true);
     this.accountError.set(null);
-    this.auth.logout().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.signingOut.set(false);
-        this.myProfile.set(null);
-        this.history.set([]);
-        this.result.set(null);
-        this.query.reset();
-        this.load();
-      },
-      error: (error: unknown) => {
-        this.signingOut.set(false);
-        this.accountError.set(authErrorKey(error));
-      },
-    });
+    this.auth
+      .logout()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.signingOut.set(false);
+          this.myProfile.set(null);
+          this.history.set([]);
+          this.result.set(null);
+          this.query.reset();
+          this.load();
+        },
+        error: (error: unknown) => {
+          this.signingOut.set(false);
+          this.accountError.set(authErrorKey(error));
+        },
+      });
   }
 
   showCatalog(): void {

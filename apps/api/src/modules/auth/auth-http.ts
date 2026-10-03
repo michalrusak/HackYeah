@@ -5,7 +5,10 @@ import type { CookieOptions, Request } from 'express';
 export const SESSION_COOKIE = 'hackyeah_session';
 
 export function allowedWebOrigins(): string[] {
-  return (process.env.WEB_ORIGIN ?? `http://localhost:${process.env.WEB_PORT ?? '4200'}`)
+  return (
+    process.env.WEB_ORIGIN ??
+    `http://localhost:${process.env.WEB_PORT ?? '4200'}`
+  )
     .split(',')
     .map((origin) => new URL(origin.trim()).origin);
 }
@@ -15,7 +18,10 @@ export function assertTrustedOrigin(request: Request): void {
   if (!origin || !allowedWebOrigins().includes(origin)) {
     throw new ForbiddenException({
       success: false,
-      error: { code: ErrorCodes.FORBIDDEN, message: 'Żądanie musi pochodzić z aplikacji.' },
+      error: {
+        code: ErrorCodes.FORBIDDEN,
+        message: 'Żądanie musi pochodzić z aplikacji.',
+      },
     });
   }
 }

@@ -33,28 +33,42 @@ describe('AuthService', () => {
     repository.findByLogin.mockResolvedValue(account);
     repository.findByOwner.mockResolvedValue(null);
     const module = await Test.createTestingModule({
-      providers: [AuthService, { provide: AuthRepository, useValue: repository }],
+      providers: [
+        AuthService,
+        { provide: AuthRepository, useValue: repository },
+      ],
     }).compile();
     service = module.get(AuthService);
   });
 
   it('stores only the hash of a freshly generated session credential', async () => {
-    const result = await service.login({ login: 'test.user', password: 'Test-password-123!' });
+    const result = await service.login({
+      login: 'test.user',
+      password: 'Test-password-123!',
+    });
     expect(result.user).toEqual({ id: account.id, login: account.login });
     expect(result.token).toMatch(/^[a-f0-9]{64}$/);
-    expect(repository.createSession).toHaveBeenCalledWith(expect.objectContaining({
-      accountId: account.id,
-      tokenHash: credentialHash(result.token),
-    }));
-    expect(JSON.stringify(repository.createSession.mock.calls)).not.toContain(result.token);
+    expect(repository.createSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        accountId: account.id,
+        tokenHash: credentialHash(result.token),
+      }),
+    );
+    expect(JSON.stringify(repository.createSession.mock.calls)).not.toContain(
+      result.token,
+    );
   });
 
   it('rejects expired sessions and removes their credential', async () => {
     const token = 'b'.repeat(64);
     const tokenHash = credentialHash(token);
     repository.findSession.mockResolvedValue({
-      id: 'session-id', tokenHash, accountId: account.id,
-      createdAt: new Date(), expiresAt: new Date(Date.now() - 1), account,
+      id: 'session-id',
+      tokenHash,
+      accountId: account.id,
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() - 1),
+      account,
     });
     expect(await service.accountForToken(token)).toBeNull();
     expect(repository.deleteSession).toHaveBeenCalledWith(tokenHash);
@@ -63,16 +77,29 @@ describe('AuthService', () => {
   it('rejects incorrect passwords and unknown users with the same response', async () => {
     let wrongPassword: unknown;
     try {
-      await service.login({ login: 'test.user', password: 'Wrong-password-123!' });
-    } catch (error) { wrongPassword = error; }
+      await service.login({
+        login: 'test.user',
+        password: 'Wrong-password-123!',
+      });
+    } catch (error) {
+      wrongPassword = error;
+    }
     repository.findByLogin.mockResolvedValue(null);
     let unknownUser: unknown;
     try {
-      await service.login({ login: 'missing', password: 'Wrong-password-123!' });
-    } catch (error) { unknownUser = error; }
+      await service.login({
+        login: 'missing',
+        password: 'Wrong-password-123!',
+      });
+    } catch (error) {
+      unknownUser = error;
+    }
     expect(wrongPassword).toBeInstanceOf(UnauthorizedException);
     expect(unknownUser).toBeInstanceOf(UnauthorizedException);
-    if (wrongPassword instanceof UnauthorizedException && unknownUser instanceof UnauthorizedException) {
+    if (
+      wrongPassword instanceof UnauthorizedException &&
+      unknownUser instanceof UnauthorizedException
+    ) {
       expect(wrongPassword.getResponse()).toEqual(unknownUser.getResponse());
     }
     expect(repository.createSession).not.toHaveBeenCalled();

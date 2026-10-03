@@ -1,6 +1,16 @@
-import { ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { createHash, randomBytes } from 'node:crypto';
-import { ErrorCodes, type AuthLoginInput, type AuthRegisterInput, type AuthUser } from '@repo/api-contracts';
+import {
+  ErrorCodes,
+  type AuthLoginInput,
+  type AuthRegisterInput,
+  type AuthUser,
+} from '@repo/api-contracts';
 import { Prisma, type Account } from '../../generated/prisma/client.js';
 import { AuthRepository } from './auth.repository.js';
 import { hashPassword, verifyPassword } from './password.js';
@@ -17,35 +27,56 @@ export function publicUser(account: Account): AuthUser {
 
 @Injectable()
 export class AuthService {
-  constructor(@Inject(AuthRepository) private readonly repository: AuthRepository) {}
+  constructor(
+    @Inject(AuthRepository) private readonly repository: AuthRepository,
+  ) {}
 
-  async register(input: AuthRegisterInput): Promise<{ user: AuthUser; token: string }> {
+  async register(
+    input: AuthRegisterInput,
+  ): Promise<{ user: AuthUser; token: string }> {
     const ownerHash = input.legacyKey
       ? credentialHash(input.legacyKey)
       : randomBytes(32).toString('hex');
     const login = input.login.toLowerCase();
-    if (await this.repository.findByLogin(login) || await this.repository.findByOwner(ownerHash)) {
+    if (
+      (await this.repository.findByLogin(login)) ||
+      (await this.repository.findByOwner(ownerHash))
+    ) {
       throw this.registrationConflict();
     }
     const passwordHash = await hashPassword(input.password);
     try {
-      const account = await this.repository.createAccount({ login, ownerHash, passwordHash });
+      const account = await this.repository.createAccount({
+        login,
+        ownerHash,
+        passwordHash,
+      });
       return this.newSession(account);
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
         throw this.registrationConflict();
       }
       throw error;
     }
   }
 
-  async login(input: AuthLoginInput): Promise<{ user: AuthUser; token: string }> {
-    const account = await this.repository.findByLogin(input.login.toLowerCase());
+  async login(
+    input: AuthLoginInput,
+  ): Promise<{ user: AuthUser; token: string }> {
+    const account = await this.repository.findByLogin(
+      input.login.toLowerCase(),
+    );
     const valid = await verifyPassword(input.password, account?.passwordHash);
     if (!account || !valid) {
       throw new UnauthorizedException({
         success: false,
-        error: { code: ErrorCodes.UNAUTHORIZED, message: 'Nieprawidłowy login lub hasło.' },
+        error: {
+          code: ErrorCodes.UNAUTHORIZED,
+          message: 'Nieprawidłowy login lub hasło.',
+        },
       });
     }
     return this.newSession(account);
@@ -69,10 +100,12 @@ export class AuthService {
   }
 
   async isClaimedOwner(ownerHash: string): Promise<boolean> {
-    return !!await this.repository.findByOwner(ownerHash);
+    return !!(await this.repository.findByOwner(ownerHash));
   }
 
-  private async newSession(account: Account): Promise<{ user: AuthUser; token: string }> {
+  private async newSession(
+    account: Account,
+  ): Promise<{ user: AuthUser; token: string }> {
     const token = randomBytes(32).toString('hex');
     await this.repository.createSession({
       accountId: account.id,
@@ -85,7 +118,11 @@ export class AuthService {
   private registrationConflict(): ConflictException {
     return new ConflictException({
       success: false,
-      error: { code: ErrorCodes.CONFLICT, message: 'Login jest zajęty lub ten profil ma już konto. Zaloguj się albo wybierz inny login.' },
+      error: {
+        code: ErrorCodes.CONFLICT,
+        message:
+          'Login jest zajęty lub ten profil ma już konto. Zaloguj się albo wybierz inny login.',
+      },
     });
   }
 }

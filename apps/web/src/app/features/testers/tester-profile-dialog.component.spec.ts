@@ -53,25 +53,24 @@ describe('TesterProfileDialogComponent', () => {
   }
   afterEach(() => http?.verify());
 
-  it('requires explicit consent and validates form data before saving', async () => {
+  it('validates mandatory fields and has no consent or visibility controls', async () => {
     await setup();
     const component = fixture.componentInstance;
     component.form.patchValue({
-      displayName: 'Ala',
+      displayName: '',
       city: 'Kraków',
       bio: 'Chętnie testuję społeczne aplikacje.',
-      consent: false,
     });
     component.save();
-    expect(component.form.controls.consent.invalid).toBeTrue();
+    expect(component.form.controls.displayName.invalid).toBeTrue();
     http.expectNone('/api/testers/profile/me');
-    component.form.patchValue({ consent: true, displayName: '   ' });
+    component.form.patchValue({ displayName: '   ' });
     component.save();
     expect(component.form.controls.displayName.invalid).toBeTrue();
     http.expectNone('/api/testers/profile/me');
   });
 
-  it('creates a profile with parsed, deduplicated traits and hides the key by default', async () => {
+  it('creates a profile using cookies and omits removed consent and sharing controls', async () => {
     await setup();
     const component = fixture.componentInstance;
     const root: HTMLElement = fixture.nativeElement;
@@ -82,33 +81,32 @@ describe('TesterProfileDialogComponent', () => {
       bio: profile.bio,
       skills: 'Grafika, Grafika, Testowanie',
       resources: 'Komputer',
-      consent: true,
     });
     component.save();
     const request = http.expectOne('/api/testers/profile/me');
     expect(request.request.method).toBe('PUT');
     expect(request.request.body.skills).toEqual(['Grafika', 'Testowanie']);
-    expect(request.request.body.consent).toBeTrue();
-    expect(request.request.headers.has('X-Tester-Key')).toBeTrue();
+    expect(request.request.body.consent).toBeUndefined();
+    expect(request.request.withCredentials).toBeTrue();
     component.save();
     http.expectNone('/api/testers/profile/me');
     request.flush(createApiSuccess({ profile }));
     expect(close).toHaveBeenCalledWith('saved');
   });
 
-  it('populates and edits an existing profile, including hiding it from new searches', async () => {
+  it('populates and edits an existing profile without changing visibility', async () => {
     await setup(profile);
     const component = fixture.componentInstance;
     expect(component.form.controls.displayName.value).toBe('Ala');
     expect(component.form.controls.skills.value).toBe('Grafika');
-    component.form.patchValue({ city: 'Warszawa', isActive: false });
+    component.form.patchValue({ city: 'Warszawa' });
     component.save();
     const request = http.expectOne('/api/testers/profile/me');
     expect(request.request.body.city).toBe('Warszawa');
-    expect(request.request.body.isActive).toBeFalse();
+    expect(request.request.body.isActive).toBeUndefined();
     request.flush(
       createApiSuccess({
-        profile: { ...profile, city: 'Warszawa', isActive: false },
+        profile: { ...profile, city: 'Warszawa' },
       }),
     );
     expect(close).toHaveBeenCalledWith('saved');
@@ -125,19 +123,20 @@ describe('TesterProfileDialogComponent', () => {
     expect(close).not.toHaveBeenCalled();
   });
 
-  it('blocks escape and backdrop dismissal while restoring and unlocks on failure', async () => {
+  it('moves keyboard focus to the first invalid field and announces validation', async () => {
     await setup();
-    fixture.componentInstance.restoreControl.setValue('a'.repeat(64));
-    fixture.componentInstance.restore();
-    expect(dialog.disableClose).toBeTrue();
-    http
-      .expectOne('/api/testers/profile/me')
-      .flush(createApiSuccess({ profile: null }));
-    http
-      .expectOne('/api/testers/searches')
-      .flush(createApiSuccess({ searches: [] }));
-    expect(dialog.disableClose).toBeFalse();
-    expect(fixture.componentInstance.restoring()).toBeFalse();
-    expect(close).not.toHaveBeenCalled();
+    fixture.componentInstance.save();
+    fixture.detectChanges();
+    const root: HTMLElement = fixture.nativeElement;
+    expect(document.activeElement).toBe(
+      root.querySelector('input[formControlName="displayName"]'),
+    );
+    expect(root.querySelector('[role="alert"]')?.textContent).toContain(
+      'testers.profile.validation',
+    );
+    expect(
+      root.querySelector('mat-checkbox, mat-slide-toggle, .access-panel'),
+    ).toBeNull();
+    http.expectNone('/api/testers/profile/me');
   });
 });

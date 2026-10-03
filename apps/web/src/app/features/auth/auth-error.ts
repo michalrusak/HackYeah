@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApiErrorResponseSchema } from '@repo/api-contracts';
 
-export function authErrorKey(error: unknown): string {
+export function authErrorKey(error: unknown, authenticating = false): string {
   const response =
     error instanceof HttpErrorResponse
       ? ApiErrorResponseSchema.safeParse(error.error)
@@ -11,7 +11,7 @@ export function authErrorKey(error: unknown): string {
     INVALID_CREDENTIALS: 'invalidCredentials',
     LOGIN_TAKEN: 'loginTaken',
     CONFLICT: 'loginTaken',
-    UNAUTHORIZED: 'sessionExpired',
+    UNAUTHORIZED: authenticating ? 'invalidCredentials' : 'sessionExpired',
     VALIDATION_ERROR: 'validation',
     RATE_LIMIT: 'rateLimit',
   };

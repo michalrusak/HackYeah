@@ -40,6 +40,7 @@ function respond<T>(
   outcome: TesterOutcome<T>,
 ): ApiSuccessResponse<T> | ApiErrorResponse {
   response.status(outcome.status);
+  response.setHeader('Cache-Control', 'no-store');
   return outcome.body;
 }
 

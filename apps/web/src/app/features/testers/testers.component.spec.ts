@@ -12,7 +12,7 @@ import {
   type TesterSearchData,
 } from '@repo/api-contracts';
 import { TestersComponent } from './testers.component';
-import { TestersService } from './testers.service';
+import { AuthService } from '../../core/services/auth.service';
 
 const profile: TesterProfile = {
   id: '12345678-1234-4123-8123-123456789012',
@@ -69,6 +69,13 @@ describe('TestersComponent', () => {
     fixture = TestBed.createComponent(TestersComponent);
     root = fixture.nativeElement;
     http
+      .expectOne('/api/auth/me')
+      .flush(
+        createApiSuccess({
+          user: { id: '12345678-1234-4123-8123-123456789010', login: 'tester' },
+        }),
+      );
+    http
       .expectOne('/api/testers/profiles')
       .flush(createApiSuccess({ profiles: [profile], total: 1, limit: 100 }));
     http
@@ -106,13 +113,12 @@ describe('TestersComponent', () => {
     http.expectNone('/api/testers/search');
   });
 
-  it('sends an owner key, prevents duplicate searches and renders real AI explanations', () => {
+  it('uses the account cookie, prevents duplicate searches and renders real AI explanations', () => {
     submit();
     const request = http.expectOne('/api/testers/search');
     expect(request.request.method).toBe('POST');
-    expect(request.request.headers.get('X-Tester-Key')).toMatch(
-      /^[a-f0-9]{64}$/,
-    );
+    expect(request.request.withCredentials).toBeTrue();
+    expect(request.request.headers.has('X-Tester-Key')).toBeFalse();
     expect(request.request.body).toEqual({ query: search.query });
     expect(root.querySelector('mat-progress-bar')).not.toBeNull();
     fixture.componentInstance.search();
@@ -184,23 +190,24 @@ describe('TestersComponent', () => {
     expect(root.querySelector('app-tester-card')).toBeNull();
   });
 
-  it('keeps the current identity when a well-formed recovery key owns no data', () => {
-    const service = TestBed.inject(TestersService);
-    const currentKey = service.getKey();
-    let failed = false;
-    service.restoreKey('a'.repeat(64)).subscribe({
-      error: () => {
-        failed = true;
-      },
-    });
+  it('clears private profile and results after logout and loads guest data', () => {
+    fixture.componentInstance.myProfile.set(profile);
+    fixture.componentInstance.result.set(search);
+    fixture.componentInstance.logout();
     http
-      .expectOne('/api/testers/profile/me')
-      .flush(createApiSuccess({ profile: null }));
+      .expectOne('/api/auth/logout')
+      .flush(createApiSuccess({ loggedOut: true }));
+    http.expectOne('/api/auth/me').flush(createApiSuccess({ user: null }));
+    http
+      .expectOne('/api/testers/profiles')
+      .flush(createApiSuccess({ profiles: [profile], total: 1, limit: 100 }));
     http
       .expectOne('/api/testers/searches')
       .flush(createApiSuccess({ searches: [] }));
-    expect(failed).toBeTrue();
-    expect(service.getKey()).toBe(currentKey);
+    http.expectNone('/api/testers/profile/me');
+    expect(TestBed.inject(AuthService).user()).toBeNull();
+    expect(fixture.componentInstance.myProfile()).toBeNull();
+    expect(fixture.componentInstance.result()).toBeNull();
   });
 
   it('explains that changed profiles require a new search instead of displaying stale matches', () => {

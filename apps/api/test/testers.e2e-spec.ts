@@ -47,7 +47,9 @@ describe.skipIf(!databaseUrl)(
 
     function ownerHeaders(owner: string): Record<string, string> {
       const cookie = cookies.get(owner);
-      return cookie ? { Cookie: cookie, Origin: origin } : { 'X-Tester-Key': owner, Origin: origin };
+      return cookie
+        ? { Cookie: cookie, Origin: origin }
+        : { 'X-Tester-Key': owner, Origin: origin };
     }
 
     async function register(owner: string): Promise<void> {
@@ -55,10 +57,15 @@ describe.skipIf(!databaseUrl)(
       const response = await request(app.getHttpServer())
         .post('/api/auth/register')
         .set('Origin', origin)
-        .send({ login: `tester_${owner.slice(0, 24)}`, password: 'Test-password-123!', legacyKey: owner })
+        .send({
+          login: `tester_${owner.slice(0, 24)}`,
+          password: 'Test-password-123!',
+          legacyKey: owner,
+        })
         .expect(201);
       const cookieHeader = response.headers['set-cookie'];
-      if (!Array.isArray(cookieHeader) || typeof cookieHeader[0] !== 'string') throw new Error('Missing session cookie');
+      if (!Array.isArray(cookieHeader) || typeof cookieHeader[0] !== 'string')
+        throw new Error('Missing session cookie');
       const cookie = cookieHeader[0].split(';')[0];
       if (!cookie) throw new Error('Missing session cookie');
       cookies.set(owner, cookie);
@@ -98,7 +105,10 @@ describe.skipIf(!databaseUrl)(
       ).data;
       if (!profile) throw new Error('Expected a saved tester profile');
       if (isActive === false) {
-        await database.testerProfile.update({ where: { id: profile.id }, data: { isActive: false } });
+        await database.testerProfile.update({
+          where: { id: profile.id },
+          data: { isActive: false },
+        });
       }
       profileIds.push(profile.id);
       return profile;
@@ -153,6 +163,8 @@ describe.skipIf(!databaseUrl)(
     afterAll(async () => {
       try {
         if (database) {
+          await database.session.deleteMany();
+          await database.account.deleteMany();
           if (searchIds.length) {
             await database.testerAssignment.deleteMany({
               where: { searchId: { in: searchIds } },
@@ -171,6 +183,46 @@ describe.skipIf(!databaseUrl)(
         await app?.close();
         await database?.$disconnect();
         vi.unstubAllGlobals();
+      }
+    });
+
+    it('only lets one account claim a legacy owner when registration requests race', async () => {
+      const legacyKey = newOwner();
+      const responses = await Promise.all(
+        [0, 1].map((attempt) =>
+          request(app.getHttpServer())
+            .post('/api/auth/register')
+            .set('Origin', origin)
+            .send({
+              login: `race_${legacyKey.slice(0, 20)}_${attempt}`,
+              password: 'Race-password-123!',
+              legacyKey,
+            }),
+        ),
+      );
+      expect(responses.map((response) => response.status).sort((a, b) => a - b)).toEqual([
+        201, 409,
+      ]);
+      expect(
+        await database.account.count({
+          where: {
+            ownerHash: createHash('sha256').update(legacyKey).digest('hex'),
+          },
+        }),
+      ).toBe(1);
+    });
+
+    it('validates account login, password and legacy-key input', async () => {
+      for (const input of [
+        { login: 'ab', password: 'Test-password-123!' },
+        { login: 'invalid login', password: 'Test-password-123!' },
+        { login: 'valid.user', password: 'short' },
+        { login: 'valid.user', password: 'x'.repeat(129) },
+        { login: 'valid.user', password: 'Test-password-123!', legacyKey: 'invalid' },
+        { login: 'valid.user', password: 'Test-password-123!', ownerHash: 'a'.repeat(64) },
+      ]) {
+        await request(app.getHttpServer()).post('/api/auth/register').set('Origin', origin)
+          .send(input).expect(400);
       }
     });
 

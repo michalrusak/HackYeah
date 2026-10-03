@@ -8,7 +8,7 @@ import {
   type AuthSessionData,
   type AuthUser,
 } from '@repo/api-contracts';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, timeout } from 'rxjs';
 import { ApiService } from './api.service';
 
 const LEGACY_KEY_STORAGE = 'hackyeah.tester-owner-key';
@@ -21,8 +21,13 @@ export class AuthService {
 
   refresh(): Observable<AuthSessionData> {
     return this.api
-      .request('GET', '/auth/me', AuthSessionDataSchema, { withCredentials: true })
-      .pipe(tap(({ user }) => this.currentUser.set(user)));
+      .request('GET', '/auth/me', AuthSessionDataSchema, {
+        withCredentials: true,
+      })
+      .pipe(
+        timeout(20000),
+        tap(({ user }) => this.currentUser.set(user)),
+      );
   }
 
   login(login: string, password: string): Observable<AuthSessionData> {
@@ -31,7 +36,10 @@ export class AuthService {
         withCredentials: true,
         body: AuthLoginInputSchema.parse({ login, password }),
       })
-      .pipe(tap(({ user }) => this.currentUser.set(user)));
+      .pipe(
+        timeout(20000),
+        tap(({ user }) => this.currentUser.set(user)),
+      );
   }
 
   register(login: string, password: string): Observable<AuthSessionData> {
@@ -49,6 +57,7 @@ export class AuthService {
         body,
       })
       .pipe(
+        timeout(20000),
         tap(({ user }) => {
           this.currentUser.set(user);
           localStorage.removeItem(LEGACY_KEY_STORAGE);
@@ -62,6 +71,9 @@ export class AuthService {
         withCredentials: true,
         body: {},
       })
-      .pipe(tap(() => this.currentUser.set(null)));
+      .pipe(
+        timeout(20000),
+        tap(() => this.currentUser.set(null)),
+      );
   }
 }

@@ -1,9 +1,9 @@
 <div class="dialog-heading">
   <div>
-    <span class="eyebrow">{{ 'testers.profile.eyebrow' | translate }}</span>
+    <span class="eyebrow">{{ "testers.profile.eyebrow" | translate }}</span>
     <h2 mat-dialog-title>
       {{
-        (profile ? 'testers.profile.editTitle' : 'testers.profile.createTitle')
+        (profile ? "testers.profile.editTitle" : "testers.profile.createTitle")
           | translate
       }}
     </h2>
@@ -19,113 +19,126 @@
   </button>
 </div>
 <mat-dialog-content>
-  <p class="intro" id="profile-intro">{{ 'testers.profile.intro' | translate }}</p>
-  <form id="tester-profile-form" [formGroup]="form" (ngSubmit)="save()" aria-describedby="profile-intro" [attr.aria-busy]="saving()">
+  <p class="intro" id="profile-intro">
+    {{ "testers.profile.intro" | translate }}
+  </p>
+  <form
+    id="tester-profile-form"
+    [formGroup]="form"
+    (ngSubmit)="save()"
+    aria-describedby="profile-intro"
+    [attr.aria-busy]="saving()"
+  >
     <fieldset>
-    <legend>{{ 'testers.profile.requiredSection' | translate }}</legend>
-    <div class="two-columns">
+      <legend>{{ "testers.profile.requiredSection" | translate }}</legend>
+      <div class="two-columns">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic"
+          ><mat-label>{{ "testers.profile.displayName" | translate }}</mat-label
+          ><input
+            matInput
+            formControlName="displayName"
+            required
+            maxlength="80"
+            autocomplete="nickname"
+          /><mat-error>{{
+            "testers.profile.nameError" | translate
+          }}</mat-error></mat-form-field
+        >
+        <mat-form-field appearance="outline" subscriptSizing="dynamic"
+          ><mat-label>{{ "testers.profile.city" | translate }}</mat-label
+          ><input
+            matInput
+            formControlName="city"
+            required
+            maxlength="100"
+            autocomplete="address-level2"
+          /><mat-error>{{
+            "testers.profile.cityError" | translate
+          }}</mat-error></mat-form-field
+        >
+      </div>
       <mat-form-field appearance="outline" subscriptSizing="dynamic"
-        ><mat-label>{{ 'testers.profile.displayName' | translate }}</mat-label
-        ><input
+        ><mat-label>{{ "testers.profile.bio" | translate }}</mat-label
+        ><textarea
           matInput
-          formControlName="displayName" required
-          maxlength="80"
-          autocomplete="nickname"
-        /><mat-error>{{
-          'testers.profile.nameError' | translate
+          formControlName="bio"
+          required
+          rows="3"
+          maxlength="1200"
+          [placeholder]="'testers.profile.bioPlaceholder' | translate"
+        ></textarea
+        ><mat-hint>{{ "testers.profile.bioHint" | translate }}</mat-hint
+        ><mat-error>{{
+          "testers.profile.bioError" | translate
         }}</mat-error></mat-form-field
       >
-      <mat-form-field appearance="outline" subscriptSizing="dynamic"
-        ><mat-label>{{ 'testers.profile.city' | translate }}</mat-label
-        ><input
-          matInput
-          formControlName="city" required
-          maxlength="100"
-          autocomplete="address-level2"
-        /><mat-error>{{
-          'testers.profile.cityError' | translate
-        }}</mat-error></mat-form-field
-      >
-    </div>
-    <mat-form-field appearance="outline" subscriptSizing="dynamic"
-      ><mat-label>{{ 'testers.profile.bio' | translate }}</mat-label
-      ><textarea
-        matInput
-        formControlName="bio" required
-        rows="3"
-        maxlength="1200"
-        [placeholder]="'testers.profile.bioPlaceholder' | translate"
-      ></textarea
-      ><mat-hint>{{ 'testers.profile.bioHint' | translate }}</mat-hint
-      ><mat-error>{{
-        'testers.profile.bioError' | translate
-      }}</mat-error></mat-form-field
-    >
     </fieldset>
     <fieldset>
-    <legend>{{ 'testers.profile.optionalSection' | translate }}</legend>
-    <div class="two-columns">
+      <legend>{{ "testers.profile.optionalSection" | translate }}</legend>
+      <div class="two-columns">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic"
+          ><mat-label>{{ "testers.profile.skills" | translate }}</mat-label
+          ><input
+            matInput
+            formControlName="skills"
+            [placeholder]="'testers.profile.skillsPlaceholder' | translate"
+          /><mat-hint>{{ "testers.profile.tagsHint" | translate }}</mat-hint
+          ><mat-error>{{
+            "testers.profile.tagsError" | translate
+          }}</mat-error></mat-form-field
+        >
+        <mat-form-field appearance="outline" subscriptSizing="dynamic"
+          ><mat-label>{{ "testers.profile.resources" | translate }}</mat-label
+          ><input
+            matInput
+            formControlName="resources"
+            [placeholder]="'testers.profile.resourcesPlaceholder' | translate"
+          /><mat-hint>{{ "testers.profile.tagsHint" | translate }}</mat-hint
+          ><mat-error>{{
+            "testers.profile.tagsError" | translate
+          }}</mat-error></mat-form-field
+        >
+      </div>
       <mat-form-field appearance="outline" subscriptSizing="dynamic"
-        ><mat-label>{{ 'testers.profile.skills' | translate }}</mat-label
+        ><mat-label>{{ "testers.profile.interests" | translate }}</mat-label
         ><input
           matInput
-          formControlName="skills"
-          [placeholder]="'testers.profile.skillsPlaceholder' | translate"
-        /><mat-hint>{{ 'testers.profile.tagsHint' | translate }}</mat-hint
+          formControlName="interests"
+          [placeholder]="'testers.profile.interestsPlaceholder' | translate"
+        /><mat-hint>{{ "testers.profile.tagsHint" | translate }}</mat-hint
         ><mat-error>{{
-          'testers.profile.tagsError' | translate
+          "testers.profile.tagsError" | translate
         }}</mat-error></mat-form-field
       >
       <mat-form-field appearance="outline" subscriptSizing="dynamic"
-        ><mat-label>{{ 'testers.profile.resources' | translate }}</mat-label
-        ><input
+        ><mat-label>{{ "testers.profile.accessibility" | translate }}</mat-label
+        ><textarea
           matInput
-          formControlName="resources"
-          [placeholder]="'testers.profile.resourcesPlaceholder' | translate"
-        /><mat-hint>{{ 'testers.profile.tagsHint' | translate }}</mat-hint
+          formControlName="accessibilityNeeds"
+          rows="2"
+          maxlength="600"
+        ></textarea
+        ><mat-hint>{{
+          "testers.profile.accessibilityHint" | translate
+        }}</mat-hint
         ><mat-error>{{
-          'testers.profile.tagsError' | translate
+          "testers.profile.accessibilityError" | translate
         }}</mat-error></mat-form-field
       >
-    </div>
-    <mat-form-field appearance="outline" subscriptSizing="dynamic"
-      ><mat-label>{{ 'testers.profile.interests' | translate }}</mat-label
-      ><input
-        matInput
-        formControlName="interests"
-        [placeholder]="'testers.profile.interestsPlaceholder' | translate"
-      /><mat-hint>{{ 'testers.profile.tagsHint' | translate }}</mat-hint
-      ><mat-error>{{
-        'testers.profile.tagsError' | translate
-      }}</mat-error></mat-form-field
-    >
-    <mat-form-field appearance="outline" subscriptSizing="dynamic"
-      ><mat-label>{{ 'testers.profile.accessibility' | translate }}</mat-label
-      ><textarea
-        matInput
-        formControlName="accessibilityNeeds"
-        rows="2"
-        maxlength="600"
-      ></textarea
-      ><mat-hint>{{ 'testers.profile.accessibilityHint' | translate }}</mat-hint
-      ><mat-error>{{
-        'testers.profile.accessibilityError' | translate
-      }}</mat-error></mat-form-field
-    >
-    <mat-form-field appearance="outline" subscriptSizing="dynamic"
-      ><mat-label>{{ 'testers.profile.availability' | translate }}</mat-label
-      ><mat-select formControlName="availability"
-        ><mat-option value="remote">{{
-          'testers.availability.remote' | translate
-        }}</mat-option
-        ><mat-option value="onsite">{{
-          'testers.availability.onsite' | translate
-        }}</mat-option
-        ><mat-option value="hybrid">{{
-          'testers.availability.hybrid' | translate
-        }}</mat-option></mat-select
-      ></mat-form-field
-    >
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
+        ><mat-label>{{ "testers.profile.availability" | translate }}</mat-label
+        ><mat-select formControlName="availability"
+          ><mat-option value="remote">{{
+            "testers.availability.remote" | translate
+          }}</mat-option
+          ><mat-option value="onsite">{{
+            "testers.availability.onsite" | translate
+          }}</mat-option
+          ><mat-option value="hybrid">{{
+            "testers.availability.hybrid" | translate
+          }}</mat-option></mat-select
+        ></mat-form-field
+      >
     </fieldset>
   </form>
 
@@ -134,13 +147,8 @@
   }
 </mat-dialog-content>
 <mat-dialog-actions align="end"
-  ><button
-    mat-button
-    type="button"
-    mat-dialog-close
-    [disabled]="saving()"
-  >
-    {{ 'testers.cancel' | translate }}</button
+  ><button mat-button type="button" mat-dialog-close [disabled]="saving()">
+    {{ "testers.cancel" | translate }}</button
   ><button
     mat-flat-button
     type="submit"
@@ -149,7 +157,7 @@
   >
     <mat-icon>check</mat-icon
     >{{
-      (saving() ? 'testers.profile.saving' : 'testers.profile.save') | translate
+      (saving() ? "testers.profile.saving" : "testers.profile.save") | translate
     }}
   </button></mat-dialog-actions
 >

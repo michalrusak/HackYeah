@@ -14,7 +14,7 @@ import {
   type TesterSearchData,
   type TesterSearchesData,
 } from '@repo/api-contracts';
-import { Observable } from 'rxjs';
+import { Observable, timeout } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -44,15 +44,12 @@ export class TestersService {
   }
 
   saveProfile(input: TesterProfileInput): Observable<MyTesterProfileData> {
-    return this.api.request(
-      'PUT',
-      '/testers/profile/me',
-      MyTesterProfileDataSchema,
-      {
+    return this.api
+      .request('PUT', '/testers/profile/me', MyTesterProfileDataSchema, {
         ...this.options(),
         body: TesterProfileInputSchema.parse(input),
-      },
-    );
+      })
+      .pipe(timeout(20000));
   }
 
   search(query: string): Observable<TesterSearchData> {
@@ -94,10 +91,15 @@ export class TestersService {
     );
   }
 
-  private options(): { withCredentials: boolean; headers?: Record<string, string> } {
+  private options(): {
+    withCredentials: boolean;
+    headers?: Record<string, string>;
+  } {
     return {
       withCredentials: true,
-      ...(this.auth.user() ? {} : { headers: { 'X-Tester-Key': this.readOrCreateKey() } }),
+      ...(this.auth.user()
+        ? {}
+        : { headers: { 'X-Tester-Key': this.readOrCreateKey() } }),
     };
   }
 

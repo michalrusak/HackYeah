@@ -3,7 +3,7 @@ import {
   type TesterProfileInput,
 } from '@repo/api-contracts';
 
-const profiles: Array<Omit<TesterProfileInput, 'consent' | 'isActive'>> = [
+const profiles: TesterProfileInput[] = [
   {
     displayName: 'Maja Nowak',
     city: 'Kraków',
@@ -122,7 +122,5 @@ export const testerSeedProfiles: TesterProfileInput[] = profiles.map(
   (profile) =>
     TesterProfileInputSchema.parse({
       ...profile,
-      consent: true,
-      isActive: true,
     }),
 );
