@@ -9,7 +9,6 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -30,7 +29,6 @@ interface ChatEntry {
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
-    MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -63,7 +61,8 @@ export class AssistantPanelComponent {
 
   send(text?: string): void {
     const content = (text ?? this.message.value).trim();
-    if (content.length === 0 || this.chatLoading()) return;
+    if (content.length === 0 || content.length > 2000 || this.chatLoading())
+      return;
     this.errorKey.set(null);
     this.followUps.set([]);
     this.entries.update((current) => [...current, { role: 'user', content }]);

@@ -2,6 +2,7 @@ import { z } from "zod";
 import { apiSuccessSchema } from "./response.types.js";
 
 export const AudienceSchema = z.enum([
+  "Osoby w spektrum autyzmu",
   "Seniorzy",
   "Dzieci, młodzież i rodzina",
   "Rynek pracy",
@@ -58,6 +59,7 @@ export const MatchmakingClarificationSchema = z
   .object({
     reason: z.enum(["no_matches", "too_many_matches"]),
     question: z.string().trim().min(1).max(300).nullable(),
+    options: z.array(z.string().trim().min(1).max(180)).max(3).optional(),
     round: z.number().int().min(1).max(MAX_CLARIFICATION_ROUNDS),
     maxRounds: z.literal(MAX_CLARIFICATION_ROUNDS),
     totalMatches: z.number().int().nonnegative(),
@@ -80,10 +82,14 @@ export const MatchmakingRequestSchema = z
 export const InterpretationSchema = z
   .object({
     summary: z.string().trim().min(1).max(800),
-    audiences: z.array(AudienceSchema).max(9),
+    audiences: z.array(AudienceSchema).max(10),
     areas: z.array(SocialAreaSchema).max(8),
     needs: z.array(NeedSchema).max(21),
     missingInformation: z.array(z.string().trim().min(1).max(300)).max(3),
+    suggestedAnswers: z
+      .array(z.string().trim().min(1).max(180))
+      .max(3)
+      .optional(),
   })
   .strict();
 
@@ -164,12 +170,19 @@ export const MatchmakingResponseSchema = apiSuccessSchema(
 export const interpretationJsonSchema = {
   type: "object",
   additionalProperties: false,
-  required: ["summary", "audiences", "areas", "needs", "missingInformation"],
+  required: [
+    "summary",
+    "audiences",
+    "areas",
+    "needs",
+    "missingInformation",
+    "suggestedAnswers",
+  ],
   properties: {
     summary: { type: "string", minLength: 1, maxLength: 800 },
     audiences: {
       type: "array",
-      maxItems: 9,
+      maxItems: 10,
       items: { type: "string", enum: AudienceSchema.options },
     },
     areas: {
@@ -181,6 +194,11 @@ export const interpretationJsonSchema = {
       type: "array",
       maxItems: 21,
       items: { type: "string", enum: NeedSchema.options },
+    },
+    suggestedAnswers: {
+      type: "array",
+      maxItems: 3,
+      items: { type: "string", minLength: 1, maxLength: 180 },
     },
     missingInformation: {
       type: "array",

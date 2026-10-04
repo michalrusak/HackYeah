@@ -143,7 +143,10 @@
       }
       @if (loading()) {
         <div role="status" class="loading">
-          <mat-progress-bar mode="indeterminate" />
+          <mat-progress-bar
+            mode="indeterminate"
+            [attr.aria-label]="'a11y.loading' | translate"
+          />
           <p>{{ "adaptation.loading" | translate }}</p>
         </div>
       }

@@ -1,5 +1,15 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  inject,
+  Injector,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
@@ -14,7 +24,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
@@ -49,7 +58,6 @@ import { RopsContactService } from './rops-contact.service';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatListModule,
     MatSelectModule,
     TranslatePipe,
   ],
@@ -61,11 +69,17 @@ export class RopsContactComponent {
   private readonly service = inject(RopsContactService);
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  private readonly conversationHeading = viewChild<ElementRef<HTMLElement>>(
+    'conversationHeading',
+  );
 
   readonly categories = ContactCategorySchema.options;
   readonly checking = signal(true);
   readonly busy = signal(false);
   readonly errorKey = signal<string | null>(null);
+  readonly statusKey = signal<string | null>(null);
   readonly conversations = signal<ContactConversation[]>([]);
   readonly thread = signal<ContactThreadData | null>(null);
   readonly openId = computed(() => this.thread()?.conversation.id ?? null);
@@ -121,7 +135,7 @@ export class RopsContactComponent {
           this.checking.set(false);
         },
         error: () => {
-          this.errorKey.set('rops-contact.error');
+          this.errorKey.set('a11y.loadError');
           this.checking.set(false);
         },
       });
@@ -155,7 +169,7 @@ export class RopsContactComponent {
       )
       .subscribe({
         next: ({ items }) => this.conversations.set(items),
-        error: () => this.errorKey.set('rops-contact.error'),
+        error: () => this.errorKey.set('a11y.loadError'),
       });
   }
 
@@ -172,8 +186,9 @@ export class RopsContactComponent {
           this.thread.set(null);
           this.creating.set(false);
           this.errorKey.set(null);
+          this.statusKey.set(null);
         },
-        error: () => this.fail(),
+        error: () => this.fail('rops-contact.error'),
       });
   }
 
@@ -181,39 +196,57 @@ export class RopsContactComponent {
     this.thread.set(null);
     this.creating.set(true);
     this.errorKey.set(null);
+    this.focus('input[formControlName=firstName]');
   }
 
   open(conversation: ContactConversation): void {
     this.creating.set(false);
     this.reply.reset();
-    this.run(this.service.thread(conversation.id));
+    this.run(this.service.thread(conversation.id), 'loading', () =>
+      afterNextRender(() => this.conversationHeading()?.nativeElement.focus(), {
+        injector: this.injector,
+      }),
+    );
   }
 
   create(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.errorKey.set('a11y.contactValidation');
+      this.focus('input.ng-invalid, textarea.ng-invalid');
       return;
     }
     const { message, ...value } = this.form.getRawValue();
-    this.run(this.service.create({ ...value, initialMessage: message }), () => {
-      this.creating.set(false);
-      this.form.reset();
-    });
+    this.run(
+      this.service.create({ ...value, initialMessage: message }),
+      'sending',
+      () => {
+        this.creating.set(false);
+        this.form.reset();
+      },
+    );
   }
 
   send(): void {
     const current = this.thread();
     const content = this.reply.value.trim();
     if (!current || !content || this.reply.invalid) return;
-    this.run(this.service.send(current.conversation.id, content), () =>
-      this.reply.reset(),
+    this.run(
+      this.service.send(current.conversation.id, content),
+      'sending',
+      () => this.reply.reset(),
     );
   }
 
-  private run(source: Observable<ContactThreadData>, done?: () => void): void {
+  private run(
+    source: Observable<ContactThreadData>,
+    kind: 'loading' | 'sending',
+    done: () => void,
+  ): void {
     if (this.busy()) return;
     this.busy.set(true);
     this.errorKey.set(null);
+    this.statusKey.set(`a11y.${kind}`);
     source.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.busy.set(false);
@@ -222,14 +255,27 @@ export class RopsContactComponent {
           data.conversation,
           ...items.filter((item) => item.id !== data.conversation.id),
         ]);
-        done?.();
+        this.statusKey.set(kind === 'sending' ? 'a11y.sent' : null);
+        done();
       },
-      error: () => this.fail(),
+      error: () =>
+        this.fail(kind === 'sending' ? 'a11y.sendError' : 'a11y.loadError'),
     });
   }
 
-  private fail(): void {
+  private fail(key: string): void {
     this.busy.set(false);
-    this.errorKey.set('rops-contact.error');
+    this.statusKey.set(null);
+    this.errorKey.set(key);
+  }
+
+  private focus(selector: string): void {
+    afterNextRender(
+      () =>
+        this.element.nativeElement
+          .querySelector<HTMLElement>(selector)
+          ?.focus(),
+      { injector: this.injector },
+    );
   }
 }

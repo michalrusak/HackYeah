@@ -18,7 +18,7 @@
     </div>
     <aside class="join-card">
       <div class="join-icon" aria-hidden="true">
-        <mat-icon>diversity_3</mat-icon>
+        <mat-icon aria-hidden="true">diversity_3</mat-icon>
       </div>
       <h2>{{ "testers.joinTitle" | translate }}</h2>
       <p>{{ "testers.joinDescription" | translate }}</p>
@@ -132,7 +132,7 @@
                 busy() || initialLoading() || !!initialError() || !!assigning()
               "
             >
-              <mat-icon>{{
+              <mat-icon aria-hidden="true">{{
                 searching() ? "hourglass_top" : "auto_awesome"
               }}</mat-icon
               >{{
@@ -236,7 +236,7 @@
               (click)="showCatalog()"
               [disabled]="busy() || !!assigning()"
             >
-              <mat-icon>arrow_back</mat-icon
+              <mat-icon aria-hidden="true">arrow_back</mat-icon
               >{{ "testers.showCatalog" | translate }}
             </button>
           </div>

@@ -6,12 +6,12 @@
     [attr.aria-label]="'header.openMenu' | translate"
     (click)="menuToggle.emit()"
   >
-    <mat-icon>menu</mat-icon>
+    <mat-icon aria-hidden="true">menu</mat-icon>
   </button>
 
   <a class="brand" routerLink="/">
     <mat-icon aria-hidden="true">bolt</mat-icon>
-    <span>{{ 'app.name' | translate }}</span>
+    <span>{{ "app.name" | translate }}</span>
   </a>
 
   <nav class="desktop-nav" [attr.aria-label]="'header.mainNav' | translate">
@@ -31,8 +31,12 @@
   <span class="spacer"></span>
 
   <form class="search-form" (ngSubmit)="onSearchSubmit()">
-    <mat-form-field class="search-field" appearance="outline" subscriptSizing="dynamic">
-      <mat-label>{{ 'header.search' | translate }}</mat-label>
+    <mat-form-field
+      class="search-field"
+      appearance="outline"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>{{ "header.search" | translate }}</mat-label>
       <input
         matInput
         type="search"
@@ -47,7 +51,7 @@
         type="submit"
         [attr.aria-label]="'header.search' | translate"
       >
-        <mat-icon>search</mat-icon>
+        <mat-icon aria-hidden="true">search</mat-icon>
       </button>
     </mat-form-field>
   </form>
@@ -60,7 +64,9 @@
     "
     (click)="theme.toggle()"
   >
-    <mat-icon>{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    <mat-icon aria-hidden="true">{{
+      theme.isDark() ? "light_mode" : "dark_mode"
+    }}</mat-icon>
   </button>
 
   <button
@@ -74,6 +80,7 @@
       [matBadgeHidden]="notificationCount() === 0"
       matBadgeColor="warn"
       matBadgeSize="small"
+      aria-hidden="true"
     >
       notifications
     </mat-icon>
@@ -81,17 +88,17 @@
 
   <mat-menu #notificationsMenu="matMenu" xPosition="before">
     <div class="menu-heading" mat-menu-item disabled>
-      {{ 'header.notifications' | translate }}
+      {{ "header.notifications" | translate }}
     </div>
     @if (notificationCount() === 0) {
       <button mat-menu-item disabled>
-        {{ 'header.notificationsEmpty' | translate }}
+        {{ "header.notificationsEmpty" | translate }}
       </button>
     } @else {
       <button mat-menu-item>
-        <mat-icon>info</mat-icon>
+        <mat-icon aria-hidden="true">info</mat-icon>
         {{
-          'header.notificationsCount'
+          "header.notificationsCount"
             | translate: { count: notificationCount() }
         }}
       </button>
@@ -99,7 +106,12 @@
   </mat-menu>
 
   @if (isLoggedIn()) {
-    <button mat-button type="button" [matMenuTriggerFor]="userMenu" class="user-trigger">
+    <button
+      mat-button
+      type="button"
+      [matMenuTriggerFor]="userMenu"
+      class="user-trigger"
+    >
       <mat-icon aria-hidden="true">account_circle</mat-icon>
       <span class="user-name">{{ userName() }}</span>
       <mat-icon aria-hidden="true">arrow_drop_down</mat-icon>
@@ -108,22 +120,27 @@
     <mat-menu #userMenu="matMenu" xPosition="before">
       <div class="menu-heading" mat-menu-item disabled>{{ userName() }}</div>
       <button mat-menu-item>
-        <mat-icon>person</mat-icon>
-        {{ 'header.profile' | translate }}
+        <mat-icon aria-hidden="true">person</mat-icon>
+        {{ "header.profile" | translate }}
       </button>
       <button mat-menu-item>
-        <mat-icon>settings</mat-icon>
-        {{ 'header.settings' | translate }}
+        <mat-icon aria-hidden="true">settings</mat-icon>
+        {{ "header.settings" | translate }}
       </button>
       <button mat-menu-item (click)="logout.emit()">
-        <mat-icon>logout</mat-icon>
-        {{ 'header.logout' | translate }}
+        <mat-icon aria-hidden="true">logout</mat-icon>
+        {{ "header.logout" | translate }}
       </button>
     </mat-menu>
   } @else {
-    <button mat-stroked-button type="button" class="login-button" (click)="login.emit()">
+    <button
+      mat-stroked-button
+      type="button"
+      class="login-button"
+      (click)="login.emit()"
+    >
       <mat-icon aria-hidden="true">login</mat-icon>
-      <span class="login-label">{{ 'header.login' | translate }}</span>
+      <span class="login-label">{{ "header.login" | translate }}</span>
     </button>
   }
 </mat-toolbar>

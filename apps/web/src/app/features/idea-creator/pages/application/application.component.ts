@@ -1,4 +1,7 @@
 import {
+  afterNextRender,
+  ElementRef,
+  Injector,
   Component,
   DestroyRef,
   OnInit,
@@ -7,7 +10,13 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,7 +26,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import type { ApplicationData, CallSection } from '@repo/api-contracts';
-import { debounceTime } from 'rxjs';
+import { debounceTime, switchMap } from 'rxjs';
 import { toErrorKey } from '../../services/api-error';
 import { EditTokenStore } from '../../services/edit-token.store';
 import { IdeaCreatorApiService } from '../../services/idea-creator-api.service';
@@ -30,6 +39,7 @@ type SaveState = 'idle' | 'saving' | 'saved' | 'error';
     ReactiveFormsModule,
     RouterLink,
     MatButtonModule,
+    MatCheckboxModule,
     MatCardModule,
     MatFormFieldModule,
     MatIconModule,
@@ -45,6 +55,10 @@ export class ApplicationComponent implements OnInit {
   private readonly tokens = inject(EditTokenStore);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+
+  private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  readonly reviewed = new FormControl(false, { nonNullable: true });
 
   readonly applicationId = computed(
     () => this.route.snapshot.paramMap.get('applicationId') ?? '',
@@ -76,7 +90,14 @@ export class ApplicationComponent implements OnInit {
   }
 
   generate(): void {
-    if (this.generating() || this.submitted()) return;
+    if (
+      this.generating() ||
+      this.submitted() ||
+      this.submitting() ||
+      this.saveState() === 'saving'
+    )
+      return;
+    this.reviewed.setValue(false);
     this.generating.set(true);
     this.errorKey.set(null);
     this.api
@@ -95,20 +116,62 @@ export class ApplicationComponent implements OnInit {
   }
 
   submit(): void {
-    if (this.submitting() || this.submitted()) return;
+    if (
+      this.submitting() ||
+      this.submitted() ||
+      this.generating() ||
+      this.saveState() === 'saving'
+    )
+      return;
+    this.form.markAllAsTouched();
+    if (this.form.invalid || !this.reviewed.value) {
+      this.errorKey.set(
+        this.form.invalid ? 'a11y.fieldError' : 'a11y.reviewApplication',
+      );
+      afterNextRender(
+        () =>
+          this.element.nativeElement
+            .querySelector<HTMLElement>(
+              this.form.invalid
+                ? 'input.ng-invalid, textarea.ng-invalid, mat-select.ng-invalid'
+                : '#application-review input',
+            )
+            ?.focus(),
+        { injector: this.injector },
+      );
+      return;
+    }
     this.submitting.set(true);
+    this.form.disable({ emitEvent: false });
     this.errorKey.set(null);
     this.api
-      .submitApplication(this.applicationId(), this.token())
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .saveApplication(
+        this.applicationId(),
+        this.form.getRawValue(),
+        this.token(),
+      )
+      .pipe(
+        switchMap(() =>
+          this.api.submitApplication(this.applicationId(), this.token()),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (data) => {
           this.apply(data, { silent: true });
           this.submitting.set(false);
+          afterNextRender(
+            () =>
+              this.element.nativeElement
+                .querySelector<HTMLElement>('.submitted-notice h2')
+                ?.focus(),
+            { injector: this.injector },
+          );
         },
         error: (error: unknown) => {
           this.errorKey.set(toErrorKey(error));
           this.submitting.set(false);
+          this.form.enable({ emitEvent: false });
         },
       });
   }
@@ -159,7 +222,15 @@ export class ApplicationComponent implements OnInit {
       } else {
         this.form.addControl(
           section.id,
-          new FormControl(value, { nonNullable: true }),
+          new FormControl(value, {
+            nonNullable: true,
+            validators: [
+              Validators.maxLength(section.maxLength),
+              ...(section.required
+                ? [Validators.required, Validators.pattern(/\S/)]
+                : []),
+            ],
+          }),
           { emitEvent: false },
         );
       }
@@ -173,15 +244,22 @@ export class ApplicationComponent implements OnInit {
 
   private watchChanges(): void {
     this.form.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.reviewed.setValue(false));
+    this.form.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.save());
   }
 
   private save(): void {
-    if (this.submitted()) return;
+    if (this.submitted() || this.submitting() || this.generating()) return;
     this.saveState.set('saving');
     this.api
-      .saveApplication(this.applicationId(), this.form.getRawValue(), this.token())
+      .saveApplication(
+        this.applicationId(),
+        this.form.getRawValue(),
+        this.token(),
+      )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.saveState.set('saved'),

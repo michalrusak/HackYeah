@@ -6,6 +6,14 @@ export const routes: Routes = [
     path: '',
     component: AppLayoutComponent,
     children: [
+      {
+        path: 'dostepnosc',
+        loadComponent: () =>
+          import('./pages/accessibility/accessibility.component').then(
+            (m) => m.AccessibilityComponent,
+          ),
+        data: { breadcrumb: 'a11y.title' },
+      },
       { path: '', redirectTo: 'matchmaking', pathMatch: 'full' },
       {
         path: 'matchmaking',

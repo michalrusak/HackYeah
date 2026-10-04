@@ -1,3 +1,4 @@
+import { PilotMatchesModule } from './modules/matchmaking/pilot-matches.module.js';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -36,7 +37,9 @@ const isTestEnv = process.env.NODE_ENV === 'test';
     HealthModule,
     MatchmakingModule,
     AdaptationModule,
-    ...(isTestEnv ? [] : [TestersModule, TesterProjectsModule]),
+    ...(isTestEnv
+      ? []
+      : [TestersModule, TesterProjectsModule, PilotMatchesModule]),
   ],
   controllers: [AppController],
   providers: [

@@ -1,3 +1,4 @@
+import { PilotMatchesComponent } from './pilots/pilot-matches.component';
 import { DomSanitizer, type SafeResourceUrl } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 import { AdaptationService } from '../adaptation/adaptation.service';
@@ -25,6 +26,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import {
@@ -41,12 +43,14 @@ import { MatchmakingService } from './matchmaking.service';
 @Component({
   selector: 'app-matchmaking',
   imports: [
+    PilotMatchesComponent,
     ReactiveFormsModule,
     RouterLink,
     MatButtonModule,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
+    MatRadioModule,
     MatIconModule,
     MatProgressBarModule,
     TranslatePipe,
@@ -78,7 +82,7 @@ export class MatchmakingComponent {
     validators: [Validators.required, Validators.maxLength(4000)],
   });
   readonly form = new FormGroup({ description: this.description });
-  readonly examples = ['seniors', 'migrants', 'school'];
+  readonly examples = ['seniors', 'migrants', 'homelessness', 'pilot'];
   private readonly sanitizer = inject(DomSanitizer);
   readonly preview = signal<{ id: string; url: SafeResourceUrl } | null>(null);
   readonly previewLoading = signal(false);
@@ -153,6 +157,33 @@ export class MatchmakingComponent {
     ],
   });
   readonly answerForm = new FormGroup({ answer: this.answer });
+  readonly selectedOption = signal<number | null>(null);
+  readonly selectionRequired = signal(false);
+  readonly optionLetters = ['A', 'B', 'C'];
+  private customAnswer = '';
+
+  selectAnswer(value: unknown): void {
+    if (this.loading() || typeof value !== 'number') return;
+    const options = this.result()?.clarification?.options ?? [];
+    if (value !== -1 && (!Number.isInteger(value) || !options[value])) return;
+    if (this.selectedOption() === -1) this.customAnswer = this.answer.value;
+    this.selectedOption.set(value);
+    this.selectionRequired.set(false);
+    this.answer.setValue(
+      value === -1 ? this.customAnswer : (options[value] ?? ''),
+    );
+    if (value === -1) {
+      afterNextRender(() => this.answerInput()?.nativeElement.focus(), {
+        injector: this.injector,
+      });
+    }
+  }
+
+  private resetAnswerChoice(): void {
+    this.selectedOption.set(null);
+    this.selectionRequired.set(false);
+    this.customAnswer = '';
+  }
   private readonly clarificationHeading = viewChild<ElementRef<HTMLElement>>(
     'clarificationHeading',
   );
@@ -162,6 +193,13 @@ export class MatchmakingComponent {
 
   submitAnswer(): void {
     if (this.loading()) return;
+    if (
+      this.result()?.clarification?.options?.length &&
+      this.selectedOption() === null
+    ) {
+      this.selectionRequired.set(true);
+      return;
+    }
     const question = this.result()?.clarification?.question;
     const parsed = ClarificationAnswerSchema.safeParse({
       question,
@@ -193,6 +231,7 @@ export class MatchmakingComponent {
         this.errorKey.set(null);
         this.answers.set([]);
         this.answer.reset();
+        this.resetAnswerChoice();
         this.clarificationDismissed.set(false);
         this.failedAnswers = null;
       });
@@ -239,6 +278,7 @@ export class MatchmakingComponent {
           this.result.set(data);
           this.answers.set(answers);
           this.answer.reset('', { emitEvent: false });
+          this.resetAnswerChoice();
           this.clarificationDismissed.set(false);
           this.finish();
           afterNextRender(

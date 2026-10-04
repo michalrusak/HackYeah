@@ -36,6 +36,7 @@ export const ideaRoutes: Routes = [
       },
       {
         path: ':id',
+        data: { breadcrumb: 'a11y.ideaDetail' },
         loadComponent: () =>
           import('./pages/idea-detail/idea-detail.component').then(
             (m) => m.IdeaDetailComponent,
@@ -43,6 +44,7 @@ export const ideaRoutes: Routes = [
       },
       {
         path: ':id/canva',
+        data: { breadcrumb: 'ideaCreator.detail.canvas' },
         loadComponent: () =>
           import('./pages/idea-canvas/idea-canvas.component').then(
             (m) => m.IdeaCanvasComponent,

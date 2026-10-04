@@ -1,7 +1,7 @@
-<div class="rops-contact-container">
+<section class="rops-contact-container" aria-labelledby="rops-title">
   <header class="intro">
     <div>
-      <h1>{{ "rops-contact.title" | translate }}</h1>
+      <h1 id="rops-title">{{ "rops-contact.title" | translate }}</h1>
       <p>{{ "rops-contact.intro" | translate }}</p>
     </div>
     @if (auth.user(); as user) {
@@ -14,8 +14,15 @@
     }
   </header>
 
+  <p class="status-line" role="status">
+    @if (statusKey(); as key) {
+      {{ key | translate }}
+    }
+  </p>
   @if (errorKey(); as key) {
-    <p class="error" role="alert">{{ key | translate }}</p>
+    <p class="error-message" role="alert" tabindex="-1">
+      {{ key | translate }}
+    </p>
   }
 
   @if (checking()) {
@@ -52,30 +59,27 @@
           @if (!conversations().length) {
             <p class="empty-list">{{ "rops-contact.empty" | translate }}</p>
           }
-          <mat-action-list>
+          <ul class="conversation-list">
             @for (item of conversations(); track item.id) {
-              <button
-                mat-list-item
-                type="button"
-                [class.active]="openId() === item.id"
-                [attr.aria-current]="openId() === item.id ? 'true' : null"
-                (click)="open(item)"
-              >
-                <span matListItemTitle>{{ item.subject }}</span>
-                <span matListItemLine>
-                  {{ "rops-contact.categories." + item.category | translate }}
-                  · {{ item.updatedAt | date: "dd.MM.yyyy HH:mm" }}
-                </span>
-                <span
-                  matListItemLine
-                  class="status"
-                  [class.status-answered]="item.status === 'ANSWERED'"
+              <li>
+                <button
+                  type="button"
+                  [class.active]="openId() === item.id"
+                  [attr.aria-pressed]="openId() === item.id"
+                  (click)="open(item)"
                 >
-                  {{ "rops-contact.statuses." + item.status | translate }}
-                </span>
-              </button>
+                  <strong>{{ item.subject }}</strong>
+                  <span>
+                    {{ "rops-contact.categories." + item.category | translate }}
+                    · {{ item.updatedAt | date: "dd.MM.yyyy HH:mm" }}
+                  </span>
+                  <span [class.status-answered]="item.status === 'ANSWERED'">
+                    {{ "rops-contact.statuses." + item.status | translate }}
+                  </span>
+                </button>
+              </li>
             }
-          </mat-action-list>
+          </ul>
         </mat-card-content>
       </mat-card>
 
@@ -106,7 +110,7 @@
                     | translate
                 }}</mat-hint>
               </mat-form-field>
-              <div class="name-row">
+              <div class="name-fields">
                 <mat-form-field appearance="outline">
                   <mat-label>{{
                     "rops-contact.firstName" | translate
@@ -171,6 +175,7 @@
                   rows="6"
                   maxlength="4000"
                 ></textarea>
+                <mat-hint>{{ "a11y.messageLimit" | translate }}</mat-hint>
                 @if (form.controls.message.hasError("required")) {
                   <mat-error>{{
                     "rops-contact.required" | translate
@@ -188,7 +193,9 @@
           @if (thread(); as data) {
             <mat-card-header>
               <mat-card-title>
-                <h2>{{ data.conversation.subject }}</h2>
+                <h2 #conversationHeading tabindex="-1">
+                  {{ data.conversation.subject }}
+                </h2>
               </mat-card-title>
               <mat-card-subtitle>
                 {{
@@ -203,7 +210,14 @@
               </mat-card-subtitle>
             </mat-card-header>
             <mat-divider />
-            <mat-card-content class="messages-container">
+            <mat-card-content
+              class="messages-container"
+              role="log"
+              aria-live="polite"
+              aria-relevant="additions"
+              [attr.aria-label]="'rops-contact.messages' | translate"
+              tabindex="0"
+            >
               @for (item of data.messages; track item.id) {
                 <div
                   class="message-bubble"
@@ -261,4 +275,4 @@
       </mat-card>
     </div>
   }
-</div>
+</section>

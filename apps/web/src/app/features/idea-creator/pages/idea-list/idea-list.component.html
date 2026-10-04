@@ -84,7 +84,10 @@
   </form>
 
   @if (loading()) {
-    <mat-progress-bar mode="indeterminate" />
+    <mat-progress-bar
+      mode="indeterminate"
+      [attr.aria-label]="'a11y.loading' | translate"
+    />
   }
 
   <p class="results-count" role="status">
@@ -118,7 +121,10 @@
           }
           <mat-card-content>
             <p class="badges">
-              <span class="badge" [class.good-practice]="item.kind === 'GOOD_PRACTICE'">
+              <span
+                class="badge"
+                [class.good-practice]="item.kind === 'GOOD_PRACTICE'"
+              >
                 {{ "ideaCreator.kinds." + item.kind | translate }}
               </span>
               <span class="badge subtle">

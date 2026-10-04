@@ -81,6 +81,7 @@ export class OpenRouterService {
                   'Wybieraj tylko tagi ze schematu, które wynikają z opisu. Uwzględnij synonimy, ' +
                   'np. samotność oznacza potrzebę relacji społecznych. Nie wyciągaj wniosków ' +
                   'o odbiorcach wyłącznie z nazwy organizacji. Nie dopisuj niepodanych problemów. ' +
+                  'Gdy opis dotyczy autyzmu, wybierz odbiorców Osoby w spektrum autyzmu. Autyzm sam w sobie nie oznacza niepełnosprawności intelektualnej; nie przypisuj jej bez informacji w opisie. ' +
                   'Brak podstaw do wyboru tagów oznacza pustą tablicę. ' +
                   'Przy opisie ogólnym lub niezwiązanym z problemem społecznym zwróć needs: [] ' +
                   'i krótkie pytanie doprecyzowujące w missingInformation. ' +
@@ -89,7 +90,10 @@ export class OpenRouterService {
                   'Nie powtarzaj danych osobowych w pytaniach. Nie wybieraj wszystkich potrzeb ' +
                   'z obszaru, tylko te faktycznie opisane. Unikaj powtórzeń tagów. ' +
                   'W needs najpierw wybierz konkretną potrzebę, a potem ewentualne potrzeby ogólne. ' +
+                  'Doradztwo zawodowe, przygotowanie do pierwszej pracy i rozpoznawanie mocnych stron na rynku pracy oznaczają potrzebę Aktywizacja zawodowa. Nie zastępuj jej kompetencjami cyfrowymi ani wsparciem emocjonalnym, jeśli nie zostały opisane. ' +
+                  'Samo wspomnienie młodzieży nie oznacza pieczy zastępczej. ' +
                   'Przykłady interpretacji (nie kopiuj ich do innych opisów): ' +
+                  'materiały do przygotowania młodych osób w spektrum autyzmu do pierwszej pracy -> audiences: ["Osoby w spektrum autyzmu"], needs: ["Aktywizacja zawodowa"], areas: ["Niepełnosprawność"]. ' +
                   'ukraińskie rodziny nie wiedzą jak zapisać się do lekarza -> audiences: ["Cudzoziemcy"], ' +
                   'needs: ["Informacja o opiece zdrowotnej", "Dostęp do usług"], areas: ["Integracja cudzoziemców", "Zdrowie"]. ' +
                   'uczniowie wracają po leczeniu kryzysu do klasy -> needs: ["Powrót do szkoły", "Wsparcie emocjonalne"]. ' +
@@ -107,7 +111,12 @@ export class OpenRouterService {
                   'W missingInformation zaproponuj jedno krótkie pytanie, które najlepiej zawęzi dobór innowacji. ' +
                   'Nie pytaj ponownie o informacje już podane, nie powtarzaj wcześniejszych pytań. ' +
                   'Pytaj o odbiorców, konkretną trudność lub oczekiwaną zmianę. Nie pytaj o dane osobowe. ' +
-                  'Jeżeli problem jest wystarczająco konkretny, missingInformation może być puste.',
+                  'Jeżeli problem jest wystarczająco konkretny, missingInformation może być puste. ' +
+                  'Do PIERWSZEGO pytania w missingInformation podaj dokładnie trzy różne, krótkie odpowiedzi w suggestedAnswers. ' +
+                  'Odpowiedzi muszą bezpośrednio odpowiadać na to pytanie i pomagać zawęzić potrzeby, bez dopisywania diagnoz lub faktów o użytkowniku. ' +
+                  'Nie numeruj ich i nie dodawaj opcji Inna odpowiedź — interfejs doda ją osobno. ' +
+                  'Nie traktuj własnych propozycji odpowiedzi jako deklaracji użytkownika ani podstawy do wyboru tagów. ' +
+                  'Gdy missingInformation jest puste, suggestedAnswers musi być puste.',
               },
               {
                 role: 'user',

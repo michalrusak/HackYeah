@@ -54,7 +54,9 @@
       [disabled]="busy()"
       (click)="toggleAssignment.emit()"
     >
-      <mat-icon>{{ assigned() ? "check_circle" : "person_add" }}</mat-icon>
+      <mat-icon aria-hidden="true">{{
+        assigned() ? "check_circle" : "person_add"
+      }}</mat-icon>
       {{ (assigned() ? "testers.unassign" : "testers.assign") | translate }}
     </button>
   }

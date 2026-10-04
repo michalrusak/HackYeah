@@ -1,5 +1,6 @@
 .rops-contact-container {
   padding: 16px;
+  min-height: 60vh;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -32,9 +33,8 @@ h2 {
   font: inherit;
 }
 
-.error {
+.status-line {
   margin: 0;
-  color: var(--mat-sys-error, #ba1a1a);
 }
 
 .login-prompt mat-card-content {
@@ -58,12 +58,15 @@ h2 {
 .chat-layout {
   display: flex;
   gap: 16px;
-  min-height: 60vh;
+  flex-grow: 1;
+  flex-wrap: wrap;
 }
 
 .sidebar {
-  width: 320px;
-  flex-shrink: 0;
+  flex: 1 1 260px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 
   mat-card-content {
     padding: 0 8px 8px;
@@ -80,17 +83,13 @@ h2 {
   color: var(--mat-sys-on-surface-variant, #44474e);
 }
 
-.active {
-  background: var(--mat-sys-secondary-container, #d7e3f7);
-}
-
 .status-answered {
   font-weight: 600;
   color: var(--mat-sys-primary, #005cbb);
 }
 
 .chat-area {
-  flex-grow: 1;
+  flex: 2 1 360px;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -101,15 +100,6 @@ h2 {
   flex-direction: column;
   gap: 8px;
   padding-top: 16px;
-}
-
-.name-row {
-  display: flex;
-  gap: 16px;
-
-  mat-form-field {
-    flex: 1;
-  }
 }
 
 .messages-container {
@@ -191,17 +181,51 @@ h2 {
 }
 
 @media (max-width: 800px) {
-  .chat-layout {
-    flex-direction: column;
-  }
-  .sidebar {
-    width: auto;
-  }
-  .name-row {
-    flex-direction: column;
-    gap: 8px;
-  }
   .message-bubble {
     max-width: 90%;
+  }
+}
+
+.name-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.name-fields > * {
+  flex: 1 1 180px;
+}
+.conversation-list {
+  list-style: none;
+  padding: 8px;
+  margin: 0;
+}
+.conversation-list button {
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  background: var(--hub-surface);
+  color: var(--hub-ink);
+  border: 1px solid var(--hub-border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.conversation-list span,
+.conversation-list strong {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.conversation-list .active {
+  background: var(--hub-soft);
+  border: 2px solid var(--hub-brand);
+}
+.error-message {
+  color: var(--hub-error);
+}
+@media (max-width: 600px) {
+  .rops-contact-container {
+    padding: 0;
+  }
+  .message-bubble {
+    max-width: 100%;
   }
 }

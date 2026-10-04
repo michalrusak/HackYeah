@@ -8,6 +8,7 @@ import {
   Injector,
   signal,
   ViewChild,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
@@ -16,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import {
   Router,
+  ActivatedRoute,
   NavigationEnd,
   RouterLink,
   RouterLinkActive,
@@ -57,7 +59,8 @@ export class AppLayoutComponent {
   private mainContent?: ElementRef<HTMLElement>;
   private readonly focusMonitor = inject(FocusMonitor);
   private readonly injector = inject(Injector);
-  private pendingNavigationFocus = false;
+  private readonly route = inject(ActivatedRoute);
+  private readonly help = viewChild<ElementRef<HTMLDetailsElement>>('help');
 
   constructor() {
     const translate = inject(TranslateService);
@@ -67,6 +70,10 @@ export class AppLayoutComponent {
         filter((event) => event instanceof NavigationEnd),
         startWith(null),
         map(() => {
+          let active = this.route.snapshot;
+          while (active.firstChild) active = active.firstChild;
+          const pageKey = active.data['breadcrumb'];
+          if (typeof pageKey === 'string') return pageKey;
           const path = this.router.url.split(/[?#]/)[0];
           return (
             this.navItems.find(
@@ -88,8 +95,7 @@ export class AppLayoutComponent {
       )
       .subscribe(({ page, app }) => {
         if (page && app) title.setTitle(`${page} · ${app}`);
-        if (this.pendingNavigationFocus) {
-          this.pendingNavigationFocus = false;
+        if (this.mainContent) {
           afterNextRender(
             () => {
               if (this.mainContent)
@@ -103,10 +109,14 @@ export class AppLayoutComponent {
 
   onNavigationClick(): void {
     this.mobileNavOpen.set(false);
-    this.pendingNavigationFocus = true;
   }
 
   dismissSidebar(): void {
+    const help = this.help()?.nativeElement;
+    if (help?.open) {
+      help.open = false;
+      help.querySelector<HTMLElement>('summary')?.focus();
+    }
     if (!this.isMobile()) this.sidebarDismissed.set(true);
   }
 }

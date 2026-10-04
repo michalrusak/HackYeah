@@ -1,0 +1,114 @@
+:host {
+  display: block;
+  margin-block: 32px;
+}
+.alternative,
+.pilots > p {
+  color: var(--hub-muted);
+}
+.alternative button {
+  min-height: 48px;
+  height: auto;
+  white-space: normal;
+  padding: 12px 20px;
+}
+h2 {
+  font-size: 26px;
+  margin: 0 0 12px;
+}
+.pilot-card {
+  background: #fff9e6;
+  border: 1px solid #d6b85f;
+  border-radius: 16px;
+  padding: clamp(20px, 4vw, 32px);
+  margin-top: 24px;
+  color: #493b18;
+  overflow-wrap: anywhere;
+}
+.pilot-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #73540e;
+}
+.pilot-badge mat-icon {
+  flex-shrink: 0;
+}
+h3 {
+  font-size: 24px;
+  line-height: 1.3;
+  margin: 16px 0;
+}
+p {
+  line-height: 1.65;
+}
+.pilot-warning {
+  padding: 16px;
+  border-left: 3px solid #997218;
+  background: #fff0ba;
+  border-radius: 4px 10px 10px 4px;
+  font-weight: 600;
+}
+.demo-note,
+.eligibility-note {
+  font-size: 14px;
+}
+dl {
+  display: grid;
+  gap: 10px;
+  font-size: 16px;
+}
+dl > div {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 16px;
+}
+dt {
+  font-weight: 600;
+}
+dd {
+  margin: 0;
+}
+summary {
+  cursor: pointer;
+  min-height: 48px;
+  padding-block: 12px;
+  font-weight: 600;
+}
+summary:focus-visible {
+  outline: 3px solid var(--hub-brand);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.conditions {
+  padding-top: 12px;
+  border-top: 1px solid #d6b85f;
+}
+h4 {
+  font-size: 17px;
+  margin: 16px 0 8px;
+}
+.conditions button {
+  min-height: 48px;
+  height: auto;
+  padding: 12px 20px;
+}
+@media (max-width: 600px) {
+  dl > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
+
+.source-note {
+  font-size: 14px;
+}
+.source-note a {
+  color: inherit;
+  text-decoration: underline;
+}
+.conditions a {
+  min-height: 48px;
+  height: auto;
+  padding: 12px 20px;
+}

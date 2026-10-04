@@ -5,6 +5,9 @@
 
   <mat-sidenav
     #drawer
+    id="idea-assistant"
+    role="dialog"
+    [autoFocus]="true"
     mode="over"
     position="end"
     [opened]="open()"
@@ -19,13 +22,10 @@
         (click)="open.set(false)"
         [attr.aria-label]="'ideaCreator.assistant.close' | translate"
       >
-        <mat-icon>close</mat-icon>
+        <mat-icon aria-hidden="true">close</mat-icon>
       </button>
     </div>
-    <app-assistant-panel
-      [ideaId]="context.ideaId()"
-      [seed]="context.seed()"
-    />
+    <app-assistant-panel [ideaId]="context.ideaId()" [seed]="context.seed()" />
   </mat-sidenav>
 </mat-sidenav-container>
 
@@ -36,6 +36,7 @@
   class="assistant-trigger"
   (click)="toggle()"
   [attr.aria-expanded]="open()"
+  aria-controls="idea-assistant"
 >
   <mat-icon aria-hidden="true">auto_awesome</mat-icon>
   {{ "ideaCreator.assistant.open" | translate }}

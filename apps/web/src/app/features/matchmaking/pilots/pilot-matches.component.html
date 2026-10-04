@@ -1,0 +1,158 @@
+@if (!requested()) {
+  <div class="alternative">
+    <p>{{ "pilots.alternative" | translate }}</p>
+    <button mat-stroked-button type="button" (click)="load()">
+      {{ "pilots.noneFit" | translate }}
+    </button>
+  </div>
+} @else {
+  <section
+    class="pilots"
+    aria-labelledby="pilots-title"
+    [attr.aria-busy]="loading()"
+  >
+    <h2 id="pilots-title">{{ "pilots.title" | translate }}</h2>
+    <p>{{ "pilots.intro" | translate }}</p>
+    <div role="status" aria-live="polite">
+      @if (loading()) {
+        <p>{{ "pilots.loading" | translate }}</p>
+      } @else if (!failed()) {
+        <p>{{ "pilots.count" | translate: { count: matches().length } }}</p>
+      }
+    </div>
+    @if (failed()) {
+      <p role="alert">{{ "pilots.error" | translate }}</p>
+      <button mat-stroked-button type="button" (click)="load()">
+        {{ "matchmaking.retry" | translate }}
+      </button>
+    } @else if (!loading()) {
+      @for (match of matches(); track match.id) {
+        <article
+          class="pilot-card"
+          [attr.aria-labelledby]="'pilot-title-' + match.id"
+        >
+          <div class="pilot-badge">
+            <mat-icon aria-hidden="true">error_outline</mat-icon
+            ><strong>{{
+              (match.external ? "pilots.externalBadge" : "pilots.badge")
+                | translate
+            }}</strong>
+          </div>
+          @if (match.conditions.isDemo) {
+            <p class="demo-note">{{ "pilots.demo" | translate }}</p>
+          }
+          <h3 [id]="'pilot-title-' + match.id">{{ match.title }}</h3>
+          <p>{{ match.description }}</p>
+          <p class="pilot-warning">
+            {{
+              (match.external ? "pilots.externalWarning" : "pilots.warning")
+                | translate
+            }}
+          </p>
+          <p>
+            <strong>{{ "pilots.why" | translate }}</strong>
+            {{ match.matchedNeeds.join(", ") }}
+          </p>
+          <p class="eligibility-note">{{ "pilots.eligibility" | translate }}</p>
+          <dl>
+            <div>
+              <dt>{{ "pilots.organizer" | translate }}</dt>
+              <dd>{{ match.organizerName }}</dd>
+            </div>
+            <div>
+              <dt>{{ "pilots.where" | translate }}</dt>
+              <dd>
+                {{
+                  (match.mode
+                    ? "testers.availability." + match.mode
+                    : "pilots.unknownMode"
+                  ) | translate
+                }}
+                @if (match.location) {
+                  · {{ match.location }}
+                }
+              </dd>
+            </div>
+            <div>
+              <dt>{{ "pilots.who" | translate }}</dt>
+              <dd>
+                {{
+                  "pilots.participants." + match.conditions.participants
+                    | translate
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt>{{ "pilots.deadline" | translate }}</dt>
+              <dd>
+                @if (match.conditions.recruitmentEndsAt) {
+                  {{ match.conditions.recruitmentEndsAt | date: "dd.MM.yyyy" }}
+                } @else {
+                  {{ "pilots.unknownDeadline" | translate }}
+                }
+              </dd>
+            </div>
+          </dl>
+          @if (match.external; as external) {
+            <p class="source-note">
+              {{ "pilots.source" | translate }}:
+              <a
+                [href]="external.sourceUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                >{{ external.sourceLabel }}
+                <span class="sr-only">{{
+                  "pilots.externalLinkHint" | translate
+                }}</span></a
+              >
+              · {{ "pilots.verifiedAt" | translate }}:
+              {{ external.verifiedAt | date: "dd.MM.yyyy" }}
+            </p>
+          }
+          <details>
+            <summary>
+              {{ "pilots.conditions" | translate
+              }}<span class="sr-only">: {{ match.title }}</span>
+            </summary>
+            <div class="conditions">
+              <h4>{{ "pilots.requirements" | translate }}</h4>
+              <p>{{ match.requirements }}</p>
+              <h4>{{ "pilots.schedule" | translate }}</h4>
+              <p>{{ match.conditions.testSchedule }}</p>
+              <h4>{{ "pilots.commitment" | translate }}</h4>
+              <p>{{ match.conditions.commitment }}</p>
+              @if (match.external; as external) {
+                <p>{{ "pilots.externalContactHint" | translate }}</p>
+                <a
+                  mat-flat-button
+                  [href]="external.sourceUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >{{ "pilots.externalContact" | translate }}
+                  <span class="sr-only">{{
+                    "pilots.externalLinkHint" | translate
+                  }}</span></a
+                >
+              } @else if (selected() !== match.id) {
+                <button
+                  mat-flat-button
+                  type="button"
+                  (click)="selected.set(match.id)"
+                >
+                  {{ "pilots.interested" | translate }}
+                </button>
+              } @else {
+                <app-pilot-interest [match]="match" />
+              }
+            </div>
+          </details>
+        </article>
+      } @empty {
+        <p>{{ "pilots.empty" | translate }}</p>
+        <a mat-stroked-button routerLink="/rops-contact">{{
+          "pilots.contactHub" | translate
+        }}</a>
+      }
+    }
+  </section>
+}

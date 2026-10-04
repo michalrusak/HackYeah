@@ -1,12 +1,17 @@
 <section class="materials" aria-labelledby="materials-title">
   <header class="intro">
     <span class="eyebrow">{{ "ideaCreator.eyebrow" | translate }}</span>
-    <h1 id="materials-title">{{ "ideaCreator.materials.title" | translate }}</h1>
+    <h1 id="materials-title">
+      {{ "ideaCreator.materials.title" | translate }}
+    </h1>
     <p>{{ "ideaCreator.materials.subtitle" | translate }}</p>
   </header>
 
   @if (loading()) {
-    <mat-progress-bar mode="indeterminate" />
+    <mat-progress-bar
+      mode="indeterminate"
+      [attr.aria-label]="'a11y.loading' | translate"
+    />
     <p role="status">{{ "ideaCreator.materials.loading" | translate }}</p>
   }
 

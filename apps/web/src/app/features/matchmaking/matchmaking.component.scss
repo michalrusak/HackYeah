@@ -408,3 +408,22 @@ mat-card-actions a {
 .preview-toggle {
   scroll-margin-top: 16px;
 }
+
+.clarification-options {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0;
+}
+.clarification-options mat-radio-button {
+  padding: 8px 12px;
+  border: 1px solid var(--hub-border);
+  border-radius: 12px;
+  min-height: 48px;
+}
+.clarification-options .mat-mdc-radio-checked {
+  background: var(--hub-soft);
+  border-color: var(--hub-brand);
+}
+.choice-error {
+  color: var(--hub-error);
+}
