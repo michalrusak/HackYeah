@@ -1,0 +1,30 @@
+# Dependencies and build outputs
+node_modules
+**/node_modules
+**/dist
+.turbo
+
+# Git and IDE
+.git
+.gitignore
+.cursor
+.vscode
+.idea
+
+# Env and secrets (injected at runtime)
+.env
+.env.*
+!.env.example
+
+# Tests and docs
+**/*.spec.ts
+**/*.e2e-spec.ts
+**/test
+**/coverage
+**/*.md
+!apps/web/public/**/*.md
+
+# Local tooling
+terminals
+agent-transcripts
+*.pdf

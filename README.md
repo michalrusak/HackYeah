@@ -55,6 +55,17 @@ Po starcie:
 | Backend (NestJS) | http://localhost:3000 |
 | PostgreSQL | `localhost:5432` |
 
+### Wdrożenie produkcyjne (Docker)
+
+Pełny stack w kontenerach (nginx + API + PostgreSQL):
+
+```bash
+cp .env.production.example .env   # uzupełnij domeny i hasła
+pnpm docker:prod:up
+```
+
+Aplikacja: http://localhost:8080 · Szczegóły: **[docs/DEPLOY.md](docs/DEPLOY.md)**
+
 ---
 
 ## Struktura projektu

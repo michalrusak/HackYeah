@@ -1,17 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module.js';
-import { allowedWebOrigins } from './modules/auth/auth-http.js';
+import { configureCorsOrigin } from './modules/auth/auth-http.js';
 import { DomainExceptionFilter } from './shared/filters/domain-exception.filter.js';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  if (process.env.TRUST_PROXY !== 'false') {
+    app.set('trust proxy', Number(process.env.TRUST_PROXY_HOPS ?? 1));
+  }
   app.setGlobalPrefix('api');
   app.useBodyParser('json', { limit: '512kb' });
   app.useGlobalFilters(new DomainExceptionFilter());
   app.enableCors({
-    origin: allowedWebOrigins(),
+    origin: configureCorsOrigin,
     credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
   });
   await app.listen(process.env.PORT ?? 3000);
 }
