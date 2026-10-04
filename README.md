@@ -65,10 +65,10 @@ Pełny stack w kontenerach (nginx + API + PostgreSQL):
 
 ```bash
 cp .env.production.example .env   # uzupełnij domeny i hasła
-pnpm docker:prod:up
+pnpm docker:prod:up               # migracje + pełny seed (pomysły, Zasobnik, testerzy)
 ```
 
-Aplikacja: http://localhost:8080 · Szczegóły: **[docs/DEPLOY.md](docs/DEPLOY.md)**
+Aplikacja: http://localhost:50415 · Szczegóły: **[docs/DEPLOY.md](docs/DEPLOY.md)**
 
 ---
 

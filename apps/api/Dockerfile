@@ -42,9 +42,10 @@ COPY --from=build /app/apps/api/dist ./apps/api/dist
 COPY --from=build /app/apps/api/prisma ./apps/api/prisma
 COPY --from=build /app/apps/api/prisma7.config.ts ./apps/api/
 COPY apps/api/docker-entrypoint.sh ./apps/api/docker-entrypoint.sh
+COPY apps/api/docker-seed-all.sh ./apps/api/docker-seed-all.sh
 
-RUN sed -i 's/\r$//' /app/apps/api/docker-entrypoint.sh \
-  && chmod +x /app/apps/api/docker-entrypoint.sh
+RUN sed -i 's/\r$//' /app/apps/api/docker-entrypoint.sh /app/apps/api/docker-seed-all.sh \
+  && chmod +x /app/apps/api/docker-entrypoint.sh /app/apps/api/docker-seed-all.sh
 
 WORKDIR /app/apps/api
 EXPOSE 3000

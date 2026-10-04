@@ -17,7 +17,7 @@
     "docker:prod:up": "docker compose -f docker-compose.prod.yml up -d --build",
     "docker:prod:down": "docker compose -f docker-compose.prod.yml down",
     "docker:prod:logs": "docker compose -f docker-compose.prod.yml logs -f",
-    "docker:prod:seed": "docker compose -f docker-compose.prod.yml exec api node prisma/seed.mjs",
+    "docker:prod:seed": "docker compose -f docker-compose.prod.yml exec api /bin/sh /app/apps/api/docker-seed-all.sh",
     "db:migrate": "node scripts/testers-db.mjs migrate",
     "db:seed": "node scripts/testers-db.mjs seed",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",

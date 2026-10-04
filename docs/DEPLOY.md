@@ -22,17 +22,14 @@ Na serwerze produkcyjnym **nie trzeba** Node.js ani pnpm — wszystko buduje si�
 cp .env.production.example .env
 # Edytuj .env — minimum: POSTGRES_PASSWORD, DOCKER_WEB_ORIGIN
 
-# 2. Build i start
+# 2. Build i start (migracje + pełny seed uruchamiają się automatycznie)
 pnpm docker:prod:up
-
-# 3. Dane demonstracyjne (opcjonalnie)
-pnpm docker:prod:seed
 ```
 
 | Adres | Opis |
 |-------|------|
-| http://localhost:8080 | Aplikacja (frontend) |
-| http://localhost:8080/api/health | Health check API + baza |
+| http://localhost:50415 | Aplikacja (frontend) |
+| http://localhost:50415/api/health | Health check API + baza |
 
 Komendy:
 
@@ -152,18 +149,28 @@ nano .env   # uzupełnij hasła i domeny
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-Przy pierwszym starcie API automatycznie uruchamia `prisma migrate deploy`.
+Przy każdym starcie kontenera API automatycznie uruchamia:
 
-### 3. Seed (opcjonalnie)
+1. `prisma migrate deploy` — migracje bazy
+2. **pełny seed** (`apps/api/docker-seed-all.sh`) — idempotentny, nie duplikuje danych
+
+| Moduł | Co trafia do bazy |
+|-------|------------------|
+| Kreator pomysłów | 6 fiszek + 2 nabory |
+| Zasobnik wiedzy | katalog ROPS (~29 zasobów) |
+| Tester innowacji | ~210 fikcyjnych profili |
+
+Ręczne ponowienie seeda (np. po `git pull` z nowymi danymi):
 
 ```bash
-docker compose -f docker-compose.prod.yml exec api node prisma/seed.mjs
-# lub: pnpm docker:prod:seed
+pnpm docker:prod:seed
+# lub:
+docker compose -f docker-compose.prod.yml exec api /bin/sh /app/apps/api/docker-seed-all.sh
 ```
 
-### 4. Reverse proxy z TLS (Caddy / nginx / Traefik)
+### 3. Reverse proxy z TLS (Caddy / nginx / Traefik)
 
-Typowa konfiguracja: reverse proxy na hoście przekierowuje `https://twoja-domena.pl` → `localhost:8080` (kontener web).
+Typowa konfiguracja: reverse proxy na hoście przekierowuje `https://twoja-domena.pl` → `localhost:50415` (kontener web, port z `DOCKER_WEB_PORT`).
 
 Ustaw w `.env`:
 
@@ -172,7 +179,7 @@ DOCKER_WEB_ORIGIN=https://twoja-domena.pl
 COOKIE_SECURE=true
 ```
 
-### 5. Aktualizacja wersji
+### 4. Aktualizacja wersji
 
 ```bash
 git pull
@@ -284,6 +291,8 @@ sudo ufw allow 9000/tcp
 | `apps/web/Dockerfile` | Obraz Angular + nginx |
 | `apps/web/nginx.conf` | Proxy `/api`, SPA fallback |
 | `apps/web/docker-entrypoint.d/99-api-config.sh` | Generuje `api-config.json` z `WEB_API_URL` |
+| `apps/api/docker-seed-all.sh` | Pełny seed: pomysły, Zasobnik, testerzy |
+| `apps/api/docker-entrypoint.sh` | Migracje + seed + start NestJS |
 
 ---
 
