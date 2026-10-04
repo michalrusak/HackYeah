@@ -1,7 +1,9 @@
 @let item = resource();
+@let firstArea = item.areas[0];
 <article
   class="resource-card"
   [class.innovation-card]="item.kind === 'innovation'"
+  [attr.aria-labelledby]="'resource-' + item.id"
 >
   @if (videoId(); as id) {
     <div class="video-frame">
@@ -42,13 +44,45 @@
         ></span
       ></a
     >
+  } @else {
+    <div
+      class="resource-visual"
+      [class.innovation-visual]="item.kind === 'innovation'"
+      aria-hidden="true"
+    >
+      <span class="visual-orbit"></span>
+      <mat-icon>{{
+        item.kind === "innovation"
+          ? firstArea
+            ? icons[firstArea]
+            : "lightbulb"
+          : item.kind === "education"
+            ? "auto_stories"
+            : item.kind === "report"
+              ? "bar_chart"
+              : "explore"
+      }}</mat-icon>
+      <span>{{ "knowledge.discovery.visuals." + item.kind | translate }}</span>
+    </div>
   }
   <div class="badges">
     <span class="badge">{{ "knowledge.kinds." + item.kind | translate }}</span
     ><span>{{ "knowledge.scopes." + item.scope | translate }}</span>
   </div>
-  <h3>{{ item.title }}</h3>
-  <p>{{ item.summary }}</p>
+  <h3 [id]="'resource-' + item.id">{{ item.title }}</h3>
+  @if (item.kind === "innovation") {
+    <p class="audience-line">
+      <mat-icon aria-hidden="true">groups</mat-icon
+      ><span
+        ><strong>{{ "knowledge.discovery.forWhom" | translate }}</strong>
+        {{ item.audiences.join(", ") }}</span
+      >
+    </p>
+    <p class="story-label">
+      {{ "knowledge.discovery.howItWorks" | translate }}
+    </p>
+  }
+  <p class="resource-summary">{{ item.summary }}</p>
   @if (item.facts.length) {
     <ul class="fact-list" [attr.aria-label]="'knowledge.facts' | translate">
       @for (fact of item.facts; track fact.label) {
@@ -66,7 +100,14 @@
       }
     </ul>
   }
-  <p class="area-label">{{ item.areas.join(" · ") }}</p>
+  <div class="related-topics">
+    <span>{{ "knowledge.discovery.context" | translate }}</span>
+    @for (area of item.areas; track area) {
+      <a [routerLink]="['/zasobnik/temat', area]"
+        >{{ area }}<mat-icon aria-hidden="true">arrow_outward</mat-icon></a
+      >
+    }
+  </div>
   <details>
     <summary>{{ "knowledge.details" | translate }}</summary>
     <p>{{ "knowledge.source" | translate }}: {{ item.sourceLabel }}</p>
@@ -80,7 +121,7 @@
       {{ "knowledge.verifiedAt" | translate }}:
       {{ item.verifiedAt | date: "dd.MM.yyyy" }}
     </p>
-    @if (item.audiences.length) {
+    @if (item.kind !== "innovation" && item.audiences.length) {
       <p>
         {{ "knowledge.audienceFilter" | translate }}:
         {{ item.audiences.join(", ") }}
@@ -93,15 +134,82 @@
     }
   </details>
   <div class="actions card-actions">
-    <a
-      mat-flat-button
-      [href]="item.sourceUrl"
-      target="_blank"
-      rel="noopener noreferrer"
-      >{{ "knowledge.openSource" | translate
-      }}<span class="sr-only">
-        — {{ item.title }}. {{ "knowledge.newTab" | translate }}</span
-      ></a
-    >
+    @if (sourceEmbedUrl()) {
+      <button
+        #sourceToggle
+        mat-flat-button
+        type="button"
+        class="source-toggle"
+        [attr.aria-expanded]="sourceExpanded()"
+        [attr.aria-controls]="'source-preview-' + item.id"
+        (click)="toggleSource()"
+      >
+        <mat-icon aria-hidden="true">{{
+          sourceExpanded() ? "expand_less" : "expand_more"
+        }}</mat-icon>
+        {{
+          (sourceExpanded()
+            ? "knowledge.preview.collapse"
+            : "knowledge.preview.expand"
+          ) | translate
+        }}
+        <span class="sr-only"> — {{ item.title }}</span>
+      </button>
+    } @else {
+      <a
+        mat-flat-button
+        [href]="item.sourceUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ "knowledge.openSource" | translate }}
+        <span class="sr-only">
+          — {{ item.title }}. {{ "knowledge.newTab" | translate }}</span
+        >
+      </a>
+    }
   </div>
+  @if (sourceExpanded()) {
+    @if (sourceEmbedUrl(); as sourceUrl) {
+      <section
+        class="source-preview"
+        [id]="'source-preview-' + item.id"
+        [attr.aria-labelledby]="'source-heading-' + item.id"
+      >
+        <h4 #sourceHeading tabindex="-1" [id]="'source-heading-' + item.id">
+          {{ "knowledge.preview.title" | translate: { title: item.title } }}
+        </h4>
+        <p class="source-preview-hint">
+          {{ "knowledge.preview.hint" | translate }}
+        </p>
+        <a
+          class="source-fallback"
+          [href]="item.sourceUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ "knowledge.preview.openSource" | translate }}
+          <mat-icon aria-hidden="true">open_in_new</mat-icon>
+          <span class="sr-only">
+            — {{ item.title }}. {{ "knowledge.newTab" | translate }}</span
+          >
+        </a>
+        <iframe
+          [src]="sourceUrl"
+          [title]="'knowledge.preview.title' | translate: { title: item.title }"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-downloads"
+          referrerpolicy="no-referrer"
+        ></iframe>
+        <button
+          mat-stroked-button
+          type="button"
+          class="source-close"
+          (click)="toggleSource()"
+        >
+          <mat-icon aria-hidden="true">expand_less</mat-icon>
+          {{ "knowledge.preview.collapse" | translate }}
+        </button>
+      </section>
+    }
+  }
 </article>

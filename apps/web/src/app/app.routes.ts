@@ -1,7 +1,5 @@
 import { Routes } from '@angular/router';
 import { AppLayoutComponent } from './core/layout/app-layout/app-layout.component';
-import { AboutComponent } from './pages/about/about.component';
-import { ContactComponent } from './pages/contact/contact.component';
 
 export const routes: Routes = [
   {
@@ -89,11 +87,6 @@ export const routes: Routes = [
         data: { breadcrumb: 'knowledge.title' },
       },
       {
-        path: 'about',
-        component: AboutComponent,
-        data: { breadcrumb: 'nav.about' },
-      },
-      {
         path: 'rops-contact',
         loadComponent: () =>
           import('./features/rops-contact/rops-contact.component').then(
@@ -101,11 +94,7 @@ export const routes: Routes = [
           ),
         data: { breadcrumb: 'nav.rops_contact' },
       },
-      {
-        path: 'contact',
-        component: ContactComponent,
-        data: { breadcrumb: 'nav.contact' },
-      },
+      { path: 'contact', redirectTo: 'rops-contact', pathMatch: 'full' },
     ],
   },
 ];

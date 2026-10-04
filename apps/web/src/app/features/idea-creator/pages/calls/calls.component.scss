@@ -3,17 +3,17 @@
 }
 
 .calls {
-  max-width: 900px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 }
 
 .intro {
-  margin: 12px 0 24px;
+  margin: 0 0 24px;
 }
 
 .eyebrow {
   color: var(--mat-sys-primary, #005cbb);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -46,7 +46,7 @@
 }
 
 .badge {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;

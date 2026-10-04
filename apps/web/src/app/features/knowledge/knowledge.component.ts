@@ -1,6 +1,7 @@
 import {
   afterNextRender,
   Component,
+  computed,
   DestroyRef,
   ElementRef,
   inject,
@@ -27,6 +28,7 @@ import {
   type KnowledgeList,
   type KnowledgeOverview,
   type KnowledgeQuery,
+  type SocialArea,
 } from '@repo/api-contracts';
 import {
   catchError,
@@ -58,7 +60,7 @@ import { ResourceCardComponent } from './resource-card.component';
     ResourceCardComponent,
   ],
   templateUrl: './knowledge.component.html',
-  styleUrl: './knowledge.component.scss',
+  styleUrls: ['./knowledge.component.scss', './knowledge-discovery.scss'],
 })
 export class KnowledgeComponent {
   private readonly service = inject(KnowledgeService);
@@ -75,6 +77,24 @@ export class KnowledgeComponent {
   readonly audiences = AudienceSchema.options;
   readonly areas = SocialAreaSchema.options;
   readonly icons = AREA_ICONS;
+  readonly paths = [
+    { kind: 'challenge', icon: 'explore', key: 'understand' },
+    { kind: 'innovation', icon: 'lightbulb', key: 'discover' },
+    { kind: 'education', icon: 'auto_stories', key: 'learn' },
+  ] as const;
+  readonly suggestions: { key: string; area: SocialArea; icon: string }[] = [
+    { key: 'senior', area: 'Seniorzy', icon: 'elderly' },
+    { key: 'family', area: 'Rodzina i piecza zastępcza', icon: 'diversity_1' },
+    { key: 'accessibility', area: 'Niepełnosprawność', icon: 'accessible' },
+  ];
+  readonly filterKeys = [
+    'q',
+    'area',
+    'audience',
+    'kind',
+    'scope',
+    'video',
+  ] as const;
   readonly form = new FormGroup({
     q: new FormControl('', { nonNullable: true }),
     area: new FormControl('', { nonNullable: true }),
@@ -88,6 +108,26 @@ export class KnowledgeComponent {
   readonly result = signal<KnowledgeList | null>(null);
   readonly overview = signal<KnowledgeOverview | null>(null);
   readonly query = signal<KnowledgeQuery>(KnowledgeQuerySchema.parse({}));
+  readonly activeFilters = computed(() =>
+    this.filterKeys.flatMap((key) => {
+      const value = this.query()[key];
+      if (!value) return [];
+      return [
+        {
+          key,
+          value,
+          label:
+            key === 'kind'
+              ? `knowledge.kinds.${value}`
+              : key === 'scope'
+                ? `knowledge.scopes.${value}`
+                : key === 'video'
+                  ? 'knowledge.videoOnly'
+                  : null,
+        },
+      ];
+    }),
+  );
 
   constructor() {
     merge(
@@ -126,7 +166,7 @@ export class KnowledgeComponent {
           });
           return forkJoin({
             list: this.service.list(query),
-            overview: this.service.overview(),
+            overview: this.service.overview().pipe(catchError(() => of(null))),
           }).pipe(
             catchError((error: unknown) => {
               this.error.set(knowledgeError(error));
@@ -165,6 +205,22 @@ export class KnowledgeComponent {
       this.form.controls.kind.value === kind ? '' : kind,
     );
     this.search();
+  }
+  choosePath(kind: string): void {
+    this.form.reset();
+    this.form.controls.kind.setValue(kind);
+    this.search();
+  }
+  chooseSituation(area: SocialArea): void {
+    this.form.reset();
+    this.form.patchValue({ area, kind: 'innovation' });
+    this.search();
+  }
+  removeFilter(key: (typeof this.filterKeys)[number]): void {
+    const params = { ...this.query(), page: 1 };
+    delete params[key];
+    this.focusResults = true;
+    this.navigate(params);
   }
   toggleVideo(): void {
     this.form.controls.video.setValue(

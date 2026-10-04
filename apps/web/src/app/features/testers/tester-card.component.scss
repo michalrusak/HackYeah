@@ -8,7 +8,7 @@
   display: flex;
   flex-direction: column;
   border: 1px solid var(--tester-border);
-  border-radius: 20px;
+  border-radius: var(--hub-radius);
   padding: 24px;
   background: var(--tester-card);
   transition:
@@ -16,8 +16,8 @@
     box-shadow 0.2s;
 }
 .tester-card:hover {
-  border-color: #67afa0;
-  box-shadow: 0 8px 25px #143b3220;
+  border-color: var(--hub-brand);
+  box-shadow: 0 4px 16px rgb(24 44 68 / 8%);
 }
 .is-assigned {
   border-color: #178272;
@@ -33,8 +33,8 @@
   flex: 0 0 48px;
   height: 48px;
   border-radius: 16px;
-  background: #e6e6fc;
-  color: #51468a;
+  background: var(--hub-soft);
+  color: var(--hub-brand);
   font-weight: 700;
   font-size: 19px;
 }
@@ -177,10 +177,10 @@ h3 {
 }
 .assign-button {
   width: 100%;
-  --mdc-filled-button-container-color: #112d35;
+  --mdc-filled-button-container-color: var(--hub-brand);
   --mdc-filled-button-label-text-color: #fff;
 }
 .assign-button.assigned {
-  --mdc-filled-button-container-color: #dff5eb;
-  --mdc-filled-button-label-text-color: #0b6353;
+  --mdc-filled-button-container-color: var(--hub-green-soft);
+  --mdc-filled-button-label-text-color: var(--hub-green);
 }

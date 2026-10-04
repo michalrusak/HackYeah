@@ -1,226 +1,281 @@
-import { ContactDraftService } from '../../core/services/contact-draft.service';
+import { DatePipe } from '@angular/common';
 import {
-  Component,
-  OnInit,
-  inject,
-  ElementRef,
   afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  inject,
   Injector,
+  signal,
   viewChild,
-  viewChildren,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, NgModel } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatListModule } from '@angular/material/list';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslatePipe } from '@ngx-translate/core';
+import {
+  ContactCategorySchema,
+  type ContactCategory,
+  type ContactConversation,
+  type ContactThreadData,
+} from '@repo/api-contracts';
+import {
+  catchError,
+  EMPTY,
+  filter,
+  forkJoin,
+  interval,
+  of,
+  switchMap,
+  type Observable,
+} from 'rxjs';
+import { AuthService } from '../../core/services/auth.service';
+import { ContactDraftService } from '../../core/services/contact-draft.service';
+import { projectAccount } from '../testers/projects/project-dialog-access';
 import { RopsContactService } from './rops-contact.service';
-import type { Conversation, Message } from '@repo/api-contracts';
 
 @Component({
   selector: 'app-rops-contact',
-  standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
-    MatCardModule,
-    MatListModule,
+    DatePipe,
+    ReactiveFormsModule,
     MatButtonModule,
-    MatInputModule,
-    MatIconModule,
+    MatCardModule,
     MatDividerModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
     MatSelectModule,
     TranslatePipe,
   ],
   templateUrl: './rops-contact.component.html',
   styleUrls: ['./rops-contact.component.scss'],
 })
-export class RopsContactComponent implements OnInit {
-  public contactService = inject(RopsContactService);
+export class RopsContactComponent {
+  readonly auth = inject(AuthService);
+  private readonly service = inject(RopsContactService);
+  private readonly dialog = inject(MatDialog);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
   private readonly conversationHeading = viewChild<ElementRef<HTMLElement>>(
     'conversationHeading',
   );
-  private readonly fields = viewChildren(NgModel);
-  loading = false;
-  sending = false;
-  errorKey = '';
-  announcement = '';
 
-  conversations: Conversation[] = [];
-  selectedConversation: Conversation | null = null;
-  messages: Message[] = [];
+  readonly categories = ContactCategorySchema.options;
+  readonly checking = signal(true);
+  readonly busy = signal(false);
+  readonly errorKey = signal<string | null>(null);
+  readonly statusKey = signal<string | null>(null);
+  readonly conversations = signal<ContactConversation[]>([]);
+  readonly thread = signal<ContactThreadData | null>(null);
+  readonly openId = computed(() => this.thread()?.conversation.id ?? null);
+  readonly creating = signal(false);
 
-  newMessage = '';
-  newSubject = '';
-  newFirstName = '';
-  newLastName = '';
+  readonly form = new FormGroup({
+    firstName: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.maxLength(100)],
+    }),
+    lastName: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.maxLength(100)],
+    }),
+    organization: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.maxLength(200)],
+    }),
+    category: new FormControl<ContactCategory>('QUESTION', {
+      nonNullable: true,
+    }),
+    subject: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.maxLength(200)],
+    }),
+    message: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.maxLength(4000)],
+    }),
+  });
+  readonly reply = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.maxLength(4000)],
+  });
 
-  isCreatingNew = false;
-
-  roles = [
-    { value: 'CITIZEN', viewValue: 'rops-contact.roles.citizen' },
-    { value: 'ROPS_EMPLOYEE', viewValue: 'rops-contact.roles.employee' },
-  ];
-
-  get currentRole() {
-    return this.contactService.currentUserRole;
-  }
-  set currentRole(role: string) {
-    this.contactService.currentUserRole = role;
-    this.contactService.currentUserId =
-      role === 'CITIZEN' ? 'mock-citizen-123' : 'mock-employee-456';
-    this.loadConversations();
-    this.selectedConversation = null;
-    this.isCreatingNew = false;
-  }
-
-  private readonly contactDraft = inject(ContactDraftService);
-
-  ngOnInit() {
-    const draft = this.contactDraft.take();
+  constructor() {
+    const draft = inject(ContactDraftService).take();
     if (draft) {
-      this.createNewConversation();
-      this.newSubject = draft.subject;
-      this.newMessage = draft.body;
+      this.form.patchValue({ subject: draft.subject, message: draft.body });
+      this.creating.set(true);
     }
-    this.loadConversations();
+    this.auth
+      .refresh()
+      .pipe(
+        switchMap(({ user }) =>
+          user ? this.service.conversations() : of({ items: [] }),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: ({ items }) => {
+          this.conversations.set(items);
+          this.checking.set(false);
+        },
+        error: () => {
+          this.errorKey.set('a11y.loadError');
+          this.checking.set(false);
+        },
+      });
   }
 
-  loadConversations() {
-    this.loading = true;
-    this.errorKey = '';
-    this.contactService.getConversations().subscribe({
-      next: (data) => {
-        this.conversations = data;
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
-        this.errorKey = 'a11y.loadError';
-      },
+  /** Odpowiedź ROPS pojawia się sama, gdy ekran jest otwarty. */
+  private readonly poll = interval(30_000)
+    .pipe(
+      filter(() => this.auth.user() !== null && !this.busy()),
+      switchMap(() => {
+        const open = this.thread()?.conversation.id;
+        return forkJoin({
+          list: this.service.conversations(),
+          thread: open ? this.service.thread(open) : of(null),
+        }).pipe(catchError(() => EMPTY));
+      }),
+      takeUntilDestroyed(this.destroyRef),
+    )
+    .subscribe(({ list, thread }) => {
+      this.conversations.set(list.items);
+      if (thread && thread.conversation.id === this.thread()?.conversation.id)
+        this.thread.set(thread);
     });
+
+  login(): void {
+    projectAccount(this.dialog, this.auth)
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.service.conversations()),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: ({ items }) => this.conversations.set(items),
+        error: () => this.errorKey.set('a11y.loadError'),
+      });
   }
 
-  selectConversation(conv: Conversation) {
-    this.selectedConversation = conv;
-    this.messages = [];
-    this.errorKey = '';
-    this.loading = true;
-    this.isCreatingNew = false;
-    this.contactService.getMessages(conv.id).subscribe({
-      next: (data) => {
-        if (this.selectedConversation?.id !== conv.id) return;
-        this.messages = data;
-        this.loading = false;
-        afterNextRender(
-          () => this.conversationHeading()?.nativeElement.focus(),
-          { injector: this.injector },
-        );
-      },
-      error: () => {
-        this.loading = false;
-        this.errorKey = 'a11y.loadError';
-      },
-    });
+  logout(): void {
+    if (this.busy()) return;
+    this.busy.set(true);
+    this.auth
+      .logout()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.busy.set(false);
+          this.conversations.set([]);
+          this.thread.set(null);
+          this.creating.set(false);
+          this.errorKey.set(null);
+          this.statusKey.set(null);
+        },
+        error: () => this.fail('rops-contact.error'),
+      });
   }
 
-  createNewConversation() {
-    this.isCreatingNew = true;
-    this.selectedConversation = null;
-    this.newSubject = '';
-    this.newMessage = '';
-    this.newFirstName = '';
-    this.newLastName = '';
-    afterNextRender(
-      () =>
-        this.element.nativeElement
-          .querySelector<HTMLElement>('[name=firstName]')
-          ?.focus(),
-      { injector: this.injector },
+  startNew(): void {
+    this.thread.set(null);
+    this.creating.set(true);
+    this.errorKey.set(null);
+    this.focus('input[formControlName=firstName]');
+  }
+
+  open(conversation: ContactConversation): void {
+    this.creating.set(false);
+    this.reply.reset();
+    this.run(this.service.thread(conversation.id), 'loading', () =>
+      afterNextRender(() => this.conversationHeading()?.nativeElement.focus(), {
+        injector: this.injector,
+      }),
     );
   }
 
-  sendMessage() {
-    if (this.sending || (!this.isCreatingNew && !this.selectedConversation))
-      return;
-    this.errorKey = '';
-    this.announcement = '';
-    for (const field of this.fields()) field.control.markAsTouched();
-    if (
-      !this.newMessage.trim() ||
-      this.newMessage.length > 4000 ||
-      (this.isCreatingNew &&
-        (!this.newSubject.trim() ||
-          !this.newFirstName.trim() ||
-          !this.newLastName.trim()))
-    ) {
-      this.errorKey = 'a11y.contactValidation';
-      afterNextRender(
-        () =>
-          (
-            this.element.nativeElement.querySelector<HTMLElement>(
-              'input.ng-invalid, textarea.ng-invalid',
-            ) ??
-            this.element.nativeElement.querySelector<HTMLElement>(
-              '[role=alert]',
-            )
-          )?.focus(),
-        { injector: this.injector },
-      );
+  create(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.errorKey.set('a11y.contactValidation');
+      this.focus('input.ng-invalid, textarea.ng-invalid');
       return;
     }
-    this.sending = true;
+    const { message, ...value } = this.form.getRawValue();
+    this.run(
+      this.service.create({ ...value, initialMessage: message }),
+      'sending',
+      () => {
+        this.creating.set(false);
+        this.form.reset();
+      },
+    );
+  }
 
-    if (
-      this.isCreatingNew &&
-      this.newSubject.trim() &&
-      this.newFirstName.trim() &&
-      this.newLastName.trim()
-    ) {
-      this.contactService
-        .createConversation({
-          firstName: this.newFirstName,
-          lastName: this.newLastName,
-          subject: this.newSubject,
-          initialMessage: this.newMessage,
-        })
-        .subscribe({
-          next: (conv) => {
-            this.sending = false;
-            this.announcement = 'a11y.sent';
-            this.loadConversations();
-            this.selectConversation(conv);
-            this.newMessage = '';
-          },
-          error: () => {
-            this.sending = false;
-            this.errorKey = 'a11y.sendError';
-          },
-        });
-    } else if (this.selectedConversation) {
-      this.contactService
-        .sendMessage(this.selectedConversation.id, {
-          content: this.newMessage,
-        })
-        .subscribe({
-          next: (msg) => {
-            this.sending = false;
-            this.announcement = 'a11y.sent';
-            this.messages.push(msg);
-            this.newMessage = '';
-          },
-          error: () => {
-            this.sending = false;
-            this.errorKey = 'a11y.sendError';
-          },
-        });
-    }
+  send(): void {
+    const current = this.thread();
+    const content = this.reply.value.trim();
+    if (!current || !content || this.reply.invalid) return;
+    this.run(
+      this.service.send(current.conversation.id, content),
+      'sending',
+      () => this.reply.reset(),
+    );
+  }
+
+  private run(
+    source: Observable<ContactThreadData>,
+    kind: 'loading' | 'sending',
+    done: () => void,
+  ): void {
+    if (this.busy()) return;
+    this.busy.set(true);
+    this.errorKey.set(null);
+    this.statusKey.set(`a11y.${kind}`);
+    source.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (data) => {
+        this.busy.set(false);
+        this.thread.set(data);
+        this.conversations.update((items) => [
+          data.conversation,
+          ...items.filter((item) => item.id !== data.conversation.id),
+        ]);
+        this.statusKey.set(kind === 'sending' ? 'a11y.sent' : null);
+        done();
+      },
+      error: () =>
+        this.fail(kind === 'sending' ? 'a11y.sendError' : 'a11y.loadError'),
+    });
+  }
+
+  private fail(key: string): void {
+    this.busy.set(false);
+    this.statusKey.set(null);
+    this.errorKey.set(key);
+  }
+
+  private focus(selector: string): void {
+    afterNextRender(
+      () =>
+        this.element.nativeElement
+          .querySelector<HTMLElement>(selector)
+          ?.focus(),
+      { injector: this.injector },
+    );
   }
 }

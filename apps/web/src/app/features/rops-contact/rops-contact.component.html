@@ -1,202 +1,278 @@
 <section class="rops-contact-container" aria-labelledby="rops-title">
-  <h1 id="rops-title">{{ "nav.rops_contact" | translate }}</h1>
-  <p role="status">
-    {{
-      (sending ? "a11y.sending" : loading ? "a11y.loading" : announcement)
-        | translate
-    }}
+  <header class="intro hub-page-header">
+    <div>
+      <h1 id="rops-title">{{ "rops-contact.title" | translate }}</h1>
+      <p>{{ "rops-contact.intro" | translate }}</p>
+    </div>
+    @if (auth.user(); as user) {
+      <div class="account">
+        <span>{{ "auth.signedInAs" | translate: { login: user.login } }}</span>
+        <button mat-button type="button" [disabled]="busy()" (click)="logout()">
+          {{ "auth.logout" | translate }}
+        </button>
+      </div>
+    }
+  </header>
+
+  <p class="status-line" role="status">
+    @if (statusKey(); as key) {
+      {{ key | translate }}
+    }
   </p>
-  @if (errorKey) {
+  @if (errorKey(); as key) {
     <p class="error-message" role="alert" tabindex="-1">
-      {{ errorKey | translate }}
+      {{ key | translate }}
     </p>
   }
-  <div class="role-selector">
-    <mat-form-field appearance="outline">
-      <mat-label>{{ "rops-contact.simulate_role" | translate }}</mat-label>
-      <mat-select [(ngModel)]="currentRole">
-        <mat-option *ngFor="let role of roles" [value]="role.value">
-          {{ role.viewValue | translate }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
 
-  <div class="chat-layout">
-    <mat-card class="sidebar">
-      <mat-card-header>
-        <h2>{{ "rops-contact.conversations" | translate }}</h2>
-      </mat-card-header>
+  @if (checking()) {
+    <p role="status">{{ "rops-contact.checking" | translate }}</p>
+  } @else if (!auth.user()) {
+    <mat-card class="login-prompt">
       <mat-card-content>
-        <button
-          mat-stroked-button
-          color="primary"
-          class="full-width mt-2 mb-2"
-          (click)="createNewConversation()"
-          *ngIf="currentRole === 'CITIZEN'"
-        >
-          <mat-icon aria-hidden="true">add</mat-icon>
-          {{ "rops-contact.new_conversation" | translate }}
+        <mat-icon class="large-icon" aria-hidden="true">forum</mat-icon>
+        <h2>{{ "rops-contact.loginTitle" | translate }}</h2>
+        <p>{{ "rops-contact.loginIntro" | translate }}</p>
+        <button mat-flat-button type="button" (click)="login()">
+          {{ "auth.login" | translate }}
         </button>
-        <ul class="conversation-list">
-          @for (conv of conversations; track conv.id) {
-            <li>
-              <button
-                type="button"
-                (click)="selectConversation(conv)"
-                [class.active]="selectedConversation?.id === conv.id"
-                [attr.aria-pressed]="selectedConversation?.id === conv.id"
-              >
-                <strong>{{ conv.subject }}</strong>
-                <span *ngIf="conv.citizen?.firstName"
-                  >{{ conv.citizen?.firstName }}
-                  {{ conv.citizen?.lastName }}</span
-                >
-                <span>{{ conv.updatedAt | date: "short" }}</span>
-              </button>
-            </li>
-          }
-        </ul>
       </mat-card-content>
     </mat-card>
-
-    <mat-card class="chat-area">
-      <ng-container *ngIf="isCreatingNew">
+  } @else {
+    <div class="chat-layout">
+      <mat-card class="sidebar">
         <mat-card-header>
-          <h2>{{ "rops-contact.new_conversation" | translate }}</h2>
+          <mat-card-title>
+            <h2>{{ "rops-contact.conversations" | translate }}</h2>
+          </mat-card-title>
         </mat-card-header>
-        <mat-card-content class="new-convo-content">
-          <div class="name-fields">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>{{ "rops-contact.first_name" | translate }}</mat-label>
-              <input
-                matInput
-                [(ngModel)]="newFirstName"
-                name="firstName"
-                autocomplete="given-name"
-                maxlength="100"
-                required
-                #firstName="ngModel"
-              />
-              <mat-error>{{ "a11y.required" | translate }}</mat-error>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>{{ "rops-contact.last_name" | translate }}</mat-label>
-              <input
-                matInput
-                [(ngModel)]="newLastName"
-                name="lastName"
-                autocomplete="family-name"
-                maxlength="100"
-                required
-                #lastName="ngModel"
-              />
-              <mat-error>{{ "a11y.required" | translate }}</mat-error>
-            </mat-form-field>
-          </div>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ "rops-contact.subject" | translate }}</mat-label>
-            <input
-              matInput
-              [(ngModel)]="newSubject"
-              name="subject"
-              autocomplete="off"
-              maxlength="200"
-              required
-              #subject="ngModel"
-            />
-            <mat-error>{{ "a11y.required" | translate }}</mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="full-width flex-grow">
-            <mat-label>{{ "rops-contact.message" | translate }}</mat-label>
-            <textarea
-              matInput
-              [(ngModel)]="newMessage"
-              name="message"
-              rows="6"
-              maxlength="4000"
-              required
-            ></textarea>
-            <mat-hint>{{ "a11y.messageLimit" | translate }}</mat-hint>
-            <mat-error>{{ "a11y.required" | translate }}</mat-error>
-          </mat-form-field>
-          <div class="actions right">
-            <button
-              mat-flat-button
-              color="primary"
-              (click)="sendMessage()"
-              [disabled]="sending"
-            >
-              {{ "rops-contact.send" | translate }}
-            </button>
-          </div>
-        </mat-card-content>
-      </ng-container>
-
-      <ng-container *ngIf="selectedConversation && !isCreatingNew">
-        <mat-card-header>
-          <h2 #conversationHeading tabindex="-1">
-            {{ selectedConversation.subject }}
-          </h2>
-        </mat-card-header>
-        <mat-divider></mat-divider>
-        <mat-card-content
-          class="messages-container"
-          role="log"
-          aria-live="polite"
-          aria-relevant="additions"
-          [attr.aria-label]="'rops-contact.message' | translate"
-          tabindex="0"
-        >
-          <div
-            *ngFor="let msg of messages"
-            class="message-bubble"
-            [ngClass]="{
-              'own-message': msg.senderId === contactService.currentUserId,
-            }"
+        <mat-card-content>
+          <button
+            mat-stroked-button
+            type="button"
+            class="new-button"
+            (click)="startNew()"
           >
-            <div class="message-content">
-              <strong *ngIf="msg.sender?.firstName"
-                >{{ msg.sender?.firstName }} {{ msg.sender?.lastName }}:<br
-              /></strong>
-              {{ msg.content }}
-            </div>
-            <div class="message-time">
-              {{ msg.createdAt | date: "shortTime" }}
-            </div>
-          </div>
+            <mat-icon aria-hidden="true">add</mat-icon>
+            {{ "rops-contact.newConversation" | translate }}
+          </button>
+          @if (!conversations().length) {
+            <p class="empty-list">{{ "rops-contact.empty" | translate }}</p>
+          }
+          <ul class="conversation-list">
+            @for (item of conversations(); track item.id) {
+              <li>
+                <button
+                  type="button"
+                  [class.active]="openId() === item.id"
+                  [attr.aria-pressed]="openId() === item.id"
+                  (click)="open(item)"
+                >
+                  <strong>{{ item.subject }}</strong>
+                  <span>
+                    {{ "rops-contact.categories." + item.category | translate }}
+                    · {{ item.updatedAt | date: "dd.MM.yyyy HH:mm" }}
+                  </span>
+                  <span [class.status-answered]="item.status === 'ANSWERED'">
+                    {{ "rops-contact.statuses." + item.status | translate }}
+                  </span>
+                </button>
+              </li>
+            }
+          </ul>
         </mat-card-content>
-        <mat-divider></mat-divider>
-        <mat-card-actions class="chat-input-area">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ "rops-contact.type_message" | translate }}</mat-label>
-            <input
-              matInput
-              [(ngModel)]="newMessage"
-              maxlength="4000"
-              [readonly]="sending"
-              (keyup.enter)="sendMessage()"
-            />
-            <button
-              mat-icon-button
-              matSuffix
-              type="button"
-              [attr.aria-label]="'rops-contact.send' | translate"
-              (click)="sendMessage()"
-              [disabled]="sending || !newMessage.trim()"
-            >
-              <mat-icon aria-hidden="true">send</mat-icon>
-            </button>
-          </mat-form-field>
-        </mat-card-actions>
-      </ng-container>
+      </mat-card>
 
-      <ng-container *ngIf="!selectedConversation && !isCreatingNew">
-        <div class="empty-state">
-          <mat-icon class="large-icon" aria-hidden="true">chat</mat-icon>
-          <p>{{ "rops-contact.select_conversation" | translate }}</p>
-        </div>
-      </ng-container>
-    </mat-card>
-  </div>
+      <mat-card class="chat-area">
+        @if (creating()) {
+          <mat-card-header>
+            <mat-card-title>
+              <h2>{{ "rops-contact.newConversation" | translate }}</h2>
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form
+              class="new-convo-content"
+              [formGroup]="form"
+              (ngSubmit)="create()"
+            >
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "rops-contact.category" | translate }}</mat-label>
+                <mat-select formControlName="category">
+                  @for (category of categories; track category) {
+                    <mat-option [value]="category">
+                      {{ "rops-contact.categories." + category | translate }}
+                    </mat-option>
+                  }
+                </mat-select>
+                <mat-hint>{{
+                  "rops-contact.categoryHints." + form.controls.category.value
+                    | translate
+                }}</mat-hint>
+              </mat-form-field>
+              <div class="name-fields">
+                <mat-form-field appearance="outline">
+                  <mat-label>{{
+                    "rops-contact.firstName" | translate
+                  }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="firstName"
+                    autocomplete="given-name"
+                    maxlength="100"
+                  />
+                  @if (form.controls.firstName.hasError("required")) {
+                    <mat-error>{{
+                      "rops-contact.required" | translate
+                    }}</mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{
+                    "rops-contact.lastName" | translate
+                  }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="lastName"
+                    autocomplete="family-name"
+                    maxlength="100"
+                  />
+                  @if (form.controls.lastName.hasError("required")) {
+                    <mat-error>{{
+                      "rops-contact.required" | translate
+                    }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              <mat-form-field appearance="outline">
+                <mat-label>{{
+                  "rops-contact.organization" | translate
+                }}</mat-label>
+                <input
+                  matInput
+                  formControlName="organization"
+                  autocomplete="organization"
+                  maxlength="200"
+                />
+                <mat-hint>{{
+                  "rops-contact.organizationHint" | translate
+                }}</mat-hint>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "rops-contact.subject" | translate }}</mat-label>
+                <input matInput formControlName="subject" maxlength="200" />
+                @if (form.controls.subject.hasError("required")) {
+                  <mat-error>{{
+                    "rops-contact.required" | translate
+                  }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "rops-contact.message" | translate }}</mat-label>
+                <textarea
+                  matInput
+                  formControlName="message"
+                  rows="6"
+                  maxlength="4000"
+                ></textarea>
+                <mat-hint>{{ "a11y.messageLimit" | translate }}</mat-hint>
+                @if (form.controls.message.hasError("required")) {
+                  <mat-error>{{
+                    "rops-contact.required" | translate
+                  }}</mat-error>
+                }
+              </mat-form-field>
+              <div class="actions right">
+                <button mat-flat-button type="submit" [disabled]="busy()">
+                  {{ "rops-contact.send" | translate }}
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        } @else {
+          @if (thread(); as data) {
+            <mat-card-header>
+              <mat-card-title>
+                <h2 #conversationHeading tabindex="-1">
+                  {{ data.conversation.subject }}
+                </h2>
+              </mat-card-title>
+              <mat-card-subtitle>
+                {{
+                  "rops-contact.categories." + data.conversation.category
+                    | translate
+                }}
+                ·
+                {{
+                  "rops-contact.statuses." + data.conversation.status
+                    | translate
+                }}
+              </mat-card-subtitle>
+            </mat-card-header>
+            <mat-divider />
+            <mat-card-content
+              class="messages-container"
+              role="log"
+              aria-live="polite"
+              aria-relevant="additions"
+              [attr.aria-label]="'rops-contact.messages' | translate"
+              tabindex="0"
+            >
+              @for (item of data.messages; track item.id) {
+                <div
+                  class="message-bubble"
+                  [class.own-message]="item.author === 'USER'"
+                >
+                  <strong>{{
+                    "rops-contact.authors." + item.author | translate
+                  }}</strong>
+                  <div class="message-content">{{ item.content }}</div>
+                  <div class="message-time">
+                    {{ item.createdAt | date: "dd.MM.yyyy HH:mm" }}
+                  </div>
+                </div>
+              }
+            </mat-card-content>
+            <mat-divider />
+            <mat-card-actions>
+              <form
+                class="chat-input-area"
+                (submit)="$event.preventDefault(); send()"
+              >
+                @if (data.conversation.status === "CLOSED") {
+                  <p class="closed-note">
+                    {{ "rops-contact.closedNote" | translate }}
+                  </p>
+                }
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>{{
+                    "rops-contact.typeMessage" | translate
+                  }}</mat-label>
+                  <textarea
+                    matInput
+                    rows="2"
+                    maxlength="4000"
+                    [formControl]="reply"
+                  ></textarea>
+                </mat-form-field>
+                <button
+                  mat-flat-button
+                  type="submit"
+                  [disabled]="busy() || !reply.value.trim()"
+                >
+                  <mat-icon aria-hidden="true">send</mat-icon>
+                  {{ "rops-contact.send" | translate }}
+                </button>
+              </form>
+            </mat-card-actions>
+          } @else {
+            <div class="empty-state">
+              <mat-icon class="large-icon" aria-hidden="true">chat</mat-icon>
+              <p>{{ "rops-contact.selectConversation" | translate }}</p>
+            </div>
+          }
+        }
+      </mat-card>
+    </div>
+  }
 </section>

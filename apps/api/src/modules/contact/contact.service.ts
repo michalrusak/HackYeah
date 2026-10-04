@@ -1,108 +1,132 @@
-import { Injectable } from '@nestjs/common';
-import { ContactRepository } from './contact.repository.js';
+import { Inject, Injectable } from '@nestjs/common';
 import type {
+  ContactConversation,
+  ContactListData,
+  ContactQueueData,
+  ContactThreadData,
   CreateConversation,
-  SendMessage,
-  Conversation,
-  Message,
 } from '@repo/api-contracts';
+import type { Conversation } from '../../generated/prisma/client.js';
+import { DomainError } from '../../shared/errors/domain.error.js';
+import { MailService } from '../../shared/mail/mail.service.js';
+import { ContactRepository, type ThreadRow } from './contact.repository.js';
+
+const CATEGORY_LABELS: Record<ContactConversation['category'], string> = {
+  QUESTION: 'pytanie',
+  MENTOR: 'wsparcie mentora',
+  PARTNERSHIP: 'partnerstwo',
+};
+
+function toConversation(row: Conversation): ContactConversation {
+  return {
+    id: row.id,
+    subject: row.subject,
+    category: row.category,
+    status: row.status,
+    firstName: row.firstName,
+    lastName: row.lastName,
+    organization: row.organization,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+function toThread(row: ThreadRow): ContactThreadData {
+  return {
+    conversation: toConversation(row),
+    messages: row.messages.map((message) => ({
+      id: message.id,
+      author: message.author,
+      content: message.content,
+      createdAt: message.createdAt.toISOString(),
+    })),
+  };
+}
 
 @Injectable()
 export class ContactService {
-  constructor(private readonly repository: ContactRepository) {}
+  constructor(
+    @Inject(ContactRepository) private readonly repository: ContactRepository,
+    @Inject(MailService) private readonly mail: MailService,
+  ) {}
 
-  async createConversation(userId: string, data: CreateConversation) {
-    const convo = await this.repository.createConversation({
-      subject: data.subject,
-      citizenId: userId,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      initialMessage: data.initialMessage,
+  async list(accountId: string): Promise<ContactListData> {
+    const rows = await this.repository.listForAccount(accountId);
+    return { items: rows.map(toConversation) };
+  }
+
+  async create(
+    accountId: string,
+    input: CreateConversation,
+  ): Promise<ContactThreadData> {
+    const row = await this.repository.create({
+      accountId,
+      firstName: input.firstName,
+      lastName: input.lastName,
+      organization: input.organization || null,
+      category: input.category,
+      subject: input.subject,
+      initialMessage: input.initialMessage,
     });
-
-    const citizenMapped = {
-      id: convo.citizen.id,
-      email: convo.citizen.email,
-      firstName: convo.citizen.firstName,
-      lastName: convo.citizen.lastName,
-      role: convo.citizen.role,
-    };
-
-    return {
-      id: convo.id,
-      subject: convo.subject,
-      citizenId: convo.citizenId,
-      citizen: citizenMapped,
-      employeeId: convo.employeeId,
-      createdAt: convo.createdAt.toISOString(),
-      updatedAt: convo.updatedAt.toISOString(),
-      messages: convo.messages.map((m) => ({
-        id: m.id,
-        content: m.content,
-        conversationId: m.conversationId,
-        senderId: m.senderId,
-        sender: m.senderId === convo.citizenId ? citizenMapped : undefined,
-        createdAt: m.createdAt.toISOString(),
-      })),
-    } satisfies Conversation;
+    this.mail.notifyRops(
+      `Nowa sprawa (${CATEGORY_LABELS[row.category]}): ${row.subject}`,
+      'Użytkownik napisał do ROPS. Sprawa czeka w panelu administratora.',
+    );
+    return toThread(row);
   }
 
-  async getConversations(userId: string, role: string) {
-    const convos = await this.repository.getConversations(userId, role);
-    return convos.map((c) => ({
-      id: c.id,
-      subject: c.subject,
-      citizenId: c.citizenId,
-      citizen: {
-        id: c.citizen.id,
-        email: c.citizen.email,
-        firstName: c.citizen.firstName,
-        lastName: c.citizen.lastName,
-        role: c.citizen.role,
-      },
-      employeeId: c.employeeId,
-      createdAt: c.createdAt.toISOString(),
-      updatedAt: c.updatedAt.toISOString(),
-    })) satisfies Conversation[];
+  async thread(accountId: string, id: string): Promise<ContactThreadData> {
+    return toThread(await this.owned(accountId, id));
   }
 
-  async getMessages(conversationId: string) {
-    const messages = await this.repository.getMessages(conversationId);
-    return messages.map((m) => ({
-      id: m.id,
-      content: m.content,
-      conversationId: m.conversationId,
-      senderId: m.senderId,
-      sender: {
-        id: m.sender.id,
-        email: m.sender.email,
-        firstName: m.sender.firstName,
-        lastName: m.sender.lastName,
-        role: m.sender.role,
-      },
-      createdAt: m.createdAt.toISOString(),
-    })) satisfies Message[];
+  /** Wiadomość użytkownika ponownie otwiera zamkniętą sprawę. */
+  async userMessage(
+    accountId: string,
+    id: string,
+    content: string,
+  ): Promise<ContactThreadData> {
+    const row = await this.owned(accountId, id);
+    const updated = await this.repository.addMessage(id, 'USER', content);
+    this.mail.notifyRops(
+      `Nowa wiadomość w sprawie: ${row.subject}`,
+      'Użytkownik odpisał w rozmowie. Odpowiedź czeka w panelu administratora.',
+    );
+    return toThread(updated);
   }
 
-  async addMessage(conversationId: string, userId: string, data: SendMessage) {
-    const message = await this.repository.addMessage({
-      conversationId,
-      senderId: userId,
-      content: data.content,
-    });
-    return {
-      id: message.id,
-      content: message.content,
-      conversationId: message.conversationId,
-      senderId: message.senderId,
-      sender: {
-        id: message.sender.id,
-        email: message.sender.email,
-        firstName: message.sender.firstName,
-        lastName: message.sender.lastName,
-        role: message.sender.role,
-      },
-      createdAt: message.createdAt.toISOString(),
-    } satisfies Message;
+  async queue(): Promise<ContactQueueData> {
+    const { items, attention } = await this.repository.queue();
+    return { items: items.map(toConversation), attention };
+  }
+
+  async detail(id: string): Promise<ContactThreadData> {
+    return toThread(await this.existing(id));
+  }
+
+  async reply(id: string, content: string): Promise<ContactThreadData> {
+    await this.existing(id);
+    return toThread(await this.repository.addMessage(id, 'ROPS', content));
+  }
+
+  async close(id: string): Promise<ContactThreadData> {
+    await this.existing(id);
+    return toThread(await this.repository.setStatus(id, 'CLOSED'));
+  }
+
+  // Cudza rozmowa wygląda tak samo jak nieistniejąca.
+  private async owned(accountId: string, id: string): Promise<ThreadRow> {
+    const row = await this.existing(id);
+    if (row.accountId !== accountId) throw this.notFound();
+    return row;
+  }
+
+  private async existing(id: string): Promise<ThreadRow> {
+    const row = await this.repository.find(id);
+    if (!row) throw this.notFound();
+    return row;
+  }
+
+  private notFound(): DomainError {
+    return DomainError.notFound('Nie znaleźliśmy tej rozmowy.');
   }
 }

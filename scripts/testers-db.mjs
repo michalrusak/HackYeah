@@ -33,6 +33,11 @@ try {
     execLocal(packageManager, ["--filter", "api", "build"], { cwd: rootDir }),
   );
   await waitForExit(
+    execLocal(process.execPath, ["dist/modules/knowledge/seed.js"], {
+      cwd: path.join(rootDir, "apps/api"),
+    }),
+  );
+  await waitForExit(
     execLocal(
       process.execPath,
       ["apps/api/dist/database/testers-db.cli.js", action],

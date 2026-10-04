@@ -9,6 +9,7 @@ import {
   ActivatedRoute,
   convertToParamMap,
   provideRouter,
+  Router,
 } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import {
@@ -22,6 +23,7 @@ import { KnowledgeAdminComponent } from './knowledge-admin.component';
 import { IdeaModerationComponent } from './idea-moderation.component';
 import { ResourceEditorComponent } from './resource-editor.component';
 import { KnowledgeService } from './knowledge.service';
+import { KnowledgeComponent } from './knowledge.component';
 
 const resource: KnowledgeResource = KnowledgeResourceSchema.parse({
   id: 'fixture-senior',
@@ -53,6 +55,101 @@ const providers = [
   provideRouter([]),
   provideTranslateService(),
 ];
+
+describe('Knowledge discovery', () => {
+  function create(
+    params: Record<string, string> = {},
+  ): ComponentFixture<KnowledgeComponent> {
+    const queryParamMap = convertToParamMap(params);
+    TestBed.configureTestingModule({
+      imports: [KnowledgeComponent],
+      providers: [
+        ...providers,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            queryParamMap: of(queryParamMap),
+            snapshot: { queryParamMap },
+          },
+        },
+      ],
+    });
+    const fixture = TestBed.createComponent(KnowledgeComponent);
+    fixture.detectChanges();
+    return fixture;
+  }
+
+  function respond(overviewFails = false): void {
+    const http = TestBed.inject(HttpTestingController);
+    http
+      .expectOne((request) =>
+        request.url.startsWith('/api/knowledge/resources?'),
+      )
+      .flush({
+        success: true,
+        data: { resources: [resource], total: 1, page: 1, pageSize: 12 },
+      });
+    const overview = http.expectOne('/api/knowledge/overview');
+    if (overviewFails)
+      overview.flush({}, { status: 503, statusText: 'Unavailable' });
+    else
+      overview.flush({
+        success: true,
+        data: {
+          total: 1,
+          areas: [{ area: 'Seniorzy', count: 1 }],
+          updatedAt: null,
+        },
+      });
+    http.verify();
+  }
+
+  it('restores shareable filters and removes just the chosen filter while resetting pagination', () => {
+    const fixture = create({
+      area: 'Seniorzy',
+      kind: 'innovation',
+      video: '1',
+      page: '2',
+    });
+    respond();
+    expect(
+      fixture.componentInstance.activeFilters().map((filter) => filter.key),
+    ).toEqual(['area', 'kind', 'video']);
+    const router = TestBed.inject(Router);
+    const navigate = spyOn(router, 'navigateByUrl').and.resolveTo(true);
+    fixture.componentInstance.removeFilter('video');
+    const url = router.parseUrl(String(navigate.calls.mostRecent().args[0]));
+    expect(url.queryParams['area']).toBe('Seniorzy');
+    expect(url.queryParams['kind']).toBe('innovation');
+    expect(url.queryParams['video']).toBeUndefined();
+    expect(url.queryParams['page']).toBe('1');
+  });
+
+  it('starts a situation from clean filters instead of retaining an unrelated search', () => {
+    const fixture = create({ q: 'szkoła', scope: 'national', video: '1' });
+    respond();
+    const router = TestBed.inject(Router);
+    const navigate = spyOn(router, 'navigateByUrl').and.resolveTo(true);
+    fixture.componentInstance.chooseSituation('Seniorzy');
+    const url = router.parseUrl(String(navigate.calls.mostRecent().args[0]));
+    expect(url.queryParams).toEqual({ area: 'Seniorzy', kind: 'innovation' });
+    fixture.componentInstance.choosePath('education');
+    expect(
+      router.parseUrl(String(navigate.calls.mostRecent().args[0])).queryParams,
+    ).toEqual({ kind: 'education' });
+  });
+
+  it('keeps materials available if optional topic counts cannot be loaded', () => {
+    const fixture = create();
+    respond(true);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.error()).toBeNull();
+    expect(fixture.componentInstance.result()?.resources).toEqual([resource]);
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('app-resource-card')).not.toBeNull();
+    expect(element.querySelector('.tile-count')).toBeNull();
+  });
+});
 
 describe('Knowledge administrator access', () => {
   let fixture: ComponentFixture<KnowledgeAdminComponent>;
@@ -354,4 +451,76 @@ describe('Knowledge topic page', () => {
     TestBed.inject(HttpTestingController).verify();
     expect(fixture.componentInstance.error()).toBe('knowledge.topic.unknown');
   });
+});
+
+describe('Resource card ROPS preview', () => {
+  function create(
+    sourceUrl = resource.sourceUrl,
+  ): ComponentFixture<ResourceCardComponent> {
+    TestBed.configureTestingModule({
+      imports: [ResourceCardComponent],
+      providers,
+    });
+    const fixture = TestBed.createComponent(ResourceCardComponent);
+    fixture.componentRef.setInput('resource', { ...resource, sourceUrl });
+    fixture.detectChanges();
+    return fixture;
+  }
+
+  it('embeds the resource only on demand and closes it without navigation', () => {
+    const fixture = create();
+    const element: HTMLElement = fixture.nativeElement;
+    const toggle = element.querySelector<HTMLButtonElement>('.source-toggle');
+    expect(element.querySelector('iframe')).toBeNull();
+    expect(toggle?.getAttribute('aria-expanded')).toBe('false');
+    toggle?.click();
+    fixture.detectChanges();
+    const frame = element.querySelector('iframe');
+    expect(frame?.getAttribute('src')).toBe(resource.sourceUrl);
+    expect(frame?.getAttribute('sandbox')).toBe(
+      'allow-scripts allow-same-origin allow-forms allow-downloads',
+    );
+    expect(element.classList.contains('source-expanded')).toBeTrue();
+    expect(toggle?.getAttribute('aria-expanded')).toBe('true');
+    expect(
+      element.querySelector('.source-fallback')?.getAttribute('href'),
+    ).toBe(resource.sourceUrl);
+    element.querySelector<HTMLButtonElement>('.source-close')?.click();
+    fixture.detectChanges();
+    expect(element.querySelector('iframe')).toBeNull();
+    expect(element.classList.contains('source-expanded')).toBeFalse();
+    expect(toggle?.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('removes a preview when the displayed resource source changes', () => {
+    const fixture = create();
+    fixture.componentInstance.toggleSource();
+    fixture.detectChanges();
+    fixture.componentRef.setInput('resource', {
+      ...resource,
+      id: 'other',
+      sourceUrl: 'https://rops.krakow.pl/',
+    });
+    fixture.detectChanges();
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('iframe')).toBeNull();
+    expect(fixture.componentInstance.sourceExpanded()).toBeFalse();
+  });
+
+  for (const sourceUrl of [
+    'https://evil.example/',
+    'https://rops.krakow.pl.evil.example/',
+    'https://rops.krakow.pl:8443/',
+    'https://user@rops.krakow.pl/',
+  ]) {
+    it(`does not trust an unsupported iframe source: ${sourceUrl}`, () => {
+      const fixture = create(sourceUrl);
+      fixture.componentInstance.toggleSource();
+      fixture.detectChanges();
+      const element: HTMLElement = fixture.nativeElement;
+      expect(element.querySelector('.source-toggle')).toBeNull();
+      expect(element.querySelector('iframe')).toBeNull();
+      expect(fixture.componentInstance.sourceEmbedUrl()).toBeNull();
+    });
+  }
 });

@@ -12,6 +12,18 @@
   --hub-border: #7b8a9e;
   --hub-error: #b42318;
   --hub-error-soft: #fff0ee;
+  --hub-line: #d5dee8;
+  --hub-neutral: #edf1f6;
+  --hub-warning: #73540e;
+  --hub-warning-soft: #fff9e6;
+  --hub-radius: 16px;
+  --hub-control-radius: 12px;
+  --hub-title-size: clamp(1.75rem, 2.8vw, 2.25rem);
+  --hub-title-line: 1.2;
+  --hub-title-tracking: -0.025em;
+  --hub-section-size: 1.375rem;
+  --hub-card-size: 1.125rem;
+  --hub-panel-padding: clamp(20px, 2.5vw, 28px);
   color-scheme: light;
   @include mat.theme(
     (
@@ -21,6 +33,34 @@
       ),
       typography: Figtree,
       density: 0,
+    )
+  );
+  @include mat.theme-overrides(
+    (
+      primary: var(--hub-brand),
+      on-primary: var(--hub-surface),
+      primary-container: var(--hub-soft),
+      on-primary-container: var(--hub-brand),
+      secondary: var(--hub-brand),
+      on-secondary: var(--hub-surface),
+      secondary-container: var(--hub-soft),
+      on-secondary-container: var(--hub-brand),
+      tertiary: var(--hub-green),
+      tertiary-container: var(--hub-green-soft),
+      on-tertiary-container: var(--hub-green),
+      surface: var(--hub-surface),
+      surface-container-lowest: var(--hub-surface),
+      surface-container-low: var(--hub-bg),
+      surface-container: var(--hub-neutral),
+      surface-container-high: var(--hub-neutral),
+      surface-container-highest: var(--hub-neutral),
+      on-surface: var(--hub-ink),
+      on-surface-variant: var(--hub-muted),
+      outline: var(--hub-border),
+      outline-variant: var(--hub-line),
+      error: var(--hub-error),
+      error-container: var(--hub-error-soft),
+      on-error-container: var(--hub-error),
     )
   );
   @include mat.card-overrides(
@@ -54,7 +94,7 @@
       outlined-outline-color: var(--hub-border),
       outlined-hover-outline-color: var(--hub-ink),
       outlined-input-text-placeholder-color: var(--hub-muted),
-      outlined-container-shape: 8px,
+      outlined-container-shape: var(--hub-control-radius),
     )
   );
 }
@@ -103,7 +143,8 @@ dd {
   background: var(--hub-surface);
   color: var(--hub-ink);
   box-shadow: none;
-  border-radius: 16px;
+  border-radius: var(--hub-radius);
+  border: 1px solid var(--hub-line);
 }
 .mat-mdc-button-base {
   font-family: inherit;
@@ -239,4 +280,170 @@ h3 {
 .new-idea .mat-mdc-tab-body-active,
 .new-idea .mat-mdc-tab-body-content {
   overflow-y: visible;
+}
+
+/* Shared visual language across routed modules and Material overlays. */
+h1 {
+  font-size: var(--hub-title-size);
+  line-height: var(--hub-title-line);
+  letter-spacing: var(--hub-title-tracking);
+  font-weight: 700;
+  margin: 8px 0 16px;
+  text-wrap: balance;
+}
+h2 {
+  font-size: var(--hub-section-size);
+  line-height: 1.35;
+}
+h3 {
+  font-size: var(--hub-card-size);
+  line-height: 1.4;
+}
+.hub-page-header > p {
+  max-width: 70ch;
+  color: var(--hub-muted);
+}
+.hub-page-header .eyebrow {
+  color: var(--hub-brand);
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.mat-mdc-card-content {
+  padding: 24px;
+}
+.mat-mdc-card-content:first-child {
+  padding-top: 24px;
+}
+.mat-mdc-card-content:last-child {
+  padding-bottom: 24px;
+}
+.mat-mdc-card-header {
+  padding: 24px 24px 0;
+}
+.mat-mdc-card-actions {
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 24px 24px;
+}
+.mat-mdc-tab-body-content {
+  padding-top: 24px;
+}
+.mat-mdc-form-field {
+  --mat-form-field-container-text-size: 1rem;
+}
+.mat-mdc-tab .mdc-tab__text-label {
+  white-space: normal;
+  line-height: 1.4;
+}
+.mat-mdc-tab {
+  min-height: 56px;
+  height: auto;
+  padding-block: 8px;
+}
+.hub-paths {
+  margin: 24px 0 32px;
+}
+.hub-paths > h2 {
+  margin: 0 0 16px;
+  font-size: var(--hub-card-size);
+}
+.hub-path-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.hub-path {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 24px;
+  background: var(--hub-surface);
+  border: 1px solid var(--hub-border);
+  border-radius: var(--hub-radius);
+  color: var(--hub-ink);
+  text-decoration: none;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+.hub-path > mat-icon {
+  box-sizing: content-box;
+  padding: 10px;
+  border-radius: var(--hub-control-radius);
+  background: var(--hub-soft);
+  color: var(--hub-brand);
+}
+.hub-path strong {
+  font-size: 18px;
+  line-height: 1.4;
+}
+.hub-path span {
+  font-size: 16px;
+  color: var(--hub-muted);
+  line-height: 1.5;
+}
+.hub-path:hover {
+  background: var(--hub-soft);
+  border-color: var(--hub-brand);
+}
+.hub-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 16px 20px;
+  margin: 0 0 24px;
+  list-style: none;
+  background: var(--hub-soft);
+  border-radius: var(--hub-radius);
+  counter-reset: hub-step;
+}
+.hub-steps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  counter-increment: hub-step;
+}
+.hub-steps li::before {
+  content: counter(hub-step);
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--hub-brand);
+  color: var(--hub-surface);
+  font-weight: 700;
+}
+.hub-form-progress {
+  margin: 24px 0;
+}
+.hub-form-progress strong {
+  color: var(--hub-brand);
+}
+.hub-form-progress p {
+  color: var(--hub-muted);
+  font-size: 14px;
+  margin: 8px 0 0;
+}
+@media (max-width: 767px) {
+  .hub-path-grid {
+    grid-template-columns: 1fr;
+  }
+  .hub-path {
+    padding: 20px;
+    gap: 8px;
+  }
+  .mat-mdc-card-content {
+    padding-inline: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub-path {
+    transition: none;
+  }
 }

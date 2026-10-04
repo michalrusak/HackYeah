@@ -19,10 +19,7 @@
   display: block;
   font-size: 0.875rem;
   font-weight: 700;
-  color: #076958;
-}
-:host-context(.dark-theme) .eyebrow {
-  color: #71d8bd;
+  color: var(--hub-brand);
 }
 h2[mat-dialog-title] {
   padding: 6px 0 0;
@@ -66,9 +63,9 @@ mat-error {
   line-height: 1.5;
 }
 .error-message {
-  color: #8b3024;
-  background: #fff1ee;
-  border: 1px solid #dc9b91;
+  color: var(--hub-error);
+  background: var(--hub-error-soft);
+  border: 1px solid var(--hub-error);
   padding: 12px;
   border-radius: 8px;
   font-size: 1rem;
@@ -76,7 +73,7 @@ mat-error {
 }
 mat-dialog-actions {
   padding: 16px 24px;
-  border-top: 1px solid #aaa3;
+  border-top: 1px solid var(--hub-line);
   gap: 8px;
 }
 button {

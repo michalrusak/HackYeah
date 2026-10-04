@@ -1,5 +1,5 @@
 <section class="ideas" aria-labelledby="ideas-title">
-  <header class="intro">
+  <header class="intro hub-page-header">
     <span class="eyebrow">{{ "ideaCreator.eyebrow" | translate }}</span>
     <h1 id="ideas-title">{{ "ideaCreator.list.title" | translate }}</h1>
     <p>{{ "ideaCreator.list.subtitle" | translate }}</p>
@@ -12,12 +12,29 @@
         <mat-icon aria-hidden="true">folder_shared</mat-icon>
         {{ "ideaCreator.list.mine" | translate }}
       </a>
-      <a mat-stroked-button routerLink="/pomysly/materialy">
-        <mat-icon aria-hidden="true">menu_book</mat-icon>
-        {{ "ideaCreator.list.materials" | translate }}
-      </a>
     </div>
   </header>
+
+  <section class="hub-paths" aria-labelledby="idea-paths-title">
+    <h2 id="idea-paths-title">{{ "ui.pathsTitle" | translate }}</h2>
+    <div class="hub-path-grid">
+      <a class="hub-path" routerLink="/pomysly/nowy">
+        <mat-icon aria-hidden="true">lightbulb</mat-icon>
+        <strong>{{ "ui.ideaPaths.new.title" | translate }}</strong>
+        <span>{{ "ui.ideaPaths.new.description" | translate }}</span>
+      </a>
+      <a class="hub-path" routerLink="/pomysly/materialy">
+        <mat-icon aria-hidden="true">dashboard</mat-icon>
+        <strong>{{ "ui.ideaPaths.develop.title" | translate }}</strong>
+        <span>{{ "ui.ideaPaths.develop.description" | translate }}</span>
+      </a>
+      <a class="hub-path" routerLink="/pomysly/nabory">
+        <mat-icon aria-hidden="true">description</mat-icon>
+        <strong>{{ "ui.ideaPaths.fund.title" | translate }}</strong>
+        <span>{{ "ui.ideaPaths.fund.description" | translate }}</span>
+      </a>
+    </div>
+  </section>
 
   <form class="filters" [formGroup]="filters" aria-labelledby="filters-title">
     <h2 id="filters-title" class="visually-hidden">

@@ -52,12 +52,30 @@
         <summary>{{ "hub.help" | translate }}</summary>
         <div class="help-panel">
           <h2>{{ "hub.helpTitle" | translate }}</h2>
-          <ol>
-            <li>{{ "hub.helpNeed" | translate }}</li>
-            <li>{{ "hub.helpResults" | translate }}</li>
-            <li>{{ "hub.helpAction" | translate }}</li>
-          </ol>
-          <p>{{ "matchmaking.privacy" | translate }}</p>
+          <p>{{ "ui.helpIntro" | translate }}</p>
+          <ul>
+            <li>
+              <a routerLink="/matchmaking" (click)="help.open = false">{{
+                "nav.matchmaking" | translate
+              }}</a>
+            </li>
+            <li>
+              <a routerLink="/pomysly" (click)="help.open = false">{{
+                "nav.ideas" | translate
+              }}</a>
+            </li>
+            <li>
+              <a routerLink="/zasobnik" (click)="help.open = false">{{
+                "knowledge.nav" | translate
+              }}</a>
+            </li>
+          </ul>
+          <a
+            mat-button
+            routerLink="/rops-contact"
+            (click)="help.open = false"
+            >{{ "ui.helpContact" | translate }}</a
+          >
         </div>
       </details>
     </div>
@@ -77,6 +95,7 @@
       [disableClose]="!isMobile()"
       (closedStart)="mobileNavOpen.set(false)"
       (mouseenter)="sidebarDismissed.set(false)"
+      (mouseleave)="onSidebarLeave()"
       (focusin)="sidebarDismissed.set(false)"
     >
       <div class="sidebar-body">
@@ -93,6 +112,7 @@
               [routerLinkActiveOptions]="{ exact: item.path === '/' }"
               ariaCurrentWhenActive="page"
               [attr.aria-label]="item.labelKey | translate"
+              [title]="item.labelKey | translate"
               (click)="onNavigationClick()"
             >
               <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
@@ -111,7 +131,7 @@
                 | translate
             "
             [attr.aria-pressed]="sidebarPinned()"
-            (click)="sidebarPinned.set(!sidebarPinned())"
+            (click)="toggleSidebarPin()"
           >
             <mat-icon aria-hidden="true">{{
               sidebarPinned() ? "push_pin" : "chevron_right"
@@ -137,16 +157,6 @@
       </main>
       <footer class="footer">
         <a routerLink="/dostepnosc">{{ "a11y.title" | translate }}</a>
-        <span>{{ "hub.sourceNote" | translate }}</span>
-        <a
-          href="https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/kategorie"
-          target="_blank"
-          rel="noopener noreferrer"
-          >{{ "hub.library" | translate
-          }}<span class="sr-only">{{
-            "matchmaking.newTab" | translate
-          }}</span></a
-        >
       </footer>
     </mat-sidenav-content>
   </mat-sidenav-container>

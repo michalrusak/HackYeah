@@ -71,6 +71,11 @@
     <p class="error-state" role="alert">{{ error | translate }}</p>
   }
 
+  <ol class="hub-steps" [attr.aria-label]="'ui.stepsLabel' | translate">
+    @for (step of [0, 1, 2]; track step) {
+      <li>{{ "ui.testersSteps." + step | translate }}</li>
+    }
+  </ol>
   <mat-tab-group
     [selectedIndex]="selectedTab()"
     (selectedIndexChange)="selectedTab.set($event)"

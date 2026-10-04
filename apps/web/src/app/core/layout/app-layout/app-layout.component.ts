@@ -107,8 +107,19 @@ export class AppLayoutComponent {
       });
   }
 
+  toggleSidebarPin(): void {
+    const pinned = !this.sidebarPinned();
+    this.sidebarPinned.set(pinned);
+    this.sidebarDismissed.set(!pinned);
+  }
+
+  onSidebarLeave(): void {
+    if (!this.sidebarPinned()) this.sidebarDismissed.set(true);
+  }
+
   onNavigationClick(): void {
     this.mobileNavOpen.set(false);
+    if (!this.sidebarPinned()) this.sidebarDismissed.set(true);
   }
 
   dismissSidebar(): void {
@@ -116,7 +127,10 @@ export class AppLayoutComponent {
     if (help?.open) {
       help.open = false;
       help.querySelector<HTMLElement>('summary')?.focus();
+      return;
     }
-    if (!this.isMobile()) this.sidebarDismissed.set(true);
+    this.sidebarPinned.set(false);
+    this.sidebarDismissed.set(true);
+    this.mobileNavOpen.set(false);
   }
 }

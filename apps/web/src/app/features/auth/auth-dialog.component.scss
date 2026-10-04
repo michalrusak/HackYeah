@@ -35,9 +35,9 @@ mat-error {
   gap: 4px 12px;
 }
 .error-message {
-  color: #8b3024;
-  background: #fff1ee;
-  border: 1px solid #dc9b91;
+  color: var(--hub-error);
+  background: var(--hub-error-soft);
+  border: 1px solid var(--hub-error);
   border-radius: 8px;
   padding: 12px;
 }

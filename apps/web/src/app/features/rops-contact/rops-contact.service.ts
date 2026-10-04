@@ -1,77 +1,54 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ApiConfigService } from '../../core/services/api-config.service';
-import type {
-  CreateConversation,
-  SendMessage,
-  ConversationListResponse,
-  ConversationResponse,
-  MessageListResponse,
-  MessageResponse,
+import {
+  ContactListDataSchema,
+  ContactThreadDataSchema,
+  CreateConversationSchema,
+  SendMessageSchema,
+  type ContactListData,
+  type ContactThreadData,
+  type CreateConversation,
 } from '@repo/api-contracts';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import type { Observable } from 'rxjs';
+import { ApiService } from '../../core/services/api.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+/** Rozmowy zalogowanego użytkownika z ROPS — tożsamość niesie ciasteczko sesji. */
+@Injectable({ providedIn: 'root' })
 export class RopsContactService {
-  private http = inject(HttpClient);
-  private config = inject(ApiConfigService);
+  private readonly api = inject(ApiService);
 
-  private get apiUrl() {
-    return `${this.config.apiUrl}/contact`;
+  conversations(): Observable<ContactListData> {
+    return this.api.request(
+      'GET',
+      '/contact/conversations',
+      ContactListDataSchema,
+      { withCredentials: true },
+    );
   }
 
-  // For prototyping, we will simulate roles via headers.
-  // In a real app, this would be managed by AuthService.
-  public currentUserId = 'mock-citizen-123';
-  public currentUserRole = 'CITIZEN'; // or 'ROPS_EMPLOYEE'
-
-  private getHeaders() {
-    return new HttpHeaders({
-      'user-id': this.currentUserId,
-      'user-role': this.currentUserRole,
-    });
+  thread(id: string): Observable<ContactThreadData> {
+    return this.api.request(
+      'GET',
+      `/contact/conversations/${encodeURIComponent(id)}`,
+      ContactThreadDataSchema,
+      { withCredentials: true },
+    );
   }
 
-  getConversations(): Observable<ConversationListResponse['data']> {
-    return this.http
-      .get<ConversationListResponse>(`${this.apiUrl}/conversations`, {
-        headers: this.getHeaders(),
-      })
-      .pipe(map((res) => res.data));
+  create(input: CreateConversation): Observable<ContactThreadData> {
+    return this.api.request(
+      'POST',
+      '/contact/conversations',
+      ContactThreadDataSchema,
+      { withCredentials: true, body: CreateConversationSchema.parse(input) },
+    );
   }
 
-  createConversation(
-    data: CreateConversation,
-  ): Observable<ConversationResponse['data']> {
-    return this.http
-      .post<ConversationResponse>(`${this.apiUrl}/conversations`, data, {
-        headers: this.getHeaders(),
-      })
-      .pipe(map((res) => res.data));
-  }
-
-  getMessages(conversationId: string): Observable<MessageListResponse['data']> {
-    return this.http
-      .get<MessageListResponse>(
-        `${this.apiUrl}/conversations/${conversationId}/messages`,
-        { headers: this.getHeaders() },
-      )
-      .pipe(map((res) => res.data));
-  }
-
-  sendMessage(
-    conversationId: string,
-    data: SendMessage,
-  ): Observable<MessageResponse['data']> {
-    return this.http
-      .post<MessageResponse>(
-        `${this.apiUrl}/conversations/${conversationId}/messages`,
-        data,
-        { headers: this.getHeaders() },
-      )
-      .pipe(map((res) => res.data));
+  send(id: string, content: string): Observable<ContactThreadData> {
+    return this.api.request(
+      'POST',
+      `/contact/conversations/${encodeURIComponent(id)}/messages`,
+      ContactThreadDataSchema,
+      { withCredentials: true, body: SendMessageSchema.parse({ content }) },
+    );
   }
 }

@@ -40,10 +40,12 @@ pnpm install
 pnpm install
 pnpm setup        # tworzy .env z .env.example (tylko pierwszy raz)
 pnpm docker:up    # uruchamia PostgreSQL
-pnpm db:migrate   # tworzy tabele Testera innowacji bez resetowania danych
-pnpm db:seed      # opcjonalnie: fikcyjne profile demonstracyjne w PostgreSQL
+pnpm db:migrate   # tworzy tabele aplikacji bez resetowania danych
+pnpm db:seed      # katalog ROPS dla matchmakingu i demonstracyjne profile testera
 pnpm dev          # API + frontend w trybie developerskim
 ```
+
+Matchmaking korzysta z opublikowanych zasobów w bazie. Po utworzeniu nowej bazy wykonaj `pnpm db:seed`; bez katalogu wyszukiwanie zwróci zero dopasowań także dla seniorów. Sam katalog można wczytać przez `pnpm --filter api knowledge:seed` po zbudowaniu API. Istniejące wpisy i decyzje o publikacji pozostają zachowane.
 
 Po starcie:
 
@@ -88,8 +90,8 @@ Wszystkie uruchamiasz z **katalogu głównego** repozytorium.
 | `pnpm docker:up` | Start PostgreSQL |
 | `pnpm docker:down` | Stop PostgreSQL |
 | `pnpm docker:logs` | Logi bazy |
-| `pnpm db:migrate` | Addytywna migracja tabel Testera innowacji |
-| `pnpm db:seed` | Idempotentne zasilenie bazy fikcyjnymi profilami |
+| `pnpm db:migrate` | Migracje tabel aplikacji bez resetowania danych |
+| `pnpm db:seed` | Idempotentne wczytanie katalogu ROPS i fikcyjnych profili testera |
 
 ### Pojedyncza aplikacja
 

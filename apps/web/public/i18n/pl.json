@@ -5,15 +5,13 @@
   },
   "nav": {
     "home": "Start",
-    "matchmaking": "Matchmaking społeczny",
+    "matchmaking": "Znajdź rozwiązanie",
     "adaptation": "Dostosuj innowację",
     "ideas": "Kreator pomysłów",
     "calls": "Nabory grantowe",
     "materials": "Materiały",
-    "about": "O projekcie",
-    "contact": "Kontakt",
-    "testers": "Tester innowacji",
-    "rops_contact": "Kontakt ROPS"
+    "testers": "Znajdź testerów",
+    "rops_contact": "Kontakt z ROPS"
   },
   "layout": {
     "skipToContent": "Przejdź do treści"
@@ -49,10 +47,6 @@
     "apiLabel": "API",
     "dbLabel": "Baza danych",
     "apiError": "Nie udało się połączyć z API. Uruchom pnpm dev i pnpm docker:up."
-  },
-  "about": {
-    "title": "O projekcie",
-    "description": "Placeholder — opisz tu swój projekt hackathonowy."
   },
   "matchmaking": {
     "chat": {
@@ -100,7 +94,7 @@
     "descriptionLabel": "Twoja potrzeba",
     "placeholder": "Prowadzimy klub seniora. Uczestnicy przychodzą na zajęcia, ale mało ze sobą rozmawiają. Chcemy pomóc im lepiej się poznać…",
     "hint": "Napisz, kogo dotyczy problem i co jest trudne. Nie musisz znać gotowego rozwiązania.",
-    "privacy": "Opis trafia do AI przez OpenRouter. Nie wpisuj danych osobowych. Nie zapisujemy opisów ani wyników w aplikacji.",
+    "privacy": "Opis trafia do AI. Proszę nie wpisuj danych osobowych.",
     "submit": "Pokaż propozycje",
     "loading": "Szukamy innowacji…",
     "loadingDetail": "Interpretujemy potrzeby i porównujemy je z katalogiem. Może to potrwać do 30 sekund.",
@@ -224,7 +218,7 @@
     },
     "list": {
       "title": "Pomysły i dobre praktyki",
-      "subtitle": "Zgłoś pomysł, podziel się dobrą praktyką lub rozwiązaniem testowanym w mikroskali. Fiszkę możesz stworzyć w każdej chwili. Rozwijaj ją z Canwą i asystentem, a podczas naboru przygotuj wniosek o finansowanie.",
+      "subtitle": "Masz pomysł na lepszą codzienność? Opisz go, rozwiń z pomocą asystenta lub podziel się rozwiązaniem, które już sprawdzasz.",
       "create": "Zgłoś pomysł",
       "mine": "Moje pomysły",
       "materials": "Materiały do prototypowania",
@@ -253,7 +247,7 @@
     },
     "new": {
       "title": "Zgłoś pomysł na innowację społeczną",
-      "subtitle": "Fiszka ma cztery kroki. Możesz zacząć od jednego zdania — asystent pomoże rozwinąć resztę.",
+      "subtitle": "Przejdziemy przez cztery krótkie kroki: pomysł, opis, etap i odbiorców. Możesz pisać własnymi słowami lub skorzystać z asystenta.",
       "step1": "Od czego zaczynamy",
       "step2": "Istota pomysłu",
       "step3": "Etap i kontekst",
@@ -361,7 +355,7 @@
     },
     "assistant": {
       "title": "Asystent kreatora innowacji",
-      "open": "Asystent",
+      "open": "Pomoc w rozwijaniu pomysłu",
       "close": "Zamknij asystenta",
       "intro": "Podpowiada, jak zbudować innowację, pomaga rozwinąć pomysł i proponuje nietuzinkowe warianty.",
       "chatTab": "Rozmowa",
@@ -425,10 +419,6 @@
       "materials": "Materiały i Canwa",
       "calls": "Nabory i wnioski"
     }
-  },
-  "contact": {
-    "title": "Kontakt",
-    "description": "Placeholder — email, social media, formularz kontaktowy."
   },
   "hub": {
     "skip": "Przejdź do treści",
@@ -570,20 +560,47 @@
     "resultsAnnouncement": "Wyszukiwanie zakończone. Liczba dopasowanych osób: {{count}}."
   },
   "rops-contact": {
-    "simulate_role": "Symuluj rolę (Prototyp)",
-    "roles": {
-      "citizen": "Użytkownik prywatny / Mieszkaniec",
-      "employee": "Pracownik ROPS"
+    "title": "Kontakt z ROPS",
+    "intro": "Zadaj pytanie, poproś o wsparcie mentora albo zaproponuj partnerstwo. Zespół ROPS Kraków odpowie w tej samej rozmowie.",
+    "checking": "Sprawdzamy, czy jesteś zalogowany…",
+    "loginTitle": "Zaloguj się, aby napisać do ROPS",
+    "loginIntro": "Rozmowy są przypisane do Twojego konta. Dzięki temu wrócisz do nich na dowolnym urządzeniu i tylko Ty zobaczysz odpowiedzi.",
+    "conversations": "Twoje rozmowy",
+    "empty": "Nie masz jeszcze żadnej rozmowy.",
+    "newConversation": "Nowa rozmowa",
+    "category": "Rodzaj sprawy",
+    "categories": {
+      "QUESTION": "Pytanie",
+      "MENTOR": "Wsparcie mentora",
+      "PARTNERSHIP": "Partnerstwo"
     },
-    "conversations": "Twoje konwersacje",
-    "new_conversation": "Nowa rozmowa",
-    "first_name": "Imię",
-    "last_name": "Nazwisko",
-    "subject": "Temat / Czego dotyczy sprawa?",
+    "categoryHints": {
+      "QUESTION": "Szybkie pytanie do zespołu ROPS.",
+      "MENTOR": "Opisz, nad czym pracujesz i w czym potrzebujesz wsparcia mentora.",
+      "PARTNERSHIP": "Opisz swoją organizację i to, jakiej współpracy szukasz."
+    },
+    "statuses": {
+      "AWAITING_ROPS": "Czeka na odpowiedź ROPS",
+      "ANSWERED": "ROPS odpowiedział",
+      "CLOSED": "Zamknięta"
+    },
+    "authors": {
+      "USER": "Ty",
+      "ROPS": "ROPS Kraków"
+    },
+    "firstName": "Imię",
+    "lastName": "Nazwisko",
+    "organization": "Organizacja (opcjonalnie)",
+    "organizationHint": "Np. stowarzyszenie, urząd, firma lub szkoła, którą reprezentujesz.",
+    "subject": "Temat — czego dotyczy sprawa?",
     "message": "Treść pierwszej wiadomości",
+    "messages": "Wiadomości w rozmowie",
+    "required": "To pole jest wymagane.",
     "send": "Wyślij",
-    "type_message": "Napisz wiadomość...",
-    "select_conversation": "Wybierz konwersację z listy po lewej, aby rozpocząć rozmowę."
+    "typeMessage": "Napisz wiadomość",
+    "closedNote": "ROPS zamknął tę rozmowę. Jeśli napiszesz, otworzymy ją ponownie.",
+    "selectConversation": "Wybierz rozmowę z listy albo rozpocznij nową.",
+    "error": "Nie udało się wykonać operacji. Odśwież stronę i spróbuj ponownie."
   },
   "auth": {
     "login": "Zaloguj się",
@@ -873,13 +890,13 @@
     "title": "Zasobnik wiedzy",
     "nav": "Zasobnik wiedzy",
     "navigation": "Nawigacja główna",
-    "intro": "Poznaj wyzwania społeczne, znajdź sprawdzone pomysły i materiały ROPS Kraków.",
+    "intro": "Nie musisz znać fachowych pojęć. Poznaj wyzwania społeczne, zobacz pomysły, które pomagają ludziom, i znajdź wiedzę do działania.",
     "toMatchmaking": "Opisz problem i znajdź innowacje",
-    "areasTitle": "Od czego chcesz zacząć?",
-    "mapScope": "Wybierz temat. Pokażemy, na czym polega wyzwanie, kluczowe liczby i rozwiązania, które już działają.",
+    "areasTitle": "Wolisz wybrać temat? Poznaj wyzwania i rozwiązania",
+    "mapScope": "Od wyjaśnienia problemu i danych do innowacji i materiałów edukacyjnych. Wybierz temat, który jest Ci bliski.",
     "videoOnly": "Tylko z filmem",
     "facts": "Kluczowe liczby",
-    "answersNeeds": "Odpowiada na potrzeby",
+    "answersNeeds": "W czym pomaga?",
     "topic": {
       "breadcrumb": "Temat społeczny",
       "back": "Wszystkie tematy",
@@ -917,15 +934,20 @@
     "publicationYear": "Rok publikacji",
     "verifiedAt": "Data sprawdzenia źródła",
     "openSource": "Przejdź do źródła",
+    "preview": {
+      "expand": "Więcej szczegółów z ROPS",
+      "collapse": "Zwiń podgląd",
+      "title": "Podgląd ROPS: {{title}}",
+      "hint": "Poniżej możesz przejrzeć stronę ROPS. Jeśli podgląd się nie wyświetla, otwórz stronę źródłową.",
+      "openSource": "Otwórz stronę ROPS w nowej karcie"
+    },
     "video": "Film na stronie ROPS",
     "newTab": "Otwiera się w nowej karcie.",
     "pagination": "Strony wyników",
     "previous": "Poprzednia strona",
     "next": "Następna strona",
     "page": "Strona {{page}}",
-    "catalogNote": "To wybrany katalog demonstracyjny, a nie pełna biblioteka ROPS. Opisy są krótkimi opracowaniami redakcyjnymi; pełne informacje i zasady wykorzystania znajdziesz w źródłach.",
-    "videoNote": "Filmy pochodzą z kanału ROPS Kraków w serwisie YouTube i wczytują się po kliknięciu „Odtwórz film”. Dostępność napisów i tłumaczenia na PJM zależy od nagrania.",
-    "sourcesTitle": "Więcej wiedzy u źródła",
+    "sourcesTitle": "Więcej wiedzy",
     "sources": {
       "reports": "Raporty z badań",
       "innovations": "Biblioteka Innowacji Społecznych",
@@ -1052,6 +1074,33 @@
           "REJECT": "Pomysł odrzucony. Autor dostał uzasadnienie.",
           "REPLY": "Odpowiedź wysłana do autora."
         }
+      },
+      "contact": {
+        "tab": "Wiadomości ({{count}})",
+        "title": "Wiadomości od użytkowników",
+        "intro": "Pytania, prośby o wsparcie mentora i propozycje partnerstw wysłane z ekranu „Kontakt z ROPS”. Odpowiedź pojawia się w rozmowie użytkownika.",
+        "attention": "Czeka na Twoją odpowiedź: {{count}}",
+        "filterLabel": "Filtruj według rodzaju sprawy",
+        "all": "Wszystkie",
+        "empty": "Brak wiadomości w tej kategorii.",
+        "updated": "Ostatnia zmiana",
+        "open": "Otwórz rozmowę",
+        "close": "Zamknij podgląd",
+        "from": "Od",
+        "authors": {
+          "USER": "Użytkownik",
+          "ROPS": "ROPS Kraków"
+        },
+        "message": "Odpowiedź dla użytkownika",
+        "messageHint": "Użytkownik zobaczy ją w swojej rozmowie na ekranie „Kontakt z ROPS”.",
+        "messageRequired": "Napisz odpowiedź.",
+        "reply": "Wyślij odpowiedź",
+        "finish": "Zakończ sprawę",
+        "error": "Nie udało się wykonać operacji. Odśwież dane i spróbuj ponownie.",
+        "done": {
+          "reply": "Odpowiedź wysłana.",
+          "close": "Sprawa zakończona. Użytkownik może ją wznowić, pisząc ponownie."
+        }
       }
     },
     "trends": {
@@ -1089,7 +1138,52 @@
       "count": "Zgłoszenia"
     },
     "playVideo": "Odtwórz film",
-    "videoTitle": "Film o innowacji: {{title}}"
+    "videoTitle": "Film o innowacji: {{title}}",
+    "discovery": {
+      "eyebrow": "Wiedza i inspiracje ROPS Kraków",
+      "pathTitle": "Co chcesz dziś zrobić?",
+      "paths": {
+        "understand": {
+          "title": "Poznać wyzwania",
+          "description": "Zrozum problemy społeczne i poznaj dane."
+        },
+        "discover": {
+          "title": "Znaleźć rozwiązanie",
+          "description": "Zobacz innowacje, które pomagają w codziennym życiu."
+        },
+        "learn": {
+          "title": "Dowiedzieć się, jak działać",
+          "description": "Sięgnij po poradniki i materiały edukacyjne."
+        }
+      },
+      "placeholder": "Np. opieka, pamięć, szkoła",
+      "suggestions": "Szukasz inspiracji?",
+      "situations": {
+        "senior": "Chcę wesprzeć seniora",
+        "family": "Szukam wsparcia dla rodziny",
+        "accessibility": "Chcę ułatwić życie z niepełnosprawnością"
+      },
+      "moreFilters": "Doprecyzuj: temat, odbiorcy, region",
+      "applyFilters": "Pokaż pasujące materiały",
+      "libraryEyebrow": "Odkrywaj · oglądaj · korzystaj",
+      "allKinds": "Wszystkie materiały",
+      "activeFilters": "Twoje wybory:",
+      "removeFilter": "Usuń filtr: {{value}}",
+      "emptyTitle": "Poszukajmy inaczej",
+      "exploreTopic": "Poznaj temat",
+      "helpTitle": "Trudno znaleźć właściwe słowa?",
+      "helpDescription": "Opisz po swojemu, z czym się mierzysz. Asystent pomoże dopasować innowacje do Twojej sytuacji.",
+      "forWhom": "Dla kogo:",
+      "howItWorks": "Jak to działa?",
+      "context": "Poznaj wyzwania związane z tym materiałem:",
+      "exploreInnovation": "Poznaj rozwiązanie w ROPS",
+      "visuals": {
+        "innovation": "Pomysł na lepszą codzienność",
+        "education": "Wiedza, którą możesz wykorzystać",
+        "report": "Spojrzenie przez dane",
+        "challenge": "Zrozumieć, żeby pomóc"
+      }
+    }
   },
   "voice": {
     "start": "Wprowadź opis głosem",
@@ -1108,5 +1202,31 @@
     "network": "Usługa rozpoznawania mowy jest niedostępna. Sprawdź połączenie lub wpisz tekst ręcznie.",
     "failed": "Nie udało się uruchomić dyktowania. Spróbuj ponownie lub wpisz tekst ręcznie.",
     "limit": "Osiągnięto limit 4000 znaków. Skróć opis, aby kontynuować dyktowanie."
+  },
+  "ui": {
+    "pathsTitle": "Od czego chcesz zacząć?",
+    "ideaPaths": {
+      "new": {
+        "title": "Mam nowy pomysł",
+        "description": "Opisz go w krótkiej fiszce. Asystent pomoże Ci zacząć."
+      },
+      "develop": {
+        "title": "Chcę rozwinąć pomysł",
+        "description": "Skorzystaj z Canwy — planszy, która porządkuje pomysł i plan testu."
+      },
+      "fund": {
+        "title": "Szukam finansowania",
+        "description": "Sprawdź nabory. Wniosek przygotujesz, gdy konkurs będzie otwarty."
+      }
+    },
+    "formHint": "Pola oznaczone gwiazdką (*) są wymagane. Pozostałe możesz uzupełnić później.",
+    "helpIntro": "Wybierz to, czego teraz potrzebujesz. Każdy moduł podpowie Ci kolejny krok.",
+    "helpContact": "Potrzebujesz pomocy? Napisz do ROPS",
+    "testersSteps": [
+      "Opisz, kogo potrzebujesz",
+      "Poznaj dopasowane osoby",
+      "Zaproś do wspólnego testu"
+    ],
+    "stepsLabel": "Jak to działa"
   }
 }

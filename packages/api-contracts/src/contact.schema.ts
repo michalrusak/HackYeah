@@ -1,59 +1,63 @@
 import { z } from 'zod'
 import { apiSuccessSchema } from './response.types.js'
 
-export const UserRoleSchema = z.enum(['CITIZEN', 'ROPS_EMPLOYEE'])
+export const ContactCategorySchema = z.enum(['QUESTION', 'MENTOR', 'PARTNERSHIP'])
+export const ContactStatusSchema = z.enum(['AWAITING_ROPS', 'ANSWERED', 'CLOSED'])
 
-export const UserSchema = z.object({
+export const ContactMessageSchema = z.object({
 	id: z.string(),
-	email: z.string().email(),
-	firstName: z.string().nullable().optional(),
-	lastName: z.string().nullable().optional(),
-	role: UserRoleSchema,
-})
-
-export const MessageSchema = z.object({
-	id: z.string(),
-	content: z.string().min(1),
-	conversationId: z.string(),
-	senderId: z.string(),
-	sender: UserSchema.optional(),
+	author: z.enum(['USER', 'ROPS']),
+	content: z.string(),
 	createdAt: z.string(),
 })
 
-export const ConversationSchema = z.object({
+export const ContactConversationSchema = z.object({
 	id: z.string(),
-	subject: z.string().min(1),
-	citizenId: z.string(),
-	citizen: UserSchema.optional(),
-	employeeId: z.string().nullable(),
+	subject: z.string(),
+	category: ContactCategorySchema,
+	status: ContactStatusSchema,
+	firstName: z.string(),
+	lastName: z.string(),
+	organization: z.string().nullable(),
 	createdAt: z.string(),
 	updatedAt: z.string(),
-	messages: z.array(MessageSchema).optional(),
 })
 
 export const CreateConversationSchema = z.object({
-	firstName: z.string().min(1).max(100),
-	lastName: z.string().min(1).max(100),
-	subject: z.string().min(1).max(200),
-	initialMessage: z.string().min(1).max(4000),
+	firstName: z.string().trim().min(1).max(100),
+	lastName: z.string().trim().min(1).max(100),
+	organization: z.string().trim().max(200).optional(),
+	category: ContactCategorySchema,
+	subject: z.string().trim().min(1).max(200),
+	initialMessage: z.string().trim().min(1).max(4000),
 })
 
 export const SendMessageSchema = z.object({
-	content: z.string().min(1).max(4000),
+	content: z.string().trim().min(1).max(4000),
 })
 
-export const ConversationListResponseSchema = apiSuccessSchema(z.array(ConversationSchema))
-export const ConversationResponseSchema = apiSuccessSchema(ConversationSchema)
-export const MessageListResponseSchema = apiSuccessSchema(z.array(MessageSchema))
-export const MessageResponseSchema = apiSuccessSchema(MessageSchema)
+export const ContactListDataSchema = z.object({
+	items: z.array(ContactConversationSchema),
+})
+export const ContactThreadDataSchema = z.object({
+	conversation: ContactConversationSchema,
+	messages: z.array(ContactMessageSchema),
+})
+export const ContactQueueDataSchema = z.object({
+	items: z.array(ContactConversationSchema),
+	attention: z.number().int().nonnegative(),
+})
 
+export const ContactListResponseSchema = apiSuccessSchema(ContactListDataSchema)
+export const ContactThreadResponseSchema = apiSuccessSchema(ContactThreadDataSchema)
+export const ContactQueueResponseSchema = apiSuccessSchema(ContactQueueDataSchema)
+
+export type ContactCategory = z.infer<typeof ContactCategorySchema>
+export type ContactStatus = z.infer<typeof ContactStatusSchema>
+export type ContactMessage = z.infer<typeof ContactMessageSchema>
+export type ContactConversation = z.infer<typeof ContactConversationSchema>
 export type CreateConversation = z.infer<typeof CreateConversationSchema>
 export type SendMessage = z.infer<typeof SendMessageSchema>
-export type Conversation = z.infer<typeof ConversationSchema>
-export type Message = z.infer<typeof MessageSchema>
-export type User = z.infer<typeof UserSchema>
-
-export type ConversationListResponse = z.infer<typeof ConversationListResponseSchema>
-export type ConversationResponse = z.infer<typeof ConversationResponseSchema>
-export type MessageListResponse = z.infer<typeof MessageListResponseSchema>
-export type MessageResponse = z.infer<typeof MessageResponseSchema>
+export type ContactListData = z.infer<typeof ContactListDataSchema>
+export type ContactThreadData = z.infer<typeof ContactThreadDataSchema>
+export type ContactQueueData = z.infer<typeof ContactQueueDataSchema>

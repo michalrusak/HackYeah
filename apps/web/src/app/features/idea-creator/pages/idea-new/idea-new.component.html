@@ -1,9 +1,16 @@
 <section class="new-idea" aria-labelledby="new-idea-title">
-  <header class="intro">
+  <header class="intro hub-page-header">
     <span class="eyebrow">{{ "ideaCreator.eyebrow" | translate }}</span>
     <h1 id="new-idea-title">{{ "ideaCreator.new.title" | translate }}</h1>
     <p>{{ "ideaCreator.new.subtitle" | translate }}</p>
   </header>
+  <div class="hub-form-progress">
+    <strong>{{
+      "ideaCreator.new.stepAnnouncement"
+        | translate: { current: selectedStep() + 1, total: 4 }
+    }}</strong>
+    <p>{{ "ui.formHint" | translate }}</p>
+  </div>
 
   <p class="visually-hidden" aria-live="polite">{{ stepAnnouncement() }}</p>
 

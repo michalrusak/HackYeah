@@ -15,7 +15,7 @@
 
 @if (data(); as current) {
   <section class="application" aria-labelledby="application-title">
-    <header class="intro">
+    <header class="intro hub-page-header">
       <a mat-button [routerLink]="['/pomysly', current.idea.id]">
         <mat-icon aria-hidden="true">arrow_back</mat-icon>
         {{ "ideaCreator.application.backToIdea" | translate }}

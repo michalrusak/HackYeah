@@ -2,8 +2,8 @@
   display: block;
 }
 h1 {
-  font-size: clamp(2rem, 5vw, 3.2rem);
-  line-height: 1.15;
+  font-size: var(--hub-title-size);
+  line-height: var(--hub-title-line);
   margin: 12px 0 20px;
 }
 h2 {
@@ -71,7 +71,7 @@ a.area-tile {
 }
 .search-section {
   padding: 24px;
-  border-radius: 20px;
+  border-radius: var(--hub-radius);
   border: 1px solid var(--mat-sys-outline-variant, #c4c6d0);
   background: var(--mat-sys-surface-container-low, #f3f4fa);
 }
@@ -108,7 +108,7 @@ mat-form-field {
   min-width: 0;
   padding: 24px;
   border: 1px solid var(--mat-sys-outline-variant, #c4c6d0);
-  border-radius: 20px;
+  border-radius: var(--hub-radius);
   background: var(--mat-sys-surface, #fff);
   overflow-wrap: anywhere;
 }

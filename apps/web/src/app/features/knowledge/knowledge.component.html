@@ -1,107 +1,228 @@
-<section class="hero">
+<section class="hero hub-page-header">
+  <p class="eyebrow">
+    <mat-icon aria-hidden="true">local_library</mat-icon
+    >{{ "knowledge.discovery.eyebrow" | translate }}
+  </p>
   <h1>{{ "knowledge.title" | translate }}</h1>
   <p class="lead">{{ "knowledge.intro" | translate }}</p>
-</section>
-
-<section aria-labelledby="areas-heading">
-  <h2 id="areas-heading">{{ "knowledge.areasTitle" | translate }}</h2>
-  <p>{{ "knowledge.mapScope" | translate }}</p>
-  <div class="area-grid">
-    @for (area of areas; track area) {
-      <a class="area-tile" [routerLink]="['/zasobnik/temat', area]">
-        <mat-icon aria-hidden="true">{{ icons[area] }}</mat-icon>
-        <span>{{ area }}</span>
-        <span class="tile-count">{{
-          "knowledge.resourceCount" | translate: { count: count(area) }
-        }}</span>
-      </a>
-    }
+  <div class="learning-path" aria-labelledby="path-heading">
+    <h2 id="path-heading">{{ "knowledge.discovery.pathTitle" | translate }}</h2>
+    <div class="path-grid">
+      @for (path of paths; track path.key) {
+        <button type="button" class="path-card" (click)="choosePath(path.kind)">
+          <span class="path-icon"
+            ><mat-icon aria-hidden="true">{{ path.icon }}</mat-icon></span
+          >
+          <span class="path-copy"
+            ><strong>{{
+              "knowledge.discovery.paths." + path.key + ".title" | translate
+            }}</strong
+            ><span>{{
+              "knowledge.discovery.paths." + path.key + ".description"
+                | translate
+            }}</span></span
+          >
+          <mat-icon class="path-arrow" aria-hidden="true"
+            >arrow_forward</mat-icon
+          >
+        </button>
+      }
+    </div>
   </div>
 </section>
 
 <section class="search-section" aria-labelledby="search-heading">
   <h2 id="search-heading">{{ "knowledge.searchTitle" | translate }}</h2>
-  <div
-    class="actions kind-actions"
-    [attr.aria-label]="'knowledge.kindFilter' | translate"
-  >
-    @for (kind of kinds; track kind) {
-      <button
-        mat-stroked-button
-        type="button"
-        [attr.aria-pressed]="form.controls.kind.value === kind"
-        (click)="selectKind(kind)"
-      >
-        {{ "knowledge.kinds." + kind | translate }}
+  <form [formGroup]="form" (ngSubmit)="search()">
+    <div class="search-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ "knowledge.searchLabel" | translate }}</mat-label>
+        <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+        <input
+          matInput
+          formControlName="q"
+          maxlength="200"
+          type="search"
+          aria-describedby="search-notice"
+          [placeholder]="'knowledge.discovery.placeholder' | translate"
+        />
+      </mat-form-field>
+      <button mat-flat-button type="submit">
+        {{ "knowledge.search" | translate
+        }}<mat-icon iconPositionEnd aria-hidden="true">arrow_forward</mat-icon>
       </button>
+    </div>
+    <p class="note search-notice" id="search-notice">
+      {{ "knowledge.searchNotice" | translate }}
+    </p>
+    <div
+      class="suggestions"
+      role="group"
+      [attr.aria-label]="'knowledge.discovery.suggestions' | translate"
+    >
+      <span>{{ "knowledge.discovery.suggestions" | translate }}</span>
+      @for (suggestion of suggestions; track suggestion.key) {
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="chooseSituation(suggestion.area)"
+        >
+          <mat-icon aria-hidden="true">{{ suggestion.icon }}</mat-icon
+          >{{ "knowledge.discovery.situations." + suggestion.key | translate }}
+        </button>
+      }
+    </div>
+    <details class="advanced-filters">
+      <summary>{{ "knowledge.discovery.moreFilters" | translate }}</summary>
+      <div class="filters">
+        <mat-form-field appearance="outline"
+          ><mat-label>{{ "knowledge.areaFilter" | translate }}</mat-label
+          ><mat-select formControlName="area"
+            ><mat-option value="">{{
+              "knowledge.allAreas" | translate
+            }}</mat-option>
+            @for (area of areas; track area) {
+              <mat-option [value]="area">{{ area }}</mat-option>
+            }
+          </mat-select></mat-form-field
+        >
+        <mat-form-field appearance="outline"
+          ><mat-label>{{ "knowledge.audienceFilter" | translate }}</mat-label
+          ><mat-select formControlName="audience"
+            ><mat-option value="">{{
+              "knowledge.allAudiences" | translate
+            }}</mat-option>
+            @for (audience of audiences; track audience) {
+              <mat-option [value]="audience">{{ audience }}</mat-option>
+            }
+          </mat-select></mat-form-field
+        >
+        <mat-form-field appearance="outline"
+          ><mat-label>{{ "knowledge.scopeFilter" | translate }}</mat-label
+          ><mat-select formControlName="scope"
+            ><mat-option value="">{{
+              "knowledge.allScopes" | translate
+            }}</mat-option>
+            @for (scope of scopes; track scope) {
+              <mat-option [value]="scope">{{
+                "knowledge.scopes." + scope | translate
+              }}</mat-option>
+            }
+          </mat-select></mat-form-field
+        >
+      </div>
+      <div class="actions filter-actions">
+        <button mat-flat-button type="submit">
+          {{ "knowledge.discovery.applyFilters" | translate }}</button
+        ><button mat-button type="button" (click)="clear()">
+          {{ "knowledge.clear" | translate }}
+        </button>
+      </div>
+    </details>
+  </form>
+</section>
+
+<details class="topics-section">
+  <summary>{{ "knowledge.areasTitle" | translate }}</summary>
+  <p>{{ "knowledge.mapScope" | translate }}</p>
+  <div class="area-grid">
+    @for (area of areas; track area) {
+      <a class="area-tile" [routerLink]="['/zasobnik/temat', area]">
+        <mat-icon aria-hidden="true">{{ icons[area] }}</mat-icon>
+        <strong>{{ area }}</strong>
+        @if (overview()) {
+          <span class="tile-count">{{
+            "knowledge.resourceCount" | translate: { count: count(area) }
+          }}</span>
+        }
+        <span class="topic-link"
+          >{{ "knowledge.discovery.exploreTopic" | translate
+          }}<mat-icon aria-hidden="true">arrow_forward</mat-icon></span
+        >
+      </a>
     }
+  </div>
+</details>
+
+<section
+  class="catalog"
+  [attr.aria-busy]="loading()"
+  aria-labelledby="resources-heading"
+>
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">
+        {{ "knowledge.discovery.libraryEyebrow" | translate }}
+      </p>
+      <h2 id="resources-heading" #resultsHeading tabindex="-1">
+        {{
+          (query().kind
+            ? "knowledge.kinds." + query().kind
+            : "knowledge.resultsTitle"
+          ) | translate
+        }}
+      </h2>
+    </div>
     <button
       mat-stroked-button
       type="button"
-      [attr.aria-pressed]="form.controls.video.value === '1'"
+      [attr.aria-pressed]="query().video === '1'"
       (click)="toggleVideo()"
     >
       <mat-icon aria-hidden="true">play_circle</mat-icon
       >{{ "knowledge.videoOnly" | translate }}
     </button>
   </div>
-  <form [formGroup]="form" (ngSubmit)="search()">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>{{ "knowledge.searchLabel" | translate }}</mat-label>
-      <input matInput formControlName="q" maxlength="200" type="search" />
-    </mat-form-field>
-    <p class="note">{{ "knowledge.searchNotice" | translate }}</p>
-    <div class="filters">
-      <mat-form-field appearance="outline"
-        ><mat-label>{{ "knowledge.areaFilter" | translate }}</mat-label
-        ><mat-select formControlName="area"
-          ><mat-option value="">{{
-            "knowledge.allAreas" | translate
-          }}</mat-option>
-          @for (area of areas; track area) {
-            <mat-option [value]="area">{{ area }}</mat-option>
-          }
-        </mat-select></mat-form-field
+  <div
+    class="actions kind-actions"
+    role="group"
+    [attr.aria-label]="'knowledge.kindFilter' | translate"
+  >
+    <button
+      mat-stroked-button
+      type="button"
+      [attr.aria-pressed]="!query().kind"
+      (click)="selectKind('')"
+    >
+      {{ "knowledge.discovery.allKinds" | translate }}
+    </button>
+    @for (kind of kinds; track kind) {
+      <button
+        mat-stroked-button
+        type="button"
+        [attr.aria-pressed]="query().kind === kind"
+        (click)="selectKind(kind)"
       >
-      <mat-form-field appearance="outline"
-        ><mat-label>{{ "knowledge.audienceFilter" | translate }}</mat-label
-        ><mat-select formControlName="audience"
-          ><mat-option value="">{{
-            "knowledge.allAudiences" | translate
-          }}</mat-option>
-          @for (audience of audiences; track audience) {
-            <mat-option [value]="audience">{{ audience }}</mat-option>
-          }
-        </mat-select></mat-form-field
-      >
-      <mat-form-field appearance="outline"
-        ><mat-label>{{ "knowledge.scopeFilter" | translate }}</mat-label
-        ><mat-select formControlName="scope"
-          ><mat-option value="">{{
-            "knowledge.allScopes" | translate
-          }}</mat-option>
-          @for (scope of scopes; track scope) {
-            <mat-option [value]="scope">{{
-              "knowledge.scopes." + scope | translate
-            }}</mat-option>
-          }
-        </mat-select></mat-form-field
-      >
-    </div>
-    <div class="actions">
-      <button mat-flat-button type="submit">
-        {{ "knowledge.search" | translate }}</button
-      ><button mat-button type="button" (click)="clear()">
+        {{ "knowledge.kinds." + kind | translate }}
+      </button>
+    }
+  </div>
+  @if (activeFilters().length) {
+    <div
+      class="active-filters"
+      role="group"
+      [attr.aria-label]="'knowledge.discovery.activeFilters' | translate"
+    >
+      <span>{{ "knowledge.discovery.activeFilters" | translate }}</span>
+      @for (filter of activeFilters(); track filter.key) {
+        @let label = filter.label ? (filter.label | translate) : filter.value;
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="removeFilter(filter.key)"
+          [attr.aria-label]="
+            'knowledge.discovery.removeFilter' | translate: { value: label }
+          "
+        >
+          {{ label
+          }}<mat-icon iconPositionEnd aria-hidden="true">close</mat-icon>
+        </button>
+      }
+      <button mat-button type="button" (click)="clear()">
         {{ "knowledge.clear" | translate }}
       </button>
     </div>
-  </form>
-</section>
-
-<section [attr.aria-busy]="loading()" aria-labelledby="resources-heading">
-  <h2 id="resources-heading" #resultsHeading tabindex="-1">
-    {{ "knowledge.resultsTitle" | translate }}
-  </h2>
+  }
   @if (loading()) {
     <mat-progress-bar
       mode="indeterminate"
@@ -122,7 +243,14 @@
       {{ "knowledge.resultCount" | translate: { count: data.total } }}
     </p>
     @if (!data.resources.length) {
-      <p>{{ "knowledge.empty" | translate }}</p>
+      <div class="empty-state">
+        <mat-icon aria-hidden="true">travel_explore</mat-icon>
+        <h3>{{ "knowledge.discovery.emptyTitle" | translate }}</h3>
+        <p>{{ "knowledge.empty" | translate }}</p>
+        <a mat-flat-button routerLink="/matchmaking">{{
+          "knowledge.toMatchmaking" | translate
+        }}</a>
+      </div>
     }
     <div class="resource-grid">
       @for (resource of data.resources; track resource.id) {
@@ -153,9 +281,18 @@
       </nav>
     }
   }
-  <p class="note">{{ "knowledge.catalogNote" | translate }}</p>
-  <p class="note">{{ "knowledge.videoNote" | translate }}</p>
 </section>
+
+<aside class="help-strip" aria-labelledby="help-heading">
+  <mat-icon aria-hidden="true">forum</mat-icon>
+  <div>
+    <h2 id="help-heading">{{ "knowledge.discovery.helpTitle" | translate }}</h2>
+    <p>{{ "knowledge.discovery.helpDescription" | translate }}</p>
+  </div>
+  <a mat-flat-button routerLink="/matchmaking">{{
+    "knowledge.toMatchmaking" | translate
+  }}</a>
+</aside>
 
 <section class="sources" aria-labelledby="sources-heading">
   <h2 id="sources-heading">{{ "knowledge.sourcesTitle" | translate }}</h2>
