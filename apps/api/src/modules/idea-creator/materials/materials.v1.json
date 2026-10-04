@@ -4,10 +4,10 @@
     {
       "id": "canva-innowacji-online",
       "title": "Canva innowacji społecznej — wersja interaktywna",
-      "description": "Wypełnij planszę bezpośrednio w aplikacji. Treść zapisuje się przy Twojej fiszce, a asystent może zaproponować pierwszą wersję każdego pola.",
+      "description": "Wybierz swoją fiszkę i otwórz jej Canwę. Wypełnij planszę bezpośrednio w aplikacji. Treść zapisuje się przy Twojej fiszce, a asystent może zaproponować pierwszą wersję każdego pola.",
       "kind": "canvas",
       "format": "online",
-      "url": "/pomysly",
+      "url": "/pomysly/moje",
       "pending": false
     },
     {

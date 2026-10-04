@@ -292,3 +292,17 @@
     padding-inline: 16px;
   }
 }
+
+.workspace-content.matchmaking-workspace {
+  overflow: hidden;
+  .page-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-width: none;
+    padding: 0;
+  }
+  .footer {
+    display: none;
+  }
+}

@@ -22,7 +22,9 @@ describe('Application startup', () => {
     TestBed.inject(TranslateService);
     http.expectOne('/i18n/pl.json').flush({
       home: { cta: 'Znajdź rozwiązanie' },
-      matchmaking: { title: 'Matchmaking społeczny' },
+      matchmaking: {
+        chat: { title: 'Co chcesz zmienić w swojej społeczności?' },
+      },
     });
     await init.donePromise;
     const fixture = TestBed.createComponent(AppComponent);
@@ -32,7 +34,9 @@ describe('Application startup', () => {
     await fixture.whenStable();
     const element: HTMLElement = fixture.nativeElement;
     expect(element.querySelector('textarea')).not.toBeNull();
-    expect(element.textContent).toContain('Matchmaking społeczny');
+    expect(element.querySelector('h1')?.textContent).toContain(
+      'Co chcesz zmienić w swojej społeczności?',
+    );
     expect(TestBed.inject(TranslateService).instant('home.cta')).toBe(
       'Znajdź rozwiązanie',
     );

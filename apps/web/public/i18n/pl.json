@@ -55,6 +55,33 @@
     "description": "Placeholder — opisz tu swój projekt hackathonowy."
   },
   "matchmaking": {
+    "chat": {
+      "newChat": "Nowy czat",
+      "label": "Asystent innowacji społecznych",
+      "title": "Co chcesz zmienić w swojej społeczności?",
+      "subtitle": "Opisz potrzebę. Wspólnie poszukamy rozwiązania w bibliotece innowacji ROPS.",
+      "examples": {
+        "seniors": "Więcej kontaktu i wspólnych spotkań",
+        "migrants": "Łatwiejszy dostęp do informacji i usług",
+        "homelessness": "Wsparcie blisko osoby w kryzysie",
+        "pilot": "Przygotowanie osób w spektrum do pracy"
+      },
+      "exampleHint": "Wybierz podpowiedź lub napisz własnymi słowami poniżej.",
+      "you": "Twoja wiadomość",
+      "answerBelow": "Wybierz podpowiedź lub wpisz własną odpowiedź w polu na dole.",
+      "ready": "Mam propozycje dla Ciebie",
+      "noMatches": "Poszukajmy innego podejścia",
+      "resultsBelow": "Propozycje czekają poniżej. Użyj strzałki, aby przejść do innowacji.",
+      "tryAgain": "Możesz uzupełnić opis potrzeby lub sprawdzić poniżej możliwości testowania rozwiązań.",
+      "found": "Znaleziono propozycje innowacji: {{count}}",
+      "pilotsFound": "Znaleziono propozycje do testowania: {{count}}",
+      "goToResults": "Przejdź do znalezionych innowacji",
+      "pilotResults": "Innowacje do testowania",
+      "newNeed": "Opisz kolejną potrzebę",
+      "answerPlaceholder": "Twoja odpowiedź…",
+      "keyboard": "Enter — wyślij · Shift + Enter — nowa linia",
+      "sendAnswer": "Wyślij odpowiedź"
+    },
     "productName": "Łącznik · innowacje społeczne",
     "skipToForm": "Przejdź do opisu problemu",
     "editDescription": "Popraw lub uzupełnij opis",
@@ -197,7 +224,7 @@
     },
     "list": {
       "title": "Pomysły i dobre praktyki",
-      "subtitle": "Przeglądaj innowacje społeczne zgłoszone przez mieszkanki i mieszkańców Małopolski oraz rozwiązania przetestowane w mikroskali.",
+      "subtitle": "Zgłoś pomysł, podziel się dobrą praktyką lub rozwiązaniem testowanym w mikroskali. Fiszkę możesz stworzyć w każdej chwili. Rozwijaj ją z Canwą i asystentem, a podczas naboru przygotuj wniosek o finansowanie.",
       "create": "Zgłoś pomysł",
       "mine": "Moje pomysły",
       "materials": "Materiały do prototypowania",
@@ -322,12 +349,15 @@
       "submittedDescription": "Treść jest zablokowana do edycji. Operator naboru otrzyma ją do oceny."
     },
     "materials": {
-      "title": "Materiały do prototypowania",
-      "subtitle": "Canva innowacji społecznych i materiały pomocnicze udostępnione uczestnikom HackYeah przez ROPS Kraków.",
+      "title": "Materiały i Canwa",
+      "subtitle": "Narzędzia do rozwijania i prototypowania innowacji w jednym miejscu. Korzystaj z nich na każdym etapie pracy nad pomysłem.",
       "loading": "Wczytujemy materiały…",
       "open": "Otwórz",
       "download": "Pobierz ({{format}})",
-      "pending": "Plik zostanie udostępniony przez ROPS Kraków."
+      "pending": "Plik zostanie udostępniony przez ROPS Kraków.",
+      "canvasHint": "Canwa jest połączona z fiszką. Wybierz swój pomysł i otwórz jego Canwę albo zacznij od nowej fiszki. Asystent pomoże uzupełnić pola.",
+      "chooseIdea": "Wybierz pomysł do Canwy",
+      "createIdea": "Utwórz nową fiszkę"
     },
     "assistant": {
       "title": "Asystent kreatora innowacji",
@@ -387,6 +417,13 @@
       "required": "Wpisz wiadomość.",
       "send": "Wyślij wiadomość",
       "sending": "Wysyłamy…"
+    },
+    "navigation": {
+      "label": "Sekcje Kreatora pomysłów",
+      "ideas": "Pomysły i praktyki",
+      "mine": "Moje pomysły",
+      "materials": "Materiały i Canwa",
+      "calls": "Nabory i wnioski"
     }
   },
   "contact": {
@@ -1053,5 +1090,23 @@
     },
     "playVideo": "Odtwórz film",
     "videoTitle": "Film o innowacji: {{title}}"
+  },
+  "voice": {
+    "start": "Wprowadź opis głosem",
+    "stop": "Zatrzymaj dyktowanie",
+    "hint": "Kliknij mikrofon i mów po polsku. Przeglądarka może wysyłać dźwięk do swojej usługi rozpoznawania mowy. Nie dyktuj danych osobowych.",
+    "starting": "Uruchamiam mikrofon… Jeśli przeglądarka poprosi, zezwól na dostęp.",
+    "listening": "Słucham… Mów po polsku. Kliknij ponownie mikrofon, aby zakończyć.",
+    "stopping": "Kończę dyktowanie…",
+    "finished": "Dyktowanie zakończone. Sprawdź tekst przed wyszukaniem.",
+    "draft": "Rozpoznaję",
+    "draftSaved": "Zachowano wstępnie rozpoznany tekst. Sprawdź go i popraw przed wysłaniem.",
+    "unsupported": "Ta przeglądarka nie obsługuje dyktowania. Wpisz tekst ręcznie lub spróbuj w aktualnym Chrome albo Edge.",
+    "permission": "Brak zgody na mikrofon lub rozpoznawanie mowy. Sprawdź uprawnienia tej strony w przeglądarce i spróbuj ponownie.",
+    "microphone": "Nie udało się uruchomić mikrofonu. Sprawdź, czy jest podłączony i dostępny.",
+    "noSpeech": "Nie rozpoznano wypowiedzi. Kliknij mikrofon i spróbuj ponownie. Wpisany tekst pozostał bez zmian.",
+    "network": "Usługa rozpoznawania mowy jest niedostępna. Sprawdź połączenie lub wpisz tekst ręcznie.",
+    "failed": "Nie udało się uruchomić dyktowania. Spróbuj ponownie lub wpisz tekst ręcznie.",
+    "limit": "Osiągnięto limit 4000 znaków. Skróć opis, aby kontynuować dyktowanie."
   }
 }

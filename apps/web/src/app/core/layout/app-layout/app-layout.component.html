@@ -126,7 +126,12 @@
         </div>
       </div>
     </mat-sidenav>
-    <mat-sidenav-content class="workspace-content">
+    <mat-sidenav-content
+      class="workspace-content"
+      [class.matchmaking-workspace]="
+        router.url.split('?')[0].split('#')[0] === '/matchmaking'
+      "
+    >
       <main #mainContent class="page-content" id="main-content" tabindex="-1">
         <router-outlet />
       </main>

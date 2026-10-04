@@ -35,6 +35,28 @@ export const ideaRoutes: Routes = [
         data: { breadcrumb: 'ideaCreator.mine.title' },
       },
       {
+        path: 'materialy',
+        loadComponent: () =>
+          import('./pages/materials/materials.component').then(
+            (m) => m.MaterialsComponent,
+          ),
+        data: { breadcrumb: 'ideaCreator.materials.title' },
+      },
+      {
+        path: 'nabory',
+        loadComponent: () =>
+          import('./pages/calls/calls.component').then((m) => m.CallsComponent),
+        data: { breadcrumb: 'nav.calls' },
+      },
+      {
+        path: 'nabory/:callId/wniosek/:applicationId',
+        loadComponent: () =>
+          import('./pages/application/application.component').then(
+            (m) => m.ApplicationComponent,
+          ),
+        data: { breadcrumb: 'ideaCreator.application.title' },
+      },
+      {
         path: ':id',
         data: { breadcrumb: 'a11y.ideaDetail' },
         loadComponent: () =>
@@ -51,22 +73,5 @@ export const ideaRoutes: Routes = [
           ),
       },
     ],
-  },
-];
-
-export const callRoutes: Routes = [
-  {
-    path: '',
-    loadComponent: () =>
-      import('./pages/calls/calls.component').then((m) => m.CallsComponent),
-    data: { breadcrumb: 'nav.calls' },
-  },
-  {
-    path: ':callId/wniosek/:applicationId',
-    loadComponent: () =>
-      import('./pages/application/application.component').then(
-        (m) => m.ApplicationComponent,
-      ),
-    data: { breadcrumb: 'ideaCreator.application.title' },
   },
 ];

@@ -57,7 +57,9 @@ export class IdeaDetailComponent implements OnInit {
   readonly related = signal<MatchmakingData | null>(null);
   readonly openCall = signal<GrantCall | null>(null);
 
-  readonly ideaId = computed(() => this.route.snapshot.paramMap.get('id') ?? '');
+  readonly ideaId = computed(
+    () => this.route.snapshot.paramMap.get('id') ?? '',
+  );
   readonly token = computed(() => this.tokens.ideaToken(this.ideaId()));
   readonly isOwner = computed(() => Boolean(this.token()));
   readonly visualUrl = computed(() => {
@@ -131,7 +133,12 @@ export class IdeaDetailComponent implements OnInit {
     if (!call) return;
     const existing = this.tokens.applicationFor(this.ideaId(), call.id);
     if (existing) {
-      void this.router.navigate(['/nabory', call.id, 'wniosek', existing.id]);
+      void this.router.navigate([
+        '/pomysly/nabory',
+        call.id,
+        'wniosek',
+        existing.id,
+      ]);
       return;
     }
     this.run(
@@ -147,7 +154,7 @@ export class IdeaDetailComponent implements OnInit {
           token: created.editToken,
         });
         void this.router.navigate([
-          '/nabory',
+          '/pomysly/nabory',
           created.call.id,
           'wniosek',
           created.application.id,

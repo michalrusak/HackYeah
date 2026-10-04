@@ -1,493 +1,665 @@
 <section class="matchmaking" aria-labelledby="matchmaking-title">
-  <ol class="steps" [attr.aria-label]="'hub.stepsLabel' | translate">
-    <li
-      [attr.aria-current]="!result() ? 'step' : null"
-      [class.passed]="result()"
-    >
-      <span class="desktop-label">{{ "hub.stepNeed" | translate }}</span
-      ><span class="mobile-label">{{ "hub.stepNeedShort" | translate }}</span>
-    </li>
-    <li [attr.aria-current]="result() ? 'step' : null">
-      <span class="desktop-label">{{ "hub.stepResults" | translate }}</span
-      ><span class="mobile-label">{{
-        "hub.stepResultsShort" | translate
-      }}</span>
-    </li>
-    <li>
-      <span class="desktop-label">{{ "hub.stepAction" | translate }}</span
-      ><span class="mobile-label">{{ "hub.stepActionShort" | translate }}</span>
-    </li>
-  </ol>
-  <header class="intro">
-    <h1 id="matchmaking-title">{{ "matchmaking.title" | translate }}</h1>
-    <p>{{ "matchmaking.subtitle" | translate }}</p>
-  </header>
-
-  <div class="search-layout">
-    <mat-card class="description-card">
-      <mat-card-content>
-        <form
-          [formGroup]="form"
-          (ngSubmit)="submit()"
-          [attr.aria-busy]="loading()"
-        >
-          <h2>{{ "hub.formTitle" | translate }}</h2>
-          <p class="field-guidance" id="description-guidance">
-            {{ "matchmaking.hint" | translate }}
-          </p>
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>{{
-              "matchmaking.descriptionLabel" | translate
-            }}</mat-label>
-            <textarea
-              #descriptionInput
-              id="problem-description"
-              [attr.aria-label]="'matchmaking.descriptionLabel' | translate"
-              matInput
-              [formControl]="description"
-              rows="6"
-              maxlength="4000"
-              aria-describedby="description-guidance"
-              [placeholder]="'matchmaking.placeholder' | translate"
-            ></textarea>
-            <mat-hint align="end" class="character-count"
-              >{{ description.value.length }} / 4000</mat-hint
-            >
-            <mat-error>{{
-              "matchmaking.errors.validation" | translate
-            }}</mat-error>
-          </mat-form-field>
-          <div class="submit-row">
-            <button mat-flat-button type="submit" [disabled]="loading()">
-              {{
-                (loading() ? "matchmaking.loading" : "matchmaking.submit")
-                  | translate
-              }}
-            </button>
-            <p>{{ "matchmaking.privacy" | translate }}</p>
-          </div>
-        </form>
-      </mat-card-content>
-    </mat-card>
-    <aside class="examples" aria-labelledby="examples-title">
-      <h2 id="examples-title">{{ "matchmaking.examplesLabel" | translate }}</h2>
-      <p>{{ "hub.examplesHint" | translate }}</p>
-      @for (example of examples; track example) {
-        <button
-          mat-stroked-button
-          type="button"
-          [disabled]="loading()"
-          (click)="useExample(example)"
-        >
-          {{ "matchmaking.examples." + example + ".label" | translate }}
-        </button>
-      }
-      <p class="aside-note">{{ "hub.noAccount" | translate }}</p>
-    </aside>
-  </div>
-
-  <div aria-live="polite" aria-atomic="true">
-    @if (loading()) {
-      <div class="loading-state" role="status">
-        <mat-progress-bar
-          mode="indeterminate"
-          [attr.aria-label]="'matchmaking.loading' | translate"
-        />
-        <p>{{ "matchmaking.loadingDetail" | translate }}</p>
-      </div>
-    }
-    @if (errorKey(); as error) {
-      <div class="error-state" role="alert" #errorPanel tabindex="-1">
-        <p>{{ error | translate }}</p>
-        <button mat-stroked-button (click)="retry()">
-          {{ "matchmaking.retry" | translate }}
-        </button>
-      </div>
-    }
-  </div>
-
-  @if (result(); as data) {
-    @if (data.clarification; as clarification) {
-      @if (!clarificationDismissed()) {
-        <section
-          class="clarification-card"
-          aria-labelledby="clarification-heading"
-          [attr.aria-busy]="loading()"
-        >
-          <p class="clarification-eyebrow">
-            {{ "matchmaking.assistant.label" | translate }}
-          </p>
-          <h2 id="clarification-heading" #clarificationHeading tabindex="-1">
-            {{
-              "matchmaking.assistant." +
-                (clarification.question
-                  ? clarification.reason
-                  : "exhaustedTitle") | translate
-            }}
+  <div class="chat-scroll" #chatScroll>
+    <div class="chat-content" [class.welcome]="!submittedDescription()">
+      <header class="intro" [class.compact]="submittedDescription()">
+        <p class="assistant-label">
+          <mat-icon aria-hidden="true">auto_awesome</mat-icon
+          >{{ "matchmaking.chat.label" | translate }}
+        </p>
+        <h1 id="matchmaking-title">
+          {{ "matchmaking.chat.title" | translate }}
+        </h1>
+        @if (!submittedDescription()) {
+          <p>{{ "matchmaking.chat.subtitle" | translate }}</p>
+        }
+      </header>
+      @if (!submittedDescription()) {
+        <section class="examples" aria-labelledby="examples-title">
+          <h2 id="examples-title">
+            {{ "matchmaking.examplesLabel" | translate }}
           </h2>
-          @if (clarification.question; as question) {
-            <p>{{ "matchmaking.assistant.intro" | translate }}</p>
-            <p class="clarification-progress">
-              {{
-                "matchmaking.assistant.progress"
-                  | translate
-                    : {
-                        round: clarification.round,
-                        max: clarification.maxRounds,
+          <div class="example-grid">
+            @for (example of examples; track example; let index = $index) {
+              <button
+                class="example-tile"
+                type="button"
+                [disabled]="loading() || voice.active()"
+                (click)="useExample(example)"
+              >
+                <mat-icon aria-hidden="true">{{
+                  ["groups", "language", "home", "work_outline"][index]
+                }}</mat-icon>
+                <span
+                  ><strong>{{
+                    "matchmaking.examples." + example + ".label" | translate
+                  }}</strong
+                  ><small>{{
+                    "matchmaking.chat.examples." + example | translate
+                  }}</small></span
+                >
+                <mat-icon class="example-arrow" aria-hidden="true"
+                  >north_west</mat-icon
+                >
+              </button>
+            }
+          </div>
+          <p class="sr-only">
+            {{ "matchmaking.chat.exampleHint" | translate }}
+          </p>
+        </section>
+      }
+      @if (submittedDescription()) {
+        <div class="conversation">
+          <article class="user-message">
+            <span class="sr-only">{{
+              "matchmaking.chat.you" | translate
+            }}</span>
+            <p>{{ submittedDescription() }}</p>
+          </article>
+          @for (turn of answers(); track $index) {
+            <article class="assistant-message history-question">
+              <span class="assistant-label">{{
+                "matchmaking.assistant.label" | translate
+              }}</span>
+              <p>{{ turn.question }}</p>
+            </article>
+            <article class="user-message">
+              <span class="sr-only">{{
+                "matchmaking.chat.you" | translate
+              }}</span>
+              <p>{{ turn.answer }}</p>
+            </article>
+          }
+          @if (result(); as data) {
+            @if (data.clarification; as clarification) {
+              @if (!clarificationDismissed()) {
+                <section
+                  class="clarification-card assistant-message"
+                  aria-labelledby="clarification-heading"
+                  [attr.aria-busy]="loading()"
+                >
+                  <p class="assistant-label">
+                    {{ "matchmaking.assistant.label" | translate }}
+                  </p>
+                  <h2
+                    id="clarification-heading"
+                    #clarificationHeading
+                    tabindex="-1"
+                  >
+                    {{
+                      "matchmaking.assistant." +
+                        (clarification.question
+                          ? clarification.reason
+                          : "exhaustedTitle") | translate
+                    }}
+                  </h2>
+                  @if (clarification.question; as question) {
+                    <p
+                      id="clarification-question"
+                      class="clarification-question"
+                    >
+                      {{ question }}
+                    </p>
+                    <p class="clarification-progress">
+                      {{
+                        "matchmaking.assistant.progress"
+                          | translate
+                            : {
+                                round: clarification.round,
+                                max: clarification.maxRounds,
+                              }
+                      }}
+                    </p>
+                    @if (clarification.options?.length) {
+                      <mat-radio-group
+                        class="clarification-options"
+                        aria-labelledby="clarification-question"
+                        [value]="selectedOption()"
+                        [disabled]="
+                          loading() || voice.active() || editingDescription()
+                        "
+                        (change)="selectAnswer($event.value)"
+                        [attr.aria-invalid]="selectionRequired()"
+                        [attr.aria-describedby]="
+                          selectionRequired() ? 'choice-error' : null
+                        "
+                      >
+                        @for (option of clarification.options; track $index) {
+                          <mat-radio-button [value]="$index">{{
+                            "matchmaking.assistant.optionLabel"
+                              | translate
+                                : {
+                                    letter: optionLetters[$index],
+                                    answer: option,
+                                  }
+                          }}</mat-radio-button>
+                        }
+                        <mat-radio-button [value]="-1">{{
+                          "matchmaking.assistant.otherAnswer" | translate
+                        }}</mat-radio-button>
+                      </mat-radio-group>
+                      @if (selectionRequired()) {
+                        <p id="choice-error" class="choice-error" role="alert">
+                          {{ "matchmaking.assistant.chooseAnswer" | translate }}
+                        </p>
                       }
-              }}
-            </p>
-            <form [formGroup]="answerForm" (ngSubmit)="submitAnswer()">
-              <p id="clarification-question" class="clarification-question">
-                {{ question }}
-              </p>
-              @if (clarification.options?.length) {
-                <mat-radio-group
-                  class="clarification-options"
-                  aria-labelledby="clarification-question"
-                  [value]="selectedOption()"
-                  [disabled]="loading()"
-                  (change)="selectAnswer($event.value)"
-                  [attr.aria-invalid]="selectionRequired()"
-                  [attr.aria-describedby]="
-                    selectionRequired() ? 'choice-error' : null
+                    }
+                    <p class="answer-guidance">
+                      {{ "matchmaking.chat.answerBelow" | translate }}
+                    </p>
+                    <button
+                      mat-button
+                      type="button"
+                      [disabled]="loading() || voice.active()"
+                      (click)="dismissClarification()"
+                    >
+                      {{ "matchmaking.assistant.skip" | translate }}
+                    </button>
+                  } @else {
+                    <p>
+                      {{
+                        "matchmaking.assistant.exhaustedDescription" | translate
+                      }}
+                    </p>
+                    <a mat-stroked-button routerLink="/rops-contact">{{
+                      "matchmaking.assistant.contact" | translate
+                    }}</a>
+                  }
+                </section>
+              } @else {
+                <button
+                  class="clarification-resume"
+                  mat-stroked-button
+                  type="button"
+                  [disabled]="loading() || voice.active()"
+                  (click)="
+                    clarificationDismissed.set(false);
+                    editingDescription.set(false)
                   "
                 >
-                  @for (option of clarification.options; track $index) {
-                    <mat-radio-button [value]="$index">{{
-                      "matchmaking.assistant.optionLabel"
-                        | translate
-                          : { letter: optionLetters[$index], answer: option }
-                    }}</mat-radio-button>
-                  }
-                  <mat-radio-button [value]="-1">{{
-                    "matchmaking.assistant.otherAnswer" | translate
-                  }}</mat-radio-button>
-                </mat-radio-group>
-                @if (selectionRequired()) {
-                  <p id="choice-error" class="choice-error" role="alert">
-                    {{ "matchmaking.assistant.chooseAnswer" | translate }}
-                  </p>
-                }
-              }
-              @if (!clarification.options?.length || selectedOption() === -1) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                  <mat-label>{{
-                    "matchmaking.assistant.answer" | translate
-                  }}</mat-label>
-                  <textarea
-                    #answerInput
-                    matInput
-                    [formControl]="answer"
-                    rows="3"
-                    maxlength="1000"
-                    aria-describedby="clarification-question"
-                  ></textarea>
-                  <mat-hint align="end"
-                    >{{ answer.value.length }} / 1000</mat-hint
-                  >
-                  <mat-error>{{
-                    "matchmaking.assistant.validation" | translate
-                  }}</mat-error>
-                </mat-form-field>
-              }
-              <div class="clarification-actions">
-                <button mat-flat-button type="submit" [disabled]="loading()">
-                  {{ "matchmaking.assistant.submit" | translate }}
+                  {{ "matchmaking.assistant.resume" | translate }}
                 </button>
-                <button
-                  mat-button
-                  type="button"
-                  [disabled]="loading()"
-                  (click)="dismissClarification()"
-                >
-                  {{ "matchmaking.assistant.skip" | translate }}
-                </button>
-              </div>
-            </form>
-          } @else {
-            <p>
-              {{ "matchmaking.assistant.exhaustedDescription" | translate }}
-            </p>
-            <a mat-stroked-button routerLink="/rops-contact">{{
-              "matchmaking.assistant.contact" | translate
-            }}</a>
-          }
-          @if (answers().length) {
-            <details class="clarification-history">
-              <summary>
-                {{ "matchmaking.assistant.history" | translate }}
-              </summary>
-              @for (turn of answers(); track $index) {
-                <p>
-                  <strong>{{ turn.question }}</strong
-                  ><br />{{ turn.answer }}
+              }
+            } @else {
+              <article class="assistant-message">
+                <p class="assistant-label">
+                  {{ "matchmaking.assistant.label" | translate }}
                 </p>
-              }
-            </details>
+                <h2 id="chat-reply" #replyHeading tabindex="-1">
+                  {{
+                    (data.matches.length
+                      ? "matchmaking.chat.ready"
+                      : "matchmaking.chat.noMatches"
+                    ) | translate
+                  }}
+                </h2>
+                <p>{{ data.interpretation.summary }}</p>
+                <p>
+                  {{
+                    (data.matches.length
+                      ? "matchmaking.chat.resultsBelow"
+                      : "matchmaking.chat.tryAgain"
+                    ) | translate
+                  }}
+                </p>
+              </article>
+            }
           }
-        </section>
-      } @else {
-        <button
-          class="clarification-resume"
-          mat-stroked-button
-          type="button"
-          (click)="clarificationDismissed.set(false)"
-        >
-          {{ "matchmaking.assistant.resume" | translate }}
-        </button>
-      }
-    }
-    <section class="interpretation" aria-labelledby="interpretation-title">
-      <h2 id="interpretation-title" #responseHeading tabindex="-1">
-        {{ "matchmaking.interpretationTitle" | translate }}
-      </h2>
-      <p>{{ data.interpretation.summary }}</p>
-      <button mat-stroked-button type="button" (click)="editDescription()">
-        <mat-icon aria-hidden="true">edit</mat-icon>
-        {{ "matchmaking.editDescription" | translate }}
-      </button>
-      <dl>
-        <div>
-          <dt>{{ "matchmaking.audiences" | translate }}</dt>
-          <dd>
-            {{
-              data.interpretation.audiences.join(", ") ||
-                ("matchmaking.unspecified" | translate)
-            }}
-          </dd>
-        </div>
-        <div>
-          <dt>{{ "matchmaking.needs" | translate }}</dt>
-          <dd>
-            {{
-              data.interpretation.needs.join(", ") ||
-                ("matchmaking.unspecified" | translate)
-            }}
-          </dd>
-        </div>
-        <div>
-          <dt>{{ "matchmaking.areas" | translate }}</dt>
-          <dd>
-            {{
-              data.interpretation.areas.join(", ") ||
-                ("matchmaking.unspecified" | translate)
-            }}
-          </dd>
-        </div>
-      </dl>
-      @if (
-        !data.clarification && data.interpretation.missingInformation.length
-      ) {
-        <p class="clarification-title">
-          {{ "matchmaking.clarification" | translate }}
-        </p>
-        <ul>
-          @for (
-            question of data.interpretation.missingInformation;
-            track $index
-          ) {
-            <li>{{ question }}</li>
+          @if (loading()) {
+            <div class="loading-state" role="status">
+              <mat-progress-bar
+                mode="indeterminate"
+                [attr.aria-label]="'matchmaking.loading' | translate"
+              />
+              <p>{{ "matchmaking.loadingDetail" | translate }}</p>
+            </div>
           }
-        </ul>
+          @if (errorKey(); as error) {
+            <div class="error-state" role="alert" #errorPanel tabindex="-1">
+              <p>{{ error | translate }}</p>
+              <button mat-stroked-button (click)="retry()">
+                {{ "matchmaking.retry" | translate }}
+              </button>
+            </div>
+          }
+        </div>
       }
-    </section>
-
-    <section class="results" aria-labelledby="results-title">
-      <div class="results-heading">
-        <h2 id="results-title">{{ "matchmaking.resultsTitle" | translate }}</h2>
-        <span>{{
-          "matchmaking.resultsCount" | translate: { count: data.matches.length }
-        }}</span>
-      </div>
-      <p class="catalog-note">
-        {{
-          "matchmaking.catalogNote"
-            | translate: { count: data.catalog.innovationCount }
-        }}
-      </p>
-      @if (!data.matches.length) {
-        <mat-card class="empty-state"
-          ><mat-card-content>
-            <h3>{{ "matchmaking.emptyTitle" | translate }}</h3>
-            <p>
-              {{
-                "matchmaking.emptyDescription"
-                  | translate: { count: data.catalog.innovationCount }
-              }}
-            </p>
+      @if (result(); as data) {
+        <div class="results-region">
+          <section
+            class="interpretation"
+            aria-labelledby="interpretation-title"
+          >
+            <h2 id="interpretation-title" #responseHeading tabindex="-1">
+              {{ "matchmaking.interpretationTitle" | translate }}
+            </h2>
+            <p>{{ data.interpretation.summary }}</p>
             <button
               mat-stroked-button
               type="button"
               (click)="editDescription()"
             >
+              <mat-icon aria-hidden="true">edit</mat-icon>
               {{ "matchmaking.editDescription" | translate }}
             </button>
-            <a
-              href="https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/kategorie"
-              target="_blank"
-              rel="noopener noreferrer"
-              >{{ "hub.library" | translate }}</a
-            >
-          </mat-card-content></mat-card
-        >
-      } @else {
-        <p class="results-note">{{ "matchmaking.scoreNote" | translate }}</p>
-        <div class="result-grid">
-          @for (match of data.matches; track match.id) {
-            <mat-card
-              class="innovation-card"
-              [class.preview-expanded]="preview()?.id === match.id"
-            >
-              <mat-card-content>
-                <span
-                  class="match-level"
-                  [class.high]="match.level === 'high'"
-                  [class.medium]="match.level === 'medium'"
-                >
-                  {{ "matchmaking.levels." + match.level | translate }}
-                </span>
-                <h3>{{ match.name }}</h3>
-                <p>{{ match.description }}</p>
-                <div class="need-tags">
-                  @for (need of match.matchedNeeds; track need) {
-                    <span>{{ need }}</span>
-                  }
-                </div>
-                <div class="explanation">
-                  <h4>{{ "hub.whyMatch" | translate }}</h4>
-                  <p>{{ match.explanation }}</p>
-                </div>
-              </mat-card-content>
-              <mat-card-actions>
-                @if (match.id === "mobilne-centrum-pomocy") {
-                  <button mat-flat-button type="button" (click)="adapt()">
-                    {{ "adaptation.cta" | translate }}
-                  </button>
-                }
-                <button
-                  #previewToggle
-                  class="preview-toggle"
-                  mat-stroked-button
-                  type="button"
-                  [id]="'preview-toggle-' + match.id"
-                  [attr.aria-expanded]="preview()?.id === match.id"
-                  [attr.aria-controls]="'innovation-preview-' + match.id"
-                  (click)="togglePreview(match)"
-                >
-                  <mat-icon aria-hidden="true">{{
-                    preview()?.id === match.id ? "expand_less" : "expand_more"
-                  }}</mat-icon>
+            <dl>
+              <div>
+                <dt>{{ "matchmaking.audiences" | translate }}</dt>
+                <dd>
                   {{
-                    (preview()?.id === match.id
-                      ? "matchmaking.preview.collapse"
-                      : "matchmaking.preview.expand"
-                    ) | translate
+                    data.interpretation.audiences.join(", ") ||
+                      ("matchmaking.unspecified" | translate)
                   }}
-                  <span class="sr-only">: {{ match.name }}</span>
-                </button>
-              </mat-card-actions>
-              <section
-                class="innovation-preview"
-                [id]="'innovation-preview-' + match.id"
-                [hidden]="preview()?.id !== match.id"
-                [attr.aria-label]="
-                  'matchmaking.preview.title' | translate: { name: match.name }
-                "
+                </dd>
+              </div>
+              <div>
+                <dt>{{ "matchmaking.needs" | translate }}</dt>
+                <dd>
+                  {{
+                    data.interpretation.needs.join(", ") ||
+                      ("matchmaking.unspecified" | translate)
+                  }}
+                </dd>
+              </div>
+              <div>
+                <dt>{{ "matchmaking.areas" | translate }}</dt>
+                <dd>
+                  {{
+                    data.interpretation.areas.join(", ") ||
+                      ("matchmaking.unspecified" | translate)
+                  }}
+                </dd>
+              </div>
+            </dl>
+            @if (
+              !data.clarification &&
+              data.interpretation.missingInformation.length
+            ) {
+              <p class="clarification-title">
+                {{ "matchmaking.clarification" | translate }}
+              </p>
+              <ul>
+                @for (
+                  question of data.interpretation.missingInformation;
+                  track $index
+                ) {
+                  <li>{{ question }}</li>
+                }
+              </ul>
+            }
+          </section>
+
+          <section class="results" aria-labelledby="results-title">
+            <div class="results-heading">
+              <h2 id="results-title" #resultsHeading tabindex="-1">
+                {{ "matchmaking.resultsTitle" | translate }}
+              </h2>
+              <span>{{
+                "matchmaking.resultsCount"
+                  | translate: { count: data.matches.length }
+              }}</span>
+            </div>
+            <p class="catalog-note">
+              {{
+                "matchmaking.catalogNote"
+                  | translate: { count: data.catalog.innovationCount }
+              }}
+            </p>
+            @if (!data.matches.length) {
+              <mat-card class="empty-state"
+                ><mat-card-content>
+                  <h3>{{ "matchmaking.emptyTitle" | translate }}</h3>
+                  <p>
+                    {{
+                      "matchmaking.emptyDescription"
+                        | translate: { count: data.catalog.innovationCount }
+                    }}
+                  </p>
+                  <div class="empty-actions">
+                    <button
+                      mat-stroked-button
+                      type="button"
+                      (click)="editDescription()"
+                    >
+                      {{ "matchmaking.editDescription" | translate }}
+                    </button>
+                    <a
+                      mat-button
+                      href="https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/kategorie"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >{{ "hub.library" | translate }}</a
+                    >
+                  </div>
+                </mat-card-content></mat-card
               >
-                @if (preview(); as activePreview) {
-                  @if (activePreview.id === match.id) {
-                    <div class="preview-toolbar">
-                      <p>{{ "matchmaking.preview.caption" | translate }}</p>
-                      <a
-                        [href]="match.sourceUrl"
-                        target="_blank"
-                        rel="noopener noreferrer"
+            } @else {
+              <p class="results-note">
+                {{ "matchmaking.scoreNote" | translate }}
+              </p>
+              <div class="result-grid">
+                @for (match of data.matches; track match.id) {
+                  <mat-card
+                    class="innovation-card"
+                    [class.preview-expanded]="preview()?.id === match.id"
+                  >
+                    <mat-card-content>
+                      <span
+                        class="match-level"
+                        [class.high]="match.level === 'high'"
+                        [class.medium]="match.level === 'medium'"
                       >
-                        {{ "matchmaking.preview.external" | translate }}
-                        <span class="sr-only">{{
-                          "matchmaking.newTab" | translate
-                        }}</span>
-                      </a>
-                    </div>
-                    <p class="preview-hint">
-                      {{ "matchmaking.preview.fallback" | translate }}
-                    </p>
-                    @if (previewLoading()) {
-                      <p class="preview-status" role="status">
-                        {{ "matchmaking.preview.loading" | translate }}
-                      </p>
-                    }
-                    <iframe
-                      [src]="activePreview.url"
-                      [title]="
+                        {{ "matchmaking.levels." + match.level | translate }}
+                      </span>
+                      <h3>{{ match.name }}</h3>
+                      <p>{{ match.description }}</p>
+                      <div class="need-tags">
+                        @for (need of match.matchedNeeds; track need) {
+                          <span>{{ need }}</span>
+                        }
+                      </div>
+                      <div class="explanation">
+                        <h4>{{ "hub.whyMatch" | translate }}</h4>
+                        <p>{{ match.explanation }}</p>
+                      </div>
+                    </mat-card-content>
+                    <mat-card-actions>
+                      @if (match.id === "mobilne-centrum-pomocy") {
+                        <button mat-flat-button type="button" (click)="adapt()">
+                          {{ "adaptation.cta" | translate }}
+                        </button>
+                      }
+                      <button
+                        #previewToggle
+                        class="preview-toggle"
+                        mat-stroked-button
+                        type="button"
+                        [id]="'preview-toggle-' + match.id"
+                        [attr.aria-expanded]="preview()?.id === match.id"
+                        [attr.aria-controls]="'innovation-preview-' + match.id"
+                        (click)="togglePreview(match)"
+                      >
+                        <mat-icon aria-hidden="true">{{
+                          preview()?.id === match.id
+                            ? "expand_less"
+                            : "expand_more"
+                        }}</mat-icon>
+                        {{
+                          (preview()?.id === match.id
+                            ? "matchmaking.preview.collapse"
+                            : "matchmaking.preview.expand"
+                          ) | translate
+                        }}
+                        <span class="sr-only">: {{ match.name }}</span>
+                      </button>
+                    </mat-card-actions>
+                    <section
+                      class="innovation-preview"
+                      [id]="'innovation-preview-' + match.id"
+                      [hidden]="preview()?.id !== match.id"
+                      [attr.aria-label]="
                         'matchmaking.preview.title'
                           | translate: { name: match.name }
                       "
-                      sandbox="allow-scripts allow-same-origin allow-forms allow-downloads"
-                      referrerpolicy="no-referrer"
-                      (load)="previewLoaded(match.id)"
-                    ></iframe>
-                    <button
-                      mat-button
-                      type="button"
-                      class="preview-close"
-                      (click)="closePreview(match.id)"
                     >
-                      <mat-icon aria-hidden="true">expand_less</mat-icon>
-                      {{ "matchmaking.preview.collapse" | translate }}
-                    </button>
-                  }
+                      @if (preview(); as activePreview) {
+                        @if (activePreview.id === match.id) {
+                          <div class="preview-toolbar">
+                            <p>
+                              {{ "matchmaking.preview.caption" | translate }}
+                            </p>
+                            <a
+                              [href]="match.sourceUrl"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {{ "matchmaking.preview.external" | translate }}
+                              <span class="sr-only">{{
+                                "matchmaking.newTab" | translate
+                              }}</span>
+                            </a>
+                          </div>
+                          <p class="preview-hint">
+                            {{ "matchmaking.preview.fallback" | translate }}
+                          </p>
+                          @if (previewLoading()) {
+                            <p class="preview-status" role="status">
+                              {{ "matchmaking.preview.loading" | translate }}
+                            </p>
+                          }
+                          <iframe
+                            [src]="activePreview.url"
+                            [title]="
+                              'matchmaking.preview.title'
+                                | translate: { name: match.name }
+                            "
+                            sandbox="allow-scripts allow-same-origin allow-forms allow-downloads"
+                            referrerpolicy="no-referrer"
+                            (load)="previewLoaded(match.id)"
+                          ></iframe>
+                          <button
+                            mat-button
+                            type="button"
+                            class="preview-close"
+                            (click)="closePreview(match.id)"
+                          >
+                            <mat-icon aria-hidden="true">expand_less</mat-icon>
+                            {{ "matchmaking.preview.collapse" | translate }}
+                          </button>
+                        }
+                      }
+                    </section>
+                  </mat-card>
                 }
-              </section>
-            </mat-card>
+              </div>
+            }
+          </section>
+          <div
+            #pilotResults
+            tabindex="-1"
+            [attr.aria-label]="'matchmaking.chat.pilotResults' | translate"
+          >
+            <app-pilot-matches
+              [interpretation]="data.interpretation"
+              [automatic]="data.matches.length === 0"
+              (matchesFound)="pilotCount.set($event)"
+            />
+          </div>
+          <p>
+            <a
+              mat-stroked-button
+              routerLink="/zasobnik"
+              [queryParams]="{ area: data.interpretation.areas[0] }"
+              >{{ "knowledge.browseRelated" | translate }}</a
+            >
+          </p>
+          @if (data.relatedInformation.length) {
+            <section
+              class="related-information"
+              aria-labelledby="information-title"
+            >
+              <h2 id="information-title">
+                {{ "matchmaking.informationTitle" | translate }}
+              </h2>
+              <p>{{ "matchmaking.informationIntro" | translate }}</p>
+              <div class="information-grid">
+                @for (item of data.relatedInformation; track item.id) {
+                  <article class="information-card">
+                    <span class="scope">{{
+                      "matchmaking.scopes." + item.scope | translate
+                    }}</span>
+                    <h3>{{ item.title }}</h3>
+                    <p>{{ item.summary }}</p>
+                    <p class="source-label">{{ item.sourceLabel }}</p>
+                    <a
+                      mat-stroked-button
+                      [href]="item.sourceUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {{ "matchmaking.readSource" | translate
+                      }}<mat-icon aria-hidden="true">open_in_new</mat-icon>
+                      <span class="sr-only">{{
+                        "matchmaking.newTab" | translate
+                      }}</span>
+                    </a>
+                  </article>
+                }
+              </div>
+            </section>
           }
         </div>
       }
-    </section>
-    <app-pilot-matches
-      [interpretation]="data.interpretation"
-      [automatic]="data.matches.length === 0"
-    />
-    <p>
-      <a
-        mat-stroked-button
-        routerLink="/zasobnik"
-        [queryParams]="{ area: data.interpretation.areas[0] }"
-        >{{ "knowledge.browseRelated" | translate }}</a
+    </div>
+  </div>
+  <div class="composer-dock">
+    @if (foundCount() && !loading() && !noticeDismissed()) {
+      <div
+        class="results-notice"
+        [class.pilot-notice]="!result()?.matches?.length"
       >
-    </p>
-    @if (data.relatedInformation.length) {
-      <section class="related-information" aria-labelledby="information-title">
-        <h2 id="information-title">
-          {{ "matchmaking.informationTitle" | translate }}
-        </h2>
-        <p>{{ "matchmaking.informationIntro" | translate }}</p>
-        <div class="information-grid">
-          @for (item of data.relatedInformation; track item.id) {
-            <article class="information-card">
-              <span class="scope">{{
-                "matchmaking.scopes." + item.scope | translate
-              }}</span>
-              <h3>{{ item.title }}</h3>
-              <p>{{ item.summary }}</p>
-              <p class="source-label">{{ item.sourceLabel }}</p>
-              <a
-                mat-stroked-button
-                [href]="item.sourceUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {{ "matchmaking.readSource" | translate
-                }}<mat-icon aria-hidden="true">open_in_new</mat-icon>
-                <span class="sr-only">{{
-                  "matchmaking.newTab" | translate
-                }}</span>
-              </a>
-            </article>
-          }
-        </div>
-      </section>
+        <p role="status">
+          {{
+            (result()?.matches?.length
+              ? "matchmaking.chat.found"
+              : "matchmaking.chat.pilotsFound"
+            ) | translate: { count: foundCount() }
+          }}
+        </p>
+        <button
+          mat-icon-button
+          type="button"
+          [attr.aria-label]="'matchmaking.chat.goToResults' | translate"
+          (click)="goToResults()"
+        >
+          <mat-icon aria-hidden="true">arrow_downward</mat-icon>
+        </button>
+      </div>
     }
-  }
+    <form
+      class="composer"
+      [formGroup]="form"
+      (ngSubmit)="submitComposer()"
+      [attr.aria-busy]="loading()"
+    >
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>{{
+          (answering()
+            ? "matchmaking.assistant.answer"
+            : result() && !editingDescription()
+              ? "matchmaking.chat.newNeed"
+              : "matchmaking.descriptionLabel"
+          ) | translate
+        }}</mat-label>
+        <textarea
+          #descriptionInput
+          #answerInput
+          id="problem-description"
+          matInput
+          [formControl]="composerControl()"
+          [errorStateMatcher]="composerErrorState"
+          rows="2"
+          [attr.maxlength]="composerLimit()"
+          [attr.aria-label]="
+            (answering()
+              ? 'matchmaking.assistant.answer'
+              : result() && !editingDescription()
+                ? 'matchmaking.chat.newNeed'
+                : 'matchmaking.descriptionLabel'
+            ) | translate
+          "
+          [attr.aria-describedby]="
+            answering()
+              ? 'clarification-question composer-guidance voice-hint'
+              : 'composer-guidance voice-hint'
+          "
+          [placeholder]="
+            (answering()
+              ? 'matchmaking.chat.answerPlaceholder'
+              : 'matchmaking.placeholder'
+            ) | translate
+          "
+          (input)="onComposerInput()"
+          (keydown)="onComposerKeydown($event)"
+        ></textarea>
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          class="dictation-toggle"
+          [class.is-listening]="voice.active()"
+          [disabled]="loading() || voice.stopping()"
+          [attr.aria-label]="
+            (voice.active() ? 'voice.stop' : 'voice.start') | translate
+          "
+          [attr.title]="
+            (voice.active() ? 'voice.stop' : 'voice.start') | translate
+          "
+          [attr.aria-pressed]="voice.active()"
+          aria-controls="problem-description"
+          aria-describedby="voice-hint"
+          (click)="toggleDictation()"
+        >
+          <mat-icon aria-hidden="true">{{
+            voice.active() ? "stop_circle" : "mic"
+          }}</mat-icon>
+        </button>
+        <mat-hint align="end" class="character-count"
+          >{{ composerControl().value.length }} /
+          {{ composerLimit() }}</mat-hint
+        >
+        <mat-error>{{
+          (answering()
+            ? "matchmaking.assistant.validation"
+            : "matchmaking.errors.validation"
+          ) | translate
+        }}</mat-error>
+      </mat-form-field>
+      <p class="sr-only" id="voice-hint">
+        {{ (voice.supported ? "voice.hint" : "voice.unsupported") | translate }}
+      </p>
+      <div role="status" aria-live="polite" class="voice-status">
+        @if (voice.status(); as status) {
+          <p>{{ status | translate }}</p>
+        }
+      </div>
+      @if (voice.interim(); as interim) {
+        <p class="voice-interim">
+          {{ "voice.draft" | translate }}: {{ interim }}
+        </p>
+      }
+      @if (voice.error(); as error) {
+        <p class="voice-error" role="alert">{{ error | translate }}</p>
+      }
+
+      <div class="composer-actions">
+        <button mat-button type="button" class="new-chat" (click)="newChat()">
+          <mat-icon aria-hidden="true">edit_square</mat-icon
+          >{{ "matchmaking.chat.newChat" | translate }}
+        </button>
+        <p id="composer-guidance" class="sr-only">
+          {{ "matchmaking.chat.keyboard" | translate }}
+        </p>
+        <button
+          mat-flat-button
+          type="submit"
+          [disabled]="loading() || voice.active()"
+        >
+          <mat-icon aria-hidden="true">arrow_upward</mat-icon
+          >{{
+            (loading()
+              ? "matchmaking.loading"
+              : answering()
+                ? "matchmaking.chat.sendAnswer"
+                : "matchmaking.submit"
+            ) | translate
+          }}
+        </button>
+      </div>
+      <p class="composer-privacy">
+        {{ "matchmaking.privacy" | translate }}
+        <a routerLink="/dostepnosc">{{ "a11y.title" | translate }}</a>
+      </p>
+    </form>
+  </div>
 </section>

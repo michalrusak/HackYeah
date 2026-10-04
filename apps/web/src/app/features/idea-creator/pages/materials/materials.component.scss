@@ -73,3 +73,10 @@ a[mat-flat-button] {
   color: var(--mat-sys-error, #b3261e);
   font-weight: 600;
 }
+
+.intro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}

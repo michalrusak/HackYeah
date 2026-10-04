@@ -4,6 +4,7 @@ import {
   effect,
   inject,
   input,
+  output,
   signal,
   untracked,
 } from '@angular/core';
@@ -34,6 +35,7 @@ import { PilotInterestComponent } from './pilot-interest.component';
 export class PilotMatchesComponent {
   readonly interpretation = input.required<Interpretation>();
   readonly automatic = input(false);
+  readonly matchesFound = output<number>();
   private readonly service = inject(PilotMatchesService);
   private readonly destroyRef = inject(DestroyRef);
   private request: Subscription | null = null;
@@ -52,6 +54,7 @@ export class PilotMatchesComponent {
         this.loading.set(false);
         this.failed.set(false);
         this.matches.set([]);
+        this.matchesFound.emit(0);
         this.selected.set(null);
         if (automatic) this.load();
       });
@@ -68,6 +71,7 @@ export class PilotMatchesComponent {
       .subscribe({
         next: ({ matches }) => {
           this.matches.set(matches);
+          this.matchesFound.emit(matches.length);
           this.loading.set(false);
         },
         error: () => {

@@ -35,7 +35,10 @@
               </p>
             }
             <div class="row-actions">
-              <a mat-stroked-button [routerLink]="['/pomysly', entry.id, 'canva']">
+              <a
+                mat-stroked-button
+                [routerLink]="['/pomysly', entry.id, 'canva']"
+              >
                 {{ "ideaCreator.mine.openCanvas" | translate }}
               </a>
               <button mat-button type="button" (click)="forget(entry.id)">
@@ -59,7 +62,12 @@
           <mat-card-content>
             <h3>
               <a
-                [routerLink]="['/nabory', entry.callId, 'wniosek', entry.id]"
+                [routerLink]="[
+                  '/pomysly/nabory',
+                  entry.callId,
+                  'wniosek',
+                  entry.id,
+                ]"
                 >{{ entry.ideaTitle }}</a
               >
             </h3>

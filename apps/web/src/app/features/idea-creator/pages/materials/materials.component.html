@@ -5,6 +5,17 @@
       {{ "ideaCreator.materials.title" | translate }}
     </h1>
     <p>{{ "ideaCreator.materials.subtitle" | translate }}</p>
+    <p>{{ "ideaCreator.materials.canvasHint" | translate }}</p>
+    <div class="intro-actions">
+      <a mat-flat-button routerLink="/pomysly/moje">
+        <mat-icon aria-hidden="true">dashboard</mat-icon>
+        {{ "ideaCreator.materials.chooseIdea" | translate }}
+      </a>
+      <a mat-stroked-button routerLink="/pomysly/nowy">
+        <mat-icon aria-hidden="true">add</mat-icon>
+        {{ "ideaCreator.materials.createIdea" | translate }}
+      </a>
+    </div>
   </header>
 
   @if (loading()) {
@@ -38,7 +49,7 @@
               </p>
             } @else if (isInternal(material)) {
               <a mat-flat-button [routerLink]="material.url">
-                <mat-icon aria-hidden="true">open_in_new</mat-icon>
+                <mat-icon aria-hidden="true">arrow_forward</mat-icon>
                 {{ "ideaCreator.materials.open" | translate }}
               </a>
             } @else {

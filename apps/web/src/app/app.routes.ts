@@ -50,20 +50,19 @@ export const routes: Routes = [
         data: { breadcrumb: 'nav.ideas' },
       },
       {
+        path: 'nabory/:callId/wniosek/:applicationId',
+        redirectTo: 'pomysly/nabory/:callId/wniosek/:applicationId',
+        pathMatch: 'full',
+      },
+      {
         path: 'nabory',
-        loadChildren: () =>
-          import('./features/idea-creator/idea-creator.routes').then(
-            (m) => m.callRoutes,
-          ),
-        data: { breadcrumb: 'nav.calls' },
+        redirectTo: 'pomysly/nabory',
+        pathMatch: 'full',
       },
       {
         path: 'materialy',
-        loadComponent: () =>
-          import('./features/idea-creator/pages/materials/materials.component').then(
-            (m) => m.MaterialsComponent,
-          ),
-        data: { breadcrumb: 'nav.materials' },
+        redirectTo: 'pomysly/materialy',
+        pathMatch: 'full',
       },
       {
         path: 'zasobnik/admin',

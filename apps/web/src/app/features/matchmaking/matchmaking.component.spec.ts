@@ -259,12 +259,12 @@ describe('MatchmakingComponent', () => {
     ).not.toHaveBeenCalled();
   });
 
-  it('focuses the interpretation after completing a search and returns to the description for refinement', async () => {
+  it('focuses the assistant reply after completing a search and returns to the description for refinement', async () => {
     submitDescription();
     http.expectOne('/api/matchmaking').flush(createApiSuccess(result));
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(document.activeElement?.id).toBe('interpretation-title');
+    expect(document.activeElement?.id).toBe('chat-reply');
     root.querySelector<HTMLButtonElement>('.interpretation button')?.click();
     expect(document.activeElement?.id).toBe('problem-description');
   });
@@ -389,15 +389,13 @@ describe('MatchmakingComponent', () => {
     showClarification();
     await fixture.whenStable();
     expect(document.activeElement?.id).toBe('clarification-heading');
-    expect(root.querySelectorAll('.clarification-card textarea').length).toBe(
-      1,
-    );
+    expect(root.querySelectorAll('.composer textarea').length).toBe(1);
     fixture.componentInstance.answer.setValue('   ');
     fixture.componentInstance.submitAnswer();
     http.expectNone('/api/matchmaking');
     fixture.componentInstance.answer.setValue('Seniorom brakuje spotkań.');
     root
-      .querySelector('.clarification-card form')
+      .querySelector('.composer')
       ?.dispatchEvent(new Event('submit', { cancelable: true }));
     fixture.detectChanges();
     const req = http.expectOne('/api/matchmaking');
@@ -498,9 +496,8 @@ describe('MatchmakingComponent', () => {
     radios[3]?.click();
     fixture.detectChanges();
     await fixture.whenStable();
-    const textarea = root.querySelector<HTMLTextAreaElement>(
-      '.clarification-card textarea',
-    );
+    const textarea =
+      root.querySelector<HTMLTextAreaElement>('.composer textarea');
     expect(textarea).not.toBeNull();
     expect(document.activeElement).toBe(textarea);
     fixture.componentInstance.answer.setValue(
@@ -526,5 +523,147 @@ describe('MatchmakingComponent', () => {
     expect(fixture.componentInstance.answer.value).toBe(
       'Osobom bez stałego miejsca zamieszkania.',
     );
+  });
+  it('keeps one composer and treats typed clarification text as a custom answer', () => {
+    showClarification(['Sobie.', 'Bliskiej osobie.', 'Grupie mieszkańców.']);
+    expect(root.querySelectorAll('textarea').length).toBe(1);
+    expect(root.querySelector('.clarification-card textarea')).toBeNull();
+    const textarea = root.querySelector('textarea');
+    if (!textarea) throw new Error('Composer missing');
+    textarea.value = 'Osobom starszym w naszej gminie.';
+    textarea.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selectedOption()).toBe(-1);
+    root
+      .querySelector('form')
+      ?.dispatchEvent(new Event('submit', { cancelable: true }));
+    const request = http.expectOne('/api/matchmaking');
+    expect(request.request.body.answers).toEqual([
+      { question: 'Komu pomagamy?', answer: textarea.value },
+    ]);
+    request.flush(createApiSuccess(result));
+    fixture.detectChanges();
+    expect(root.querySelector('.history-question')?.textContent).toContain(
+      'Komu pomagamy?',
+    );
+    expect(root.querySelectorAll('.user-message').length).toBe(2);
+  });
+
+  it('announces actual results and uses the arrow to focus them without another request', () => {
+    submitDescription();
+    expect(root.querySelector('.results-notice')).toBeNull();
+    http.expectOne('/api/matchmaking').flush(createApiSuccess(result));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.foundCount()).toBe(1);
+    expect(root.querySelector('.results-notice')).not.toBeNull();
+    const heading = root.querySelector<HTMLElement>('#results-title');
+    if (!heading) throw new Error('Results heading missing');
+    const scroll = spyOn(heading, 'scrollIntoView');
+    root.querySelector<HTMLButtonElement>('.results-notice button')?.click();
+    expect(scroll).toHaveBeenCalled();
+    expect(document.activeElement).toBe(heading);
+    fixture.detectChanges();
+    expect(root.querySelector('.results-notice')).toBeNull();
+    http.expectNone('/api/matchmaking');
+  });
+
+  it('does not announce empty results and distinguishes pilot suggestions', () => {
+    showClarification();
+    expect(root.querySelector('.results-notice')).toBeNull();
+    fixture.componentInstance.pilotCount.set(2);
+    fixture.detectChanges();
+    expect(root.querySelector('.pilot-notice')?.textContent).toContain(
+      'matchmaking.chat.pilotsFound',
+    );
+    fixture.componentInstance.goToResults();
+    expect(document.activeElement?.getAttribute('aria-label')).toBe(
+      'matchmaking.chat.pilotResults',
+    );
+  });
+
+  it('keeps results while drafting another need and starts a fresh conversation only on send', () => {
+    showClarification();
+    fixture.componentInstance.answer.setValue('Seniorom.');
+    fixture.componentInstance.submitAnswer();
+    http.expectOne('/api/matchmaking').flush(createApiSuccess(result));
+    fixture.detectChanges();
+    const textarea = root.querySelector('textarea');
+    if (!textarea) throw new Error('Composer missing');
+    expect(textarea.value).toBe('');
+    textarea.value = 'Potrzebuję informacji dla migrantów.';
+    textarea.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(root.querySelector('.innovation-card')).not.toBeNull();
+    expect(fixture.componentInstance.description.value).toBe('Chcemy pomóc.');
+    root
+      .querySelector('form')
+      ?.dispatchEvent(new Event('submit', { cancelable: true }));
+    const request = http.expectOne('/api/matchmaking');
+    expect(request.request.body).toEqual({
+      description: 'Potrzebuję informacji dla migrantów.',
+    });
+    request.flush(createApiSuccess(result));
+    expect(fixture.componentInstance.answers()).toEqual([]);
+  });
+
+  it('sends with Enter but preserves Shift+Enter and composition input', () => {
+    const textarea = root.querySelector('textarea');
+    if (!textarea) throw new Error('Composer missing');
+    textarea.value = 'Seniorzy potrzebują spotkań.';
+    textarea.dispatchEvent(new Event('input'));
+    const newline = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      shiftKey: true,
+      cancelable: true,
+    });
+    textarea.dispatchEvent(newline);
+    expect(newline.defaultPrevented).toBeFalse();
+    textarea.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', isComposing: true }),
+    );
+    http.expectNone('/api/matchmaking');
+    textarea.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', cancelable: true }),
+    );
+    http.expectOne('/api/matchmaking').flush(createApiSuccess(result));
+  });
+  it('does not mark the new answer invalid just because the previous message was submitted', () => {
+    showClarification();
+    expect(root.querySelector('mat-error')).toBeNull();
+    fixture.componentInstance.submitComposer();
+    fixture.detectChanges();
+    expect(root.querySelector('mat-error')).not.toBeNull();
+    http.expectNone('/api/matchmaking');
+  });
+
+  it('opens a clean new chat and restores inspiration tiles without reloading the page', async () => {
+    showClarification();
+    fixture.componentInstance.answer.setValue('Swojej rodzinie.');
+    root.querySelector<HTMLButtonElement>('.new-chat')?.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(root.querySelectorAll('.example-tile').length).toBe(4);
+    expect(root.querySelector('.conversation')).toBeNull();
+    expect(root.querySelector('.results')).toBeNull();
+    expect(root.querySelector('.results-notice')).toBeNull();
+    expect(root.querySelector('mat-error')).toBeNull();
+    expect(fixture.componentInstance.description.value).toBe('');
+    expect(fixture.componentInstance.answer.value).toBe('');
+    expect(document.activeElement?.id).toBe('problem-description');
+    http.expectNone('/api/matchmaking');
+  });
+
+  it('cancels an in-flight search when starting a new chat', () => {
+    submitDescription();
+    const request = http.expectOne('/api/matchmaking');
+    fixture.componentInstance.newChat();
+    fixture.detectChanges();
+    expect(request.cancelled).toBeTrue();
+    expect(fixture.componentInstance.loading()).toBeFalse();
+    expect(fixture.componentInstance.description.enabled).toBeTrue();
+    expect(root.querySelector('.loading-state')).toBeNull();
+    expect(root.querySelectorAll('.example-tile').length).toBe(4);
+    submitDescription('Kolejna potrzeba mieszkańców.');
+    http.expectOne('/api/matchmaking').flush(createApiSuccess(result));
   });
 });

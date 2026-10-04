@@ -1,3 +1,6 @@
+import { Subject, takeUntil } from 'rxjs';
+import { type ErrorStateMatcher } from '@angular/material/core';
+import { SpeechInputService } from './speech-input.service';
 import { PilotMatchesComponent } from './pilots/pilot-matches.component';
 import { DomSanitizer, type SafeResourceUrl } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
@@ -6,6 +9,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   afterNextRender,
   Component,
+  computed,
   DestroyRef,
   ElementRef,
   inject,
@@ -42,6 +46,7 @@ import { MatchmakingService } from './matchmaking.service';
 
 @Component({
   selector: 'app-matchmaking',
+  providers: [SpeechInputService],
   imports: [
     PilotMatchesComponent,
     ReactiveFormsModule,
@@ -82,6 +87,130 @@ export class MatchmakingComponent {
     validators: [Validators.required, Validators.maxLength(4000)],
   });
   readonly form = new FormGroup({ description: this.description });
+  readonly voice = inject(SpeechInputService);
+  readonly composerErrorState: ErrorStateMatcher = {
+    isErrorState: (control) => !!control?.invalid && control.touched,
+  };
+  private readonly newChatRequested = new Subject<void>();
+  private readonly chatScroll =
+    viewChild<ElementRef<HTMLElement>>('chatScroll');
+
+  newChat(): void {
+    this.newChatRequested.next();
+    this.voice.cancel();
+    this.voice.error.set(null);
+    this.finish();
+    this.description.reset();
+    this.followup.reset();
+    afterNextRender(
+      () => {
+        this.chatScroll()?.nativeElement.scrollTo({ top: 0 });
+        this.descriptionInput()?.nativeElement.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
+  }
+
+  toggleDictation(): void {
+    if (this.voice.active()) {
+      this.voice.stop();
+      return;
+    }
+    if (this.loading()) return;
+    const control = this.composerControl();
+    const limit = this.composerLimit();
+    if (control.value.length >= limit) {
+      this.voice.error.set('voice.limit');
+      return;
+    }
+    this.voice.start((text) => {
+      const current = control.value;
+      const separator = current && !/\s$/.test(current) ? ' ' : '';
+      const next = current + separator + text;
+      control.setValue(next.slice(0, limit));
+      control.markAsDirty();
+      this.onComposerInput();
+      return next.length < limit;
+    });
+  }
+
+  readonly editingDescription = signal(true);
+  readonly submittedDescription = signal('');
+  readonly noticeDismissed = signal(false);
+  readonly pilotCount = signal(0);
+  readonly followup = new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.maxLength(4000),
+      Validators.pattern(/\S/),
+    ],
+  });
+  readonly answering = computed(
+    () =>
+      !this.editingDescription() &&
+      !this.clarificationDismissed() &&
+      !!this.result()?.clarification?.question,
+  );
+  readonly composerControl = computed(() =>
+    this.answering()
+      ? this.answer
+      : this.result() && !this.editingDescription()
+        ? this.followup
+        : this.description,
+  );
+  readonly composerLimit = computed(() => (this.answering() ? 1000 : 4000));
+  readonly foundCount = computed(
+    () => (this.result()?.matches.length ?? 0) + this.pilotCount(),
+  );
+  private readonly replyHeading =
+    viewChild<ElementRef<HTMLElement>>('replyHeading');
+  private readonly resultsHeading =
+    viewChild<ElementRef<HTMLElement>>('resultsHeading');
+  private readonly pilotResults =
+    viewChild<ElementRef<HTMLElement>>('pilotResults');
+
+  submitComposer(): void {
+    if (this.loading() || this.voice.active()) return;
+    if (this.answering()) {
+      this.submitAnswer();
+      return;
+    }
+    if (this.result() && !this.editingDescription()) {
+      if (this.followup.invalid) {
+        this.followup.markAsTouched();
+        return;
+      }
+      this.description.setValue(this.followup.value);
+      this.followup.reset();
+    }
+    this.submit();
+  }
+
+  onComposerInput(): void {
+    if (this.answering()) {
+      this.selectedOption.set(-1);
+      this.selectionRequired.set(false);
+      this.customAnswer = this.answer.value;
+    }
+  }
+
+  onComposerKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      this.submitComposer();
+    }
+  }
+
+  goToResults(): void {
+    const target = this.result()?.matches.length
+      ? this.resultsHeading()
+      : this.pilotResults();
+    this.noticeDismissed.set(true);
+    target?.nativeElement.focus({ preventScroll: true });
+    target?.nativeElement.scrollIntoView({ block: 'start' });
+  }
+
   readonly examples = ['seniors', 'migrants', 'homelessness', 'pilot'];
   private readonly sanitizer = inject(DomSanitizer);
   readonly preview = signal<{ id: string; url: SafeResourceUrl } | null>(null);
@@ -156,14 +285,14 @@ export class MatchmakingComponent {
       Validators.pattern(/\S/),
     ],
   });
-  readonly answerForm = new FormGroup({ answer: this.answer });
   readonly selectedOption = signal<number | null>(null);
   readonly selectionRequired = signal(false);
   readonly optionLetters = ['A', 'B', 'C'];
   private customAnswer = '';
 
   selectAnswer(value: unknown): void {
-    if (this.loading() || typeof value !== 'number') return;
+    if (this.loading() || this.voice.active() || typeof value !== 'number')
+      return;
     const options = this.result()?.clarification?.options ?? [];
     if (value !== -1 && (!Number.isInteger(value) || !options[value])) return;
     if (this.selectedOption() === -1) this.customAnswer = this.answer.value;
@@ -227,6 +356,10 @@ export class MatchmakingComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.result.set(null);
+        this.editingDescription.set(true);
+        this.submittedDescription.set('');
+        this.pilotCount.set(0);
+        this.noticeDismissed.set(false);
         this.closePreview();
         this.errorKey.set(null);
         this.answers.set([]);
@@ -238,6 +371,7 @@ export class MatchmakingComponent {
   }
 
   useExample(example: string): void {
+    if (this.voice.active()) return;
     this.description.setValue(
       this.translate.instant(`matchmaking.examples.${example}.description`),
     );
@@ -245,6 +379,8 @@ export class MatchmakingComponent {
   }
 
   editDescription(): void {
+    if (this.loading() || this.voice.active()) return;
+    this.editingDescription.set(true);
     this.descriptionInput()?.nativeElement.focus();
   }
 
@@ -253,7 +389,7 @@ export class MatchmakingComponent {
   }
 
   private search(answers: ClarificationAnswer[]): void {
-    if (this.loading()) return;
+    if (this.loading() || this.voice.active()) return;
     const parsed = MatchmakingRequestSchema.safeParse({
       description: this.description.value,
       answers,
@@ -264,18 +400,26 @@ export class MatchmakingComponent {
       this.editDescription();
       return;
     }
+    this.submittedDescription.set(parsed.data.description);
+    this.noticeDismissed.set(false);
     this.loading.set(true);
     this.errorKey.set(null);
     this.failedAnswers = null;
+    this.followup.disable({ emitEvent: false });
     this.answer.disable({ emitEvent: false });
     this.description.disable({ emitEvent: false });
     this.service
       .match(parsed.data.description, answers)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntil(this.newChatRequested),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (data) => {
           this.closePreview();
+          this.pilotCount.set(0);
           this.result.set(data);
+          this.editingDescription.set(false);
           this.answers.set(answers);
           this.answer.reset('', { emitEvent: false });
           this.resetAnswerChoice();
@@ -285,8 +429,12 @@ export class MatchmakingComponent {
             () => {
               const heading = data.clarification
                 ? this.clarificationHeading()
-                : this.responseHeading();
-              heading?.nativeElement.focus();
+                : this.replyHeading();
+              heading?.nativeElement.focus({ preventScroll: true });
+              (
+                heading?.nativeElement.closest('article, section') ??
+                heading?.nativeElement
+              )?.scrollIntoView({ block: 'start' });
             },
             { injector: this.injector },
           );
@@ -321,6 +469,7 @@ export class MatchmakingComponent {
 
   private finish(): void {
     this.loading.set(false);
+    this.followup.enable({ emitEvent: false });
     this.answer.enable({ emitEvent: false });
     this.description.enable({ emitEvent: false });
   }

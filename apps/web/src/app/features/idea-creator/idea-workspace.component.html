@@ -1,5 +1,21 @@
 <mat-sidenav-container class="workspace" autosize>
   <mat-sidenav-content>
+    <nav
+      class="creator-nav"
+      [attr.aria-label]="'ideaCreator.navigation.label' | translate"
+    >
+      @for (section of sections; track section.path) {
+        <a
+          [routerLink]="section.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: section.exact }"
+          ariaCurrentWhenActive="page"
+        >
+          <mat-icon aria-hidden="true">{{ section.icon }}</mat-icon>
+          {{ "ideaCreator.navigation." + section.label | translate }}
+        </a>
+      }
+    </nav>
     <router-outlet />
   </mat-sidenav-content>
 
