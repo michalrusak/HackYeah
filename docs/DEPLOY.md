@@ -228,13 +228,48 @@ docker compose -f docker-compose.prod.yml logs api
 
 Typowe przyczyny: PostgreSQL jeszcze nie gotowy, złe `POSTGRES_PASSWORD`, brak migracji.
 
-### Port 8080 zajęty
+### Port 8080 zajęty / dostęp tylko przez VPN
 
-Zmień w `.env`:
+W produkcji Docker **na zewnątrz wystawia tylko frontend** (nginx). API i PostgreSQL są wewnątrz sieci Docker — nie trzeba ich mapować na host.
+
+Zmień w `.env` **dwa** pola (port + origin muszą się zgadzać):
 
 ```env
-DOCKER_WEB_PORT=9080
-DOCKER_WEB_ORIGIN=http://localhost:9080
+DOCKER_WEB_PORT=9000
+DOCKER_WEB_ORIGIN=http://10.8.0.5:9000
+WEB_API_URL=/api
+COOKIE_SECURE=false
+```
+
+- `DOCKER_WEB_PORT` — port na serwerze (ten, który przepuszcza VPN/firewall)
+- `DOCKER_WEB_ORIGIN` — dokładny adres, który wpisujesz w przeglądarce (IP VPN serwera + port)
+- `WEB_API_URL=/api` — zostaw tak, nginx proxy'uje API pod tym samym adresem
+
+Restart po zmianie:
+
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+
+Test z komputera w VPN:
+
+```bash
+curl http://10.8.0.5:9000/api/health
+```
+
+Opcjonalnie — nasłuch tylko na interfejsie VPN (np. `10.8.0.5`), w `docker-compose.prod.yml` zamień linię portów web na:
+
+```yaml
+ports:
+  - "10.8.0.5:9000:80"
+```
+
+(wtedy `DOCKER_WEB_PORT` w `.env` nie steruje mapowaniem — port wpisujesz w compose)
+
+Firewall Ubuntu (jeśli VPN nie przepuszcza sam):
+
+```bash
+sudo ufw allow 9000/tcp
 ```
 
 ---

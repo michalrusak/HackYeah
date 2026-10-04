@@ -5,8 +5,8 @@
 #   pnpm docker:prod:up
 #   pnpm docker:prod:logs
 #
-# Aplikacja: http://localhost:8080 (lub DOCKER_WEB_PORT)
-# Health API: http://localhost:8080/api/health
+# Aplikacja: http://localhost:50415 (lub DOCKER_WEB_PORT z .env)
+# Health API: http://localhost:50415/api/health
 
 services:
   postgres:
@@ -43,7 +43,7 @@ services:
       NODE_ENV: production
       PORT: 3000
       DATABASE_URL: postgresql://${POSTGRES_USER:-hackyeah}:${POSTGRES_PASSWORD:-hackyeah}@postgres:5432/${POSTGRES_DB:-hackyeah}
-      WEB_ORIGIN: ${DOCKER_WEB_ORIGIN:-http://localhost:8080}
+      WEB_ORIGIN: ${DOCKER_WEB_ORIGIN:-http://localhost:50415}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
       TRUST_PROXY: ${TRUST_PROXY:-true}
       TRUST_PROXY_HOPS: ${TRUST_PROXY_HOPS:-1}
@@ -69,7 +69,7 @@ services:
     environment:
       WEB_API_URL: ${WEB_API_URL:-/api}
     ports:
-      - "${DOCKER_WEB_PORT:-8080}:80"
+      - "${DOCKER_WEB_PORT:-50415}:80"
 
 volumes:
   postgres_prod_data:
