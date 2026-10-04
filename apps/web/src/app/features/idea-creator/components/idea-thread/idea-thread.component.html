@@ -1,0 +1,47 @@
+<section class="thread" aria-labelledby="thread-title">
+  <h2 id="thread-title">{{ "ideaCreator.thread.title" | translate }}</h2>
+  <p class="state">
+    {{ "ideaCreator.thread.states." + status() | translate }}
+  </p>
+
+  @if (messages().length === 0) {
+    <p class="hint">{{ "ideaCreator.thread.empty" | translate }}</p>
+  }
+  <ol class="messages" aria-live="polite">
+    @for (message of messages(); track message.id) {
+      <li [class.rops]="message.author === 'ROPS'">
+        <p class="meta">
+          <strong>{{
+            "ideaCreator.thread.authors." + message.author | translate
+          }}</strong>
+          · {{ message.createdAt | date: "dd.MM.yyyy HH:mm" }}
+        </p>
+        <p class="content">{{ message.content }}</p>
+      </li>
+    }
+  </ol>
+
+  <form (submit)="$event.preventDefault(); send()">
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>{{ "ideaCreator.thread.label" | translate }}</mat-label>
+      <textarea
+        matInput
+        rows="3"
+        maxlength="2000"
+        [formControl]="content"
+      ></textarea>
+      @if (content.hasError("required")) {
+        <mat-error>{{ "ideaCreator.thread.required" | translate }}</mat-error>
+      }
+    </mat-form-field>
+    @if (errorKey(); as key) {
+      <p class="error" role="alert">{{ key | translate }}</p>
+    }
+    <button mat-flat-button type="submit" [disabled]="sending()">
+      {{
+        (sending() ? "ideaCreator.thread.sending" : "ideaCreator.thread.send")
+          | translate
+      }}
+    </button>
+  </form>
+</section>

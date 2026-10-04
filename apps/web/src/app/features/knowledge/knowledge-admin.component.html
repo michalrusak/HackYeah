@@ -1,0 +1,438 @@
+<h1>{{ "knowledge.admin.heading" | translate }}</h1>
+@if (checkingSession()) {
+  <p role="status">{{ "knowledge.admin.checking" | translate }}</p>
+}
+@if (error(); as errorKey) {
+  <p class="error" role="alert">{{ errorKey | translate }}</p>
+}
+@if (!checkingSession() && !service.session()) {
+  <section class="login-panel">
+    <h2>{{ "knowledge.admin.loginTitle" | translate }}</h2>
+    <p>{{ "knowledge.admin.loginIntro" | translate }}</p>
+    <form [formGroup]="form" (ngSubmit)="login()">
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.admin.password" | translate }}</mat-label
+        ><input
+          matInput
+          formControlName="password"
+          type="password"
+          autocomplete="current-password"
+          maxlength="256"
+        />
+        @if (form.controls.password.hasError("required")) {
+          <mat-error>{{
+            "knowledge.admin.passwordRequired" | translate
+          }}</mat-error>
+        }
+      </mat-form-field>
+      <button mat-flat-button type="submit" [disabled]="loading()">
+        {{
+          (loading() ? "knowledge.admin.loggingIn" : "knowledge.admin.login")
+            | translate
+        }}
+      </button>
+    </form>
+  </section>
+}
+@if (service.session()) {
+  <h2 #panelHeading tabindex="-1">
+    {{ "knowledge.admin.panelTitle" | translate }}
+  </h2>
+  <div class="actions">
+    <button
+      mat-flat-button
+      type="button"
+      [attr.aria-pressed]="tab() === 'resources'"
+      (click)="tab.set('resources')"
+    >
+      {{ "knowledge.admin.resources" | translate }}</button
+    ><button
+      mat-stroked-button
+      type="button"
+      [attr.aria-pressed]="tab() === 'ideas'"
+      (click)="tab.set('ideas')"
+    >
+      {{
+        "knowledge.admin.ideas.tab"
+          | translate: { count: ideas()?.attention ?? 0 }
+      }}</button
+    ><button
+      mat-stroked-button
+      type="button"
+      [attr.aria-pressed]="tab() === 'trends'"
+      (click)="tab.set('trends')"
+    >
+      {{ "knowledge.admin.trends" | translate }}</button
+    ><button mat-button type="button" [disabled]="loading()" (click)="load()">
+      {{ "knowledge.admin.refresh" | translate }}</button
+    ><button mat-button type="button" [disabled]="loading()" (click)="logout()">
+      {{ "knowledge.admin.logout" | translate }}
+    </button>
+  </div>
+  @if (loading()) {
+    <mat-progress-bar
+      mode="indeterminate"
+      [attr.aria-label]="'knowledge.loading' | translate"
+    />
+  }
+  @if (notice(); as noticeKey) {
+    <p role="status">{{ noticeKey | translate }}</p>
+  }
+  @if (tab() === "resources") {
+    <div
+      class="queue"
+      role="group"
+      [attr.aria-label]="'knowledge.admin.queueLabel' | translate"
+    >
+      @for (item of filters(); track item.id) {
+        <button
+          type="button"
+          class="queue-tile"
+          [class.queue-attention]="
+            item.count > 0 && (item.id === 'draft' || item.id === 'stale')
+          "
+          [attr.aria-pressed]="filter() === item.id"
+          [disabled]="loading()"
+          (click)="selectFilter(item.id)"
+        >
+          <strong>{{ item.count }}</strong>
+          <span>{{ "knowledge.admin.queue." + item.id | translate }}</span>
+        </button>
+      }
+    </div>
+    <div class="actions">
+      <button
+        mat-flat-button
+        type="button"
+        [disabled]="loading()"
+        (click)="edit(null)"
+      >
+        <mat-icon aria-hidden="true">add</mat-icon>
+        {{ "knowledge.admin.add" | translate }}
+      </button>
+    </div>
+    @if (editing()) {
+      <app-resource-editor
+        [resource]="selected()"
+        (saved)="saved()"
+        (cancelled)="editing.set(false)"
+      />
+    }
+    <form class="actions" (submit)="$event.preventDefault(); searchResources()">
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.searchLabel" | translate }}</mat-label
+        ><input
+          matInput
+          [formControl]="search"
+          type="search"
+          maxlength="200" /></mat-form-field
+      ><button mat-stroked-button type="submit" [disabled]="loading()">
+        {{ "knowledge.search" | translate }}
+      </button>
+    </form>
+    @if (list(); as data) {
+      <p role="status">
+        {{ "knowledge.resultCount" | translate: { count: data.total } }}
+      </p>
+      @if (!data.resources.length) {
+        <p>{{ "knowledge.admin.queueEmpty" | translate }}</p>
+      }
+      <div class="resource-grid">
+        @for (resource of data.resources; track resource.id) {
+          <article class="resource-card">
+            <div class="badges">
+              <span
+                class="badge"
+                [class.badge-draft]="resource.status === 'draft'"
+                >{{ "knowledge.statuses." + resource.status | translate }}</span
+              >
+              @if (isStale(resource)) {
+                <span class="badge badge-draft">{{
+                  "knowledge.admin.staleBadge" | translate
+                }}</span>
+              }
+            </div>
+            <h3>{{ resource.title }}</h3>
+            <p>
+              {{ "knowledge.kinds." + resource.kind | translate }} ·
+              {{ "knowledge.scopes." + resource.scope | translate }}
+            </p>
+            <p class="note">
+              {{ "knowledge.verifiedAt" | translate }}:
+              {{ resource.verifiedAt | date: "dd.MM.yyyy" }}<br />
+              {{
+                "knowledge.admin.revision"
+                  | translate: { revision: resource.revision }
+              }}
+              · {{ resource.updatedAt | date: "dd.MM.yyyy HH:mm" }}
+            </p>
+            <a
+              [href]="resource.sourceUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              >{{ "knowledge.admin.checkSource" | translate
+              }}<span class="sr-only">
+                — {{ resource.title }}.
+                {{ "knowledge.newTab" | translate }}</span
+              ></a
+            >
+            <div class="actions card-actions">
+              @if (resource.status === "draft") {
+                <button
+                  mat-flat-button
+                  type="button"
+                  [disabled]="loading()"
+                  (click)="quick(resource, 'publish')"
+                >
+                  {{ "knowledge.admin.verifyPublish" | translate
+                  }}<span class="sr-only"> — {{ resource.title }}</span>
+                </button>
+              } @else {
+                <button
+                  mat-flat-button
+                  type="button"
+                  [disabled]="loading()"
+                  (click)="quick(resource, 'confirm')"
+                >
+                  {{ "knowledge.admin.confirm" | translate
+                  }}<span class="sr-only"> — {{ resource.title }}</span>
+                </button>
+                <button
+                  mat-button
+                  type="button"
+                  [disabled]="loading()"
+                  (click)="quick(resource, 'unpublish')"
+                >
+                  {{ "knowledge.admin.unpublish" | translate
+                  }}<span class="sr-only"> — {{ resource.title }}</span>
+                </button>
+              }
+              <button
+                mat-stroked-button
+                type="button"
+                [disabled]="loading()"
+                (click)="edit(resource)"
+              >
+                {{ "knowledge.admin.edit" | translate
+                }}<span class="sr-only"> — {{ resource.title }}</span>
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+      @if (data.total > data.pageSize) {
+        <nav
+          class="actions"
+          [attr.aria-label]="'knowledge.pagination' | translate"
+        >
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="data.page === 1 || loading()"
+            (click)="changePage(-1)"
+          >
+            {{ "knowledge.previous" | translate }}</button
+          ><span>{{ "knowledge.page" | translate: { page: data.page } }}</span
+          ><button
+            mat-stroked-button
+            type="button"
+            [disabled]="data.page * data.pageSize >= data.total || loading()"
+            (click)="changePage(1)"
+          >
+            {{ "knowledge.next" | translate }}
+          </button>
+        </nav>
+      }
+    }
+    <details class="import-panel">
+      <summary>{{ "knowledge.admin.importTitle" | translate }}</summary>
+      <p>{{ "knowledge.admin.importIntro" | translate }}</p>
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.admin.importLabel" | translate }}</mat-label
+        ><textarea
+          matInput
+          [formControl]="importText"
+          rows="8"
+          maxlength="300000"
+        ></textarea></mat-form-field
+      ><button
+        mat-stroked-button
+        type="button"
+        [disabled]="loading()"
+        (click)="importResources()"
+      >
+        {{ "knowledge.admin.import" | translate }}
+      </button>
+      @if (imported() !== null) {
+        <p role="status">
+          {{ "knowledge.admin.imported" | translate: { count: imported() } }}
+        </p>
+      }
+    </details>
+  }
+  @if (tab() === "ideas") {
+    @if (ideas(); as queue) {
+      <app-idea-moderation [queue]="queue" (changed)="load()" />
+    }
+  }
+  @if (tab() === "trends") {
+    @if (trends(); as data) {
+      <section aria-labelledby="trends-heading">
+        <h2 id="trends-heading">{{ "knowledge.trends.title" | translate }}</h2>
+        <p>
+          {{
+            "knowledge.trends.period"
+              | translate
+                : {
+                    from: (data.from | date: "dd.MM.yyyy"),
+                    until: (data.until | date: "dd.MM.yyyy"),
+                  }
+          }}
+        </p>
+        <p class="note">{{ "knowledge.trends.note" | translate }}</p>
+        <div class="metric-grid">
+          <div class="metric">
+            <strong>{{ data.currentTotal }}</strong
+            ><span>{{ "knowledge.trends.currentTotal" | translate }}</span>
+          </div>
+          <div class="metric">
+            <strong>{{ data.previousTotal }}</strong
+            ><span>{{ "knowledge.trends.previousTotal" | translate }}</span>
+          </div>
+        </div>
+        @if (!data.currentTotal && !data.previousTotal) {
+          <p>{{ "knowledge.trends.empty" | translate }}</p>
+        }
+        @if (rising().length) {
+          <div class="trend-alert">
+            <h3>{{ "knowledge.trends.risingTitle" | translate }}</h3>
+            <p>{{ "knowledge.trends.risingIntro" | translate }}</p>
+            <ul>
+              @for (area of rising(); track area.area) {
+                <li>
+                  <strong>{{ area.area }}</strong
+                  >:
+                  {{
+                    change(area.current, area.previous)
+                      | translate
+                        : { percent: percentage(area.current, area.previous) }
+                  }}
+                  ({{
+                    "knowledge.trends.risingCounts"
+                      | translate
+                        : { current: area.current, previous: area.previous }
+                  }})
+                </li>
+              }
+            </ul>
+          </div>
+        }
+        <h3>{{ "knowledge.trends.sourcesTitle" | translate }}</h3>
+        <ul>
+          @for (source of data.sources; track source.source) {
+            @if (source.source !== "form") {
+              <li>
+                {{ "knowledge.trends.sources." + source.source | translate }}:
+                {{ source.count }}
+              </li>
+            }
+          }
+        </ul>
+        <div
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          [attr.aria-label]="'knowledge.trends.areaCaption' | translate"
+        >
+          <table>
+            <caption>
+              {{
+                "knowledge.trends.areaCaption" | translate
+              }}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">{{ "knowledge.areaFilter" | translate }}</th>
+                <th scope="col">
+                  {{ "knowledge.trends.current" | translate }}
+                </th>
+                <th scope="col">
+                  {{ "knowledge.trends.previous" | translate }}
+                </th>
+                <th scope="col">{{ "knowledge.trends.change" | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (area of data.areas; track area.area) {
+                <tr>
+                  <th scope="row">
+                    {{ area.area }}
+                    <div class="trend-bar" aria-hidden="true">
+                      <span [style.width.%]="width(area.current)"></span>
+                    </div>
+                  </th>
+                  <td>{{ area.current }}</td>
+                  <td>{{ area.previous }}</td>
+                  <td>
+                    {{
+                      change(area.current, area.previous)
+                        | translate
+                          : { percent: percentage(area.current, area.previous) }
+                    }}
+                    @if (area.rising) {
+                      <strong class="rising">{{
+                        "knowledge.trends.risingBadge" | translate
+                      }}</strong>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <h3>{{ "knowledge.trends.needsTitle" | translate }}</h3>
+        @if (!data.needs.length) {
+          <p>{{ "knowledge.trends.noTags" | translate }}</p>
+        }
+        <ul>
+          @for (need of data.needs; track need.need) {
+            <li>{{ need.need }}: {{ need.count }}</li>
+          }
+        </ul>
+        <h3>{{ "knowledge.trends.phrasesTitle" | translate }}</h3>
+        @if (!data.phrases.length) {
+          <p>{{ "knowledge.trends.noPhrases" | translate }}</p>
+        }
+        <ol>
+          @for (phrase of data.phrases; track phrase.phrase) {
+            <li>{{ phrase.phrase }}: {{ phrase.count }}</li>
+          }
+        </ol>
+        <details>
+          <summary>{{ "knowledge.trends.daily" | translate }}</summary>
+          <table>
+            <caption>
+              {{
+                "knowledge.trends.dailyCaption" | translate
+              }}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">{{ "knowledge.trends.day" | translate }}</th>
+                <th scope="col">{{ "knowledge.trends.count" | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (day of data.daily; track day.day) {
+                <tr>
+                  <th scope="row">{{ day.day | date: "dd.MM.yyyy" }}</th>
+                  <td>{{ day.count }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </details>
+      </section>
+    }
+  }
+}

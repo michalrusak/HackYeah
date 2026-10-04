@@ -14,6 +14,8 @@ import {
   GrantCallListDataSchema,
   IdeaDataSchema,
   IdeaListDataSchema,
+  IdeaMessageRequestSchema,
+  IdeaThreadDataSchema,
   MatchmakingDataSchema,
   MaterialListDataSchema,
   PlainLanguageDataSchema,
@@ -34,6 +36,7 @@ import {
   type GrantCallListData,
   type IdeaData,
   type IdeaListData,
+  type IdeaThreadData,
   type MatchmakingData,
   type MaterialListData,
   type PlainLanguageData,
@@ -115,6 +118,28 @@ export class IdeaCreatorApiService {
         { headers: auth(token) },
       )
       .pipe(unwrap(IdeaDataSchema));
+  }
+
+  getThread(id: string, token?: string): Observable<IdeaThreadData> {
+    return this.http
+      .get<unknown>(`${this.baseUrl}/ideas/${id}/thread`, {
+        headers: auth(token),
+      })
+      .pipe(unwrap(IdeaThreadDataSchema));
+  }
+
+  sendThreadMessage(
+    id: string,
+    content: string,
+    token?: string,
+  ): Observable<IdeaThreadData> {
+    return this.http
+      .post<unknown>(
+        `${this.baseUrl}/ideas/${id}/thread`,
+        IdeaMessageRequestSchema.parse({ content }),
+        { headers: auth(token) },
+      )
+      .pipe(unwrap(IdeaThreadDataSchema));
   }
 
   deleteIdea(id: string, token?: string): Observable<void> {

@@ -66,6 +66,30 @@ export const routes: Routes = [
         data: { breadcrumb: 'nav.materials' },
       },
       {
+        path: 'zasobnik/admin',
+        loadComponent: () =>
+          import('./features/knowledge/knowledge-admin.component').then(
+            (m) => m.KnowledgeAdminComponent,
+          ),
+        data: { breadcrumb: 'knowledge.admin.heading' },
+      },
+      {
+        path: 'zasobnik/temat/:area',
+        loadComponent: () =>
+          import('./features/knowledge/knowledge-topic.component').then(
+            (m) => m.KnowledgeTopicComponent,
+          ),
+        data: { breadcrumb: 'knowledge.topic.breadcrumb' },
+      },
+      {
+        path: 'zasobnik',
+        loadComponent: () =>
+          import('./features/knowledge/knowledge.component').then(
+            (m) => m.KnowledgeComponent,
+          ),
+        data: { breadcrumb: 'knowledge.title' },
+      },
+      {
         path: 'about',
         component: AboutComponent,
         data: { breadcrumb: 'nav.about' },

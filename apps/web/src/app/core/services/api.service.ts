@@ -45,6 +45,40 @@ export class ApiService {
       );
   }
 
+  get<T>(
+    path: string,
+    schema: z.ZodType<T, z.ZodTypeDef, unknown>,
+    admin = false,
+  ): Observable<T> {
+    return this.request('GET', path, schema, { withCredentials: admin });
+  }
+
+  post<T>(
+    path: string,
+    body: unknown,
+    schema: z.ZodType<T, z.ZodTypeDef, unknown>,
+    csrfToken?: string,
+  ): Observable<T> {
+    return this.request('POST', path, schema, {
+      body,
+      withCredentials: path.startsWith('/knowledge/admin'),
+      headers: csrfToken ? { 'X-Knowledge-CSRF': csrfToken } : {},
+    });
+  }
+
+  put<T>(
+    path: string,
+    body: unknown,
+    schema: z.ZodType<T, z.ZodTypeDef, unknown>,
+    csrfToken: string,
+  ): Observable<T> {
+    return this.request('PUT', path, schema, {
+      body,
+      withCredentials: true,
+      headers: { 'X-Knowledge-CSRF': csrfToken },
+    });
+  }
+
   matchInnovations(
     description: string,
     answers: ClarificationAnswer[] = [],

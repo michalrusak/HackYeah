@@ -1,0 +1,37 @@
+.fact-grid {
+  display: grid;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.fact-grid li {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--mat-sys-surface-container-low, #f3f4fa);
+  line-height: 1.5;
+}
+.fact-grid strong {
+  color: var(--mat-sys-primary, #005cbb);
+  font-size: 2rem;
+  line-height: 1.1;
+}
+.challenge {
+  max-width: 1000px;
+}
+.topic-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.topic-title mat-icon {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  font-size: 48px;
+  color: var(--mat-sys-primary, #005cbb);
+}

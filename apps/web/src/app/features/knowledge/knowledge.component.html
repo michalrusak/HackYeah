@@ -1,0 +1,192 @@
+<section class="hero">
+  <h1>{{ "knowledge.title" | translate }}</h1>
+  <p class="lead">{{ "knowledge.intro" | translate }}</p>
+</section>
+
+<section aria-labelledby="areas-heading">
+  <h2 id="areas-heading">{{ "knowledge.areasTitle" | translate }}</h2>
+  <p>{{ "knowledge.mapScope" | translate }}</p>
+  <div class="area-grid">
+    @for (area of areas; track area) {
+      <a class="area-tile" [routerLink]="['/zasobnik/temat', area]">
+        <mat-icon aria-hidden="true">{{ icons[area] }}</mat-icon>
+        <span>{{ area }}</span>
+        <span class="tile-count">{{
+          "knowledge.resourceCount" | translate: { count: count(area) }
+        }}</span>
+      </a>
+    }
+  </div>
+</section>
+
+<section class="search-section" aria-labelledby="search-heading">
+  <h2 id="search-heading">{{ "knowledge.searchTitle" | translate }}</h2>
+  <div
+    class="actions kind-actions"
+    [attr.aria-label]="'knowledge.kindFilter' | translate"
+  >
+    @for (kind of kinds; track kind) {
+      <button
+        mat-stroked-button
+        type="button"
+        [attr.aria-pressed]="form.controls.kind.value === kind"
+        (click)="selectKind(kind)"
+      >
+        {{ "knowledge.kinds." + kind | translate }}
+      </button>
+    }
+    <button
+      mat-stroked-button
+      type="button"
+      [attr.aria-pressed]="form.controls.video.value === '1'"
+      (click)="toggleVideo()"
+    >
+      <mat-icon aria-hidden="true">play_circle</mat-icon
+      >{{ "knowledge.videoOnly" | translate }}
+    </button>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="search()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ "knowledge.searchLabel" | translate }}</mat-label>
+      <input matInput formControlName="q" maxlength="200" type="search" />
+    </mat-form-field>
+    <p class="note">{{ "knowledge.searchNotice" | translate }}</p>
+    <div class="filters">
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.areaFilter" | translate }}</mat-label
+        ><mat-select formControlName="area"
+          ><mat-option value="">{{
+            "knowledge.allAreas" | translate
+          }}</mat-option>
+          @for (area of areas; track area) {
+            <mat-option [value]="area">{{ area }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.audienceFilter" | translate }}</mat-label
+        ><mat-select formControlName="audience"
+          ><mat-option value="">{{
+            "knowledge.allAudiences" | translate
+          }}</mat-option>
+          @for (audience of audiences; track audience) {
+            <mat-option [value]="audience">{{ audience }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.scopeFilter" | translate }}</mat-label
+        ><mat-select formControlName="scope"
+          ><mat-option value="">{{
+            "knowledge.allScopes" | translate
+          }}</mat-option>
+          @for (scope of scopes; track scope) {
+            <mat-option [value]="scope">{{
+              "knowledge.scopes." + scope | translate
+            }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+    </div>
+    <div class="actions">
+      <button mat-flat-button type="submit">
+        {{ "knowledge.search" | translate }}</button
+      ><button mat-button type="button" (click)="clear()">
+        {{ "knowledge.clear" | translate }}
+      </button>
+    </div>
+  </form>
+</section>
+
+<section [attr.aria-busy]="loading()" aria-labelledby="resources-heading">
+  <h2 id="resources-heading" #resultsHeading tabindex="-1">
+    {{ "knowledge.resultsTitle" | translate }}
+  </h2>
+  @if (loading()) {
+    <mat-progress-bar
+      mode="indeterminate"
+      [attr.aria-label]="'knowledge.loading' | translate"
+    />
+    <p role="status">{{ "knowledge.loading" | translate }}</p>
+  }
+  @if (error(); as errorKey) {
+    <div class="error" role="alert">
+      <p>{{ errorKey | translate }}</p>
+      <button mat-stroked-button type="button" (click)="retry()">
+        {{ "knowledge.retry" | translate }}
+      </button>
+    </div>
+  }
+  @if (result(); as data) {
+    <p role="status">
+      {{ "knowledge.resultCount" | translate: { count: data.total } }}
+    </p>
+    @if (!data.resources.length) {
+      <p>{{ "knowledge.empty" | translate }}</p>
+    }
+    <div class="resource-grid">
+      @for (resource of data.resources; track resource.id) {
+        <app-resource-card [resource]="resource" />
+      }
+    </div>
+    @if (data.total > data.pageSize) {
+      <nav
+        class="actions"
+        [attr.aria-label]="'knowledge.pagination' | translate"
+      >
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="data.page === 1"
+          (click)="page(-1)"
+        >
+          {{ "knowledge.previous" | translate }}</button
+        ><span>{{ "knowledge.page" | translate: { page: data.page } }}</span
+        ><button
+          mat-stroked-button
+          type="button"
+          [disabled]="data.page * data.pageSize >= data.total"
+          (click)="page(1)"
+        >
+          {{ "knowledge.next" | translate }}
+        </button>
+      </nav>
+    }
+  }
+  <p class="note">{{ "knowledge.catalogNote" | translate }}</p>
+  <p class="note">{{ "knowledge.videoNote" | translate }}</p>
+</section>
+
+<section class="sources" aria-labelledby="sources-heading">
+  <h2 id="sources-heading">{{ "knowledge.sourcesTitle" | translate }}</h2>
+  <div class="actions">
+    <a
+      href="https://rops.krakow.pl/badania-analizy-raporty/raporty-z-badan"
+      target="_blank"
+      rel="noopener noreferrer"
+      >{{ "knowledge.sources.reports" | translate
+      }}<span class="sr-only">. {{ "knowledge.newTab" | translate }}</span></a
+    >
+    <a
+      href="https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/kategorie"
+      target="_blank"
+      rel="noopener noreferrer"
+      >{{ "knowledge.sources.innovations" | translate
+      }}<span class="sr-only">. {{ "knowledge.newTab" | translate }}</span></a
+    >
+    <a
+      href="https://rops.krakow.pl/innowacje-spoleczne/publikacje-ze-swiata-innowacji"
+      target="_blank"
+      rel="noopener noreferrer"
+      >{{ "knowledge.sources.education" | translate
+      }}<span class="sr-only">. {{ "knowledge.newTab" | translate }}</span></a
+    >
+    <a
+      href="https://obserwator.rops.krakow.pl/"
+      target="_blank"
+      rel="noopener noreferrer"
+      >{{ "knowledge.sources.observer" | translate
+      }}<span class="sr-only">. {{ "knowledge.newTab" | translate }}</span></a
+    >
+  </div>
+</section>

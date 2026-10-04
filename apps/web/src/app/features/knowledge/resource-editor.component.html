@@ -1,0 +1,149 @@
+<section class="search-section" aria-labelledby="editor-heading">
+  <h2 id="editor-heading" #heading tabindex="-1">
+    {{
+      (resource() ? "knowledge.admin.editTitle" : "knowledge.admin.newTitle")
+        | translate
+    }}
+  </h2>
+  <p>{{ "knowledge.admin.publishNotice" | translate }}</p>
+  <form [formGroup]="form" (ngSubmit)="save()" [attr.aria-busy]="saving()">
+    <div class="filters">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
+        ><mat-label>{{ "knowledge.admin.id" | translate }}</mat-label
+        ><input matInput formControlName="id" maxlength="80" /><mat-hint>{{
+          "knowledge.admin.idHint" | translate
+        }}</mat-hint></mat-form-field
+      >
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.admin.title" | translate }}</mat-label
+        ><input matInput formControlName="title" maxlength="180"
+      /></mat-form-field>
+    </div>
+    <mat-form-field appearance="outline"
+      ><mat-label>{{ "knowledge.admin.summary" | translate }}</mat-label
+      ><textarea
+        matInput
+        formControlName="summary"
+        rows="5"
+        maxlength="2000"
+      ></textarea>
+    </mat-form-field>
+    <div class="filters">
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.kindFilter" | translate }}</mat-label
+        ><mat-select formControlName="kind">
+          @for (kind of kinds; track kind) {
+            <mat-option [value]="kind">{{
+              "knowledge.kinds." + kind | translate
+            }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.scopeFilter" | translate }}</mat-label
+        ><mat-select formControlName="scope">
+          @for (scope of scopes; track scope) {
+            <mat-option [value]="scope">{{
+              "knowledge.scopes." + scope | translate
+            }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.admin.status" | translate }}</mat-label
+        ><mat-select formControlName="status">
+          @for (status of statuses; track status) {
+            <mat-option [value]="status">{{
+              "knowledge.statuses." + status | translate
+            }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+    </div>
+    <div class="filters">
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.need.areas" | translate }}</mat-label
+        ><mat-select formControlName="areas" multiple>
+          @for (area of areas; track area) {
+            <mat-option [value]="area">{{ area }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.audienceFilter" | translate }}</mat-label
+        ><mat-select formControlName="audiences" multiple>
+          @for (audience of audiences; track audience) {
+            <mat-option [value]="audience">{{ audience }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.need.tags" | translate }}</mat-label
+        ><mat-select formControlName="needs" multiple>
+          @for (need of needs; track need) {
+            <mat-option [value]="need">{{ need }}</mat-option>
+          }
+        </mat-select></mat-form-field
+      >
+    </div>
+    <mat-form-field appearance="outline"
+      ><mat-label>{{ "knowledge.admin.sourceUrl" | translate }}</mat-label
+      ><input matInput formControlName="sourceUrl" type="url" maxlength="2000"
+    /></mat-form-field>
+    <mat-form-field appearance="outline"
+      ><mat-label>{{ "knowledge.source" | translate }}</mat-label
+      ><input matInput formControlName="sourceLabel" maxlength="200"
+    /></mat-form-field>
+    <div class="filters">
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.verifiedAt" | translate }}</mat-label
+        ><input matInput formControlName="verifiedAt" type="date"
+      /></mat-form-field>
+      <mat-form-field appearance="outline"
+        ><mat-label>{{ "knowledge.publicationYear" | translate }}</mat-label
+        ><input
+          matInput
+          formControlName="publicationYear"
+          type="number"
+          min="1900"
+          max="2100"
+      /></mat-form-field>
+    </div>
+    <mat-form-field appearance="outline"
+      ><mat-label>{{ "knowledge.admin.videoUrl" | translate }}</mat-label
+      ><input
+        matInput
+        formControlName="videoPageUrl"
+        type="url"
+        maxlength="2000"
+    /></mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"
+      ><mat-label>{{ "knowledge.admin.youtubeUrl" | translate }}</mat-label
+      ><input matInput formControlName="videoUrl" type="url" maxlength="200" />
+      <mat-hint>{{ "knowledge.admin.youtubeHint" | translate }}</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"
+      ><mat-label>{{ "knowledge.admin.facts" | translate }}</mat-label
+      ><textarea matInput formControlName="facts" rows="4"></textarea
+      ><mat-hint>{{ "knowledge.admin.factsHint" | translate }}</mat-hint>
+    </mat-form-field>
+    @if (error(); as errorKey) {
+      <p role="alert" class="error">{{ errorKey | translate }}</p>
+    }
+    <div class="actions">
+      <button mat-flat-button type="submit" [disabled]="saving()">
+        {{
+          (saving() ? "knowledge.admin.saving" : "knowledge.admin.save")
+            | translate
+        }}</button
+      ><button
+        mat-button
+        type="button"
+        [disabled]="saving()"
+        (click)="cancelled.emit()"
+      >
+        {{ "knowledge.admin.cancel" | translate }}
+      </button>
+    </div>
+  </form>
+</section>

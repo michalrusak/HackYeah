@@ -67,6 +67,11 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "prebundle": {
+              "exclude": ["@repo/api-contracts"]
+            }
+          },
           "configurations": {
             "production": {
               "buildTarget": "web:build:production"

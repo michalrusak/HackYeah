@@ -1,0 +1,790 @@
+{
+  "version": 1,
+  "resources": [
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Csenior-cuder",
+      "status": "published",
+      "id": "senior-cuder",
+      "title": "Senior CUDER",
+      "summary": "Gra karciana do wspólnych spotkań seniorów, wspierająca motywację, dbanie o zdrowie i budowanie relacji z rodziną, sąsiadami oraz nowymi znajomymi.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Seniorzy",
+        "Zdrowie",
+        "Zdrowie psychiczne"
+      ],
+      "needs": [
+        "Relacje społeczne",
+        "Aktywizacja społeczna",
+        "Kompetencje społeczne"
+      ],
+      "audiences": [
+        "Seniorzy"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Csenior-cuder",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków",
+      "videoUrl": "https://www.youtube.com/watch?v=o5TP10ZStNA"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "mobilne-centrum-pomocy",
+      "title": "Mobilne centrum pomocy dla osób starszych",
+      "summary": "Wsparcie docierające do domu niesamodzielnych seniorów na wsi. Łączy coaching senioralny z indywidualnie dobraną pomocą specjalistów, m.in. prawnika, dietetyka i rehabilitanta.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Seniorzy",
+        "Zdrowie"
+      ],
+      "needs": [
+        "Dostęp do usług",
+        "Opieka domowa",
+        "Aktywizacja społeczna",
+        "Relacje społeczne"
+      ],
+      "audiences": [
+        "Seniorzy",
+        "Osoby o ograniczonej mobilności"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Cmobilne-centrum-pomocy-dla-osob-starszych",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "organizator-opieki",
+      "title": "Organizator kompleksowej opieki w miejscu zamieszkania",
+      "summary": "Program organizacji opieki domowej dla osób starszych i osób po pogorszeniu stanu zdrowia. Pomaga rodzinie przygotować opiekę i zapewnić potrzebne wsparcie oraz sprzęt.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Seniorzy",
+        "Zdrowie"
+      ],
+      "needs": [
+        "Opieka domowa",
+        "Wsparcie opiekunów",
+        "Dostęp do usług"
+      ],
+      "audiences": [
+        "Seniorzy",
+        "Zdrowie i medycyna",
+        "Osoby o ograniczonej mobilności"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Corganizator-kompleksowej-opieki-w-miejscu-zamieszkania",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Cmerkury",
+      "status": "published",
+      "id": "merkury",
+      "title": "Merkury",
+      "summary": "Internetowy symulator bankomatu, parkomatu, paczkomatu i kasy samoobsługowej. Pozwala seniorom ćwiczyć obsługę urządzeń w domowych warunkach.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Seniorzy"
+      ],
+      "needs": [
+        "Kompetencje cyfrowe",
+        "Dostęp do usług"
+      ],
+      "audiences": [
+        "Seniorzy"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Cmerkury",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków",
+      "videoUrl": "https://www.youtube.com/watch?v=BK6a8fjELR0"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Cbawita",
+      "status": "published",
+      "id": "bawita",
+      "title": "BaWita",
+      "summary": "Drewniana tablica z ruchomymi elementami do ćwiczenia pamięci, sprawności manualnej i organizacji dnia. Przeznaczona dla dorosłych z wczesnym otępieniem oraz osób rehabilitowanych pamięciowo po udarach.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Seniorzy",
+        "Zdrowie"
+      ],
+      "needs": [
+        "Rehabilitacja",
+        "Ćwiczenie pamięci"
+      ],
+      "audiences": [
+        "Seniorzy",
+        "Zdrowie i medycyna"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Cbawita",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków",
+      "videoUrl": "https://www.youtube.com/watch?v=o7UhDlebLJo"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "e-rzecznik",
+      "title": "E-rzecznik konsumenta seniora",
+      "summary": "Aplikacja udostępniająca seniorom informacje dotyczące praw konsumenta, m.in. reklamacji, odstąpienia od umowy i egzekwowania przysługujących praw.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Seniorzy"
+      ],
+      "needs": [
+        "Prawa konsumenta",
+        "Dostęp do usług"
+      ],
+      "audiences": [
+        "Seniorzy"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Ce-rzecznik-konsumenta-seniora",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "wirtualne-izby-pamieci",
+      "title": "Wirtualne izby pamięci",
+      "summary": "Metoda warsztatowej pracy z seniorami obejmująca fotografowanie, opowiadanie historii przedmiotów i tworzenie wirtualnej galerii. Łączy przekazywanie dziedzictwa z nauką umiejętności cyfrowych.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Seniorzy"
+      ],
+      "needs": [
+        "Relacje społeczne",
+        "Kompetencje cyfrowe",
+        "Aktywizacja społeczna"
+      ],
+      "audiences": [
+        "Seniorzy"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow%2Cwirtualne-izby-pamieci",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "health-guide-pl",
+      "title": "Health Guide PL",
+      "summary": "Przewodnik po podstawowej publicznej opiece zdrowotnej w Polsce, przygotowany w językach angielskim i ukraińskim. Wyjaśnia dostęp do świadczeń osobom mającym prawo do korzystania z tego systemu.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Integracja cudzoziemców",
+        "Zdrowie"
+      ],
+      "needs": [
+        "Informacja o opiece zdrowotnej",
+        "Dostęp do usług",
+        "Dostępna komunikacja"
+      ],
+      "audiences": [
+        "Cudzoziemcy",
+        "Zdrowie i medycyna",
+        "Dzieci, młodzież i rodzina"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-cudzoziemcow%2Chealth-guide-pl",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "dialog-ponad-kulturami",
+      "title": "Dialog ponad kulturami",
+      "summary": "Komunikator polsko-dari dla uchodźców z Afganistanu i polskich instytucji. Udostępnia słownictwo dotyczące zdrowia, edukacji, pracy i spraw urzędowych oraz wybrane piktogramy.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Integracja cudzoziemców"
+      ],
+      "needs": [
+        "Komunikacja międzykulturowa",
+        "Integracja kulturowa",
+        "Dostępna komunikacja",
+        "Dostęp do usług"
+      ],
+      "audiences": [
+        "Cudzoziemcy"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-cudzoziemcow%2Cdialog-ponad-kulturami-1",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "bez-presji-z-depresji",
+      "title": "Bez presji z depresji",
+      "summary": "Karty pracy i ćwiczenia psychoedukacyjne wspierające dzieci i młodzież w powrocie do szkoły po długiej terapii lub leczeniu psychiatrycznym. Materiały obejmują również rodzinę, nauczycieli i klasę.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Zdrowie psychiczne"
+      ],
+      "needs": [
+        "Powrót do szkoły",
+        "Psychoedukacja",
+        "Zdrowie psychiczne",
+        "Wsparcie emocjonalne",
+        "Relacje społeczne"
+      ],
+      "audiences": [
+        "Dzieci, młodzież i rodzina"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny%2Cbez-presji-z-depresji",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "marimbaza",
+      "title": "MarimBaza!",
+      "summary": "Warsztaty budowania instrumentów i przygotowania wydarzenia muzycznego z młodzieżą ośrodków szkolno-wychowawczych i socjoterapii. Służą rozwijaniu współpracy, komunikacji, poczucia własnej wartości i umiejętności manualnych.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Zdrowie psychiczne",
+        "Niepełnosprawność"
+      ],
+      "needs": [
+        "Kompetencje społeczne",
+        "Aktywizacja społeczna",
+        "Relacje społeczne",
+        "Wsparcie emocjonalne"
+      ],
+      "audiences": [
+        "Dzieci, młodzież i rodzina"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny%2Cmarimbaza",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "rodzina-adopcyjna-dorasta",
+      "title": "Rodzina adopcyjna dorasta",
+      "summary": "Interaktywne treści i ćwiczenia dla rodziców adopcyjnych nastolatków. Pomagają zrozumieć emocje, zachowania i reakcje wynikające ze specyficznej historii rodziny.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Rodzina i piecza zastępcza",
+        "Zdrowie psychiczne"
+      ],
+      "needs": [
+        "Wsparcie rodziców adopcyjnych",
+        "Psychoedukacja",
+        "Wsparcie emocjonalne",
+        "Relacje społeczne"
+      ],
+      "audiences": [
+        "Dzieci, młodzież i rodzina"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny%2Crodzina-adopcyjna-dorasta",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków",
+      "videoUrl": "https://www.youtube.com/watch?v=HZzYekiW_nY"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "gluchy-czytelnik",
+      "title": "Głuchy czytelnik w bibliotece",
+      "summary": "Publikacja przybliżająca osobom g/Głuchym korzystanie z bibliotek i wspieranie dzieci w czytaniu. Treści udostępniono w prostym języku polskim oraz w polskim języku migowym.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Niepełnosprawność"
+      ],
+      "needs": [
+        "Dostęp do czytelnictwa",
+        "Dostępna komunikacja",
+        "Dostęp do usług"
+      ],
+      "audiences": [
+        "Osoby z niepełnosprawnością sensoryczną",
+        "Dzieci, młodzież i rodzina"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-sensoryczna%2Cgluchy-czytelnik-w-bibliotece",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków",
+      "videoUrl": "https://www.youtube.com/watch?v=BoAC-J1Owr4"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "agencja-pracy-incydentalnej",
+      "title": "Agencja pracy incydentalnej",
+      "summary": "Rozwiązanie wspierające powrót na rynek pracy osób w głębokim, wielowymiarowym kryzysie. Przeznaczone do wykorzystania przez podmioty zajmujące się aktywizacją zawodową.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Ubóstwo",
+        "Zdrowie psychiczne"
+      ],
+      "needs": [
+        "Aktywizacja zawodowa"
+      ],
+      "audiences": [
+        "Rynek pracy"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-rynku-pracy%2Cagencja-pracy-incydentalnej",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "innotextil",
+      "title": "Innotextil",
+      "summary": "Rozwiązanie wspierające samodzielną rehabilitację domową osób starszych i osób z ograniczeniami narządu ruchu. Odpowiada na trudności w dostępie do fizjoterapii i utrzymaniu jej efektów.",
+      "kind": "innovation",
+      "scope": "general",
+      "areas": [
+        "Niepełnosprawność",
+        "Zdrowie",
+        "Seniorzy"
+      ],
+      "needs": [
+        "Rehabilitacja",
+        "Dostęp do usług"
+      ],
+      "audiences": [
+        "Seniorzy",
+        "Osoby o ograniczonej mobilności"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci%2Cinnotextil",
+      "sourceLabel": "Biblioteka Innowacji Społecznych ROPS Kraków",
+      "videoUrl": "https://www.youtube.com/watch?v=ScqdHaNxYa8"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "mapa-seniorzy",
+      "title": "Samotność i codzienna samodzielność seniorów",
+      "summary": "Mapa Wyzwań wskazuje potrzebę kontaktów społecznych, aktywizacji i rozwoju umiejętności cyfrowych osób starszych. To kontekst do szukania rozwiązań lokalnych, a nie diagnoza konkretnej gminy.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 8",
+      "areas": [
+        "Seniorzy"
+      ],
+      "needs": [
+        "Relacje społeczne",
+        "Aktywizacja społeczna",
+        "Kompetencje cyfrowe",
+        "Opieka domowa",
+        "Wsparcie opiekunów"
+      ],
+      "kind": "challenge",
+      "audiences": [],
+      "facts": [
+        {
+          "value": "4 obszary",
+          "label": "w których seniorzy oczekują wsparcia: zdrowie, samotność, finanse i cyfryzacja"
+        }
+      ]
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "mapa-integracja",
+      "title": "Równy dostęp migrantów do usług i edukacji",
+      "summary": "Mapa Wyzwań opisuje bariery językowe i kulturowe oraz potrzebę dostosowania usług publicznych. Wskazuje również na włączenie dzieci migrantów do szkoły i wsparcie w integracji społecznej.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 5",
+      "areas": [
+        "Integracja cudzoziemców"
+      ],
+      "needs": [
+        "Dostęp do usług",
+        "Informacja o opiece zdrowotnej",
+        "Integracja kulturowa",
+        "Komunikacja międzykulturowa",
+        "Dostępna komunikacja"
+      ],
+      "kind": "challenge",
+      "audiences": []
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "mapa-zdrowie-psychiczne",
+      "title": "Izolacja, wsparcie emocjonalne i powrót do codzienności",
+      "summary": "Mapa Wyzwań zwraca uwagę na izolację młodych osób, trudności w radzeniu sobie z emocjami i bariery w korzystaniu z pomocy. Opisuje też potrzebę włączenia społecznego po kryzysie psychicznym.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 7",
+      "areas": [
+        "Zdrowie psychiczne"
+      ],
+      "needs": [
+        "Zdrowie psychiczne",
+        "Wsparcie emocjonalne",
+        "Powrót do szkoły",
+        "Psychoedukacja",
+        "Relacje społeczne",
+        "Aktywizacja zawodowa"
+      ],
+      "kind": "challenge",
+      "audiences": [],
+      "facts": [
+        {
+          "value": "ok. 3%",
+          "label": "wydatków NFZ przeznaczanych na opiekę w zakresie zdrowia psychicznego"
+        },
+        {
+          "value": "co 3.",
+          "label": "młoda osoba doświadcza FOMO, czyli lęku przed odłączeniem od sieci"
+        }
+      ]
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "mapa-zdrowie",
+      "title": "Dostęp do opieki i wsparcie opiekunów",
+      "summary": "Mapa Wyzwań przedstawia potrzebę równego dostępu do opieki oraz dostosowania wsparcia do osób starszych i zależnych. Uwzględnia obciążenie osób łączących pracę z opieką nad bliskimi.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 6",
+      "areas": [
+        "Zdrowie"
+      ],
+      "needs": [
+        "Informacja o opiece zdrowotnej",
+        "Opieka domowa",
+        "Wsparcie opiekunów",
+        "Rehabilitacja",
+        "Dostęp do usług"
+      ],
+      "kind": "challenge",
+      "audiences": [],
+      "facts": [
+        {
+          "value": "2. miejsce",
+          "label": "udary są drugą najczęstszą przyczyną zgonów"
+        }
+      ]
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "mapa-niepelnosprawnosc",
+      "title": "Samodzielność i dostępne otoczenie",
+      "summary": "Mapa Wyzwań omawia bariery uczestnictwa osób z niepełnosprawnościami. Pomaga spojrzeć na dostępność usług, samodzielne funkcjonowanie i włączenie społeczne jako powiązane potrzeby.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 3",
+      "areas": [
+        "Niepełnosprawność"
+      ],
+      "needs": [
+        "Dostępna komunikacja",
+        "Dostęp do usług",
+        "Rehabilitacja",
+        "Aktywizacja zawodowa",
+        "Dostęp do czytelnictwa"
+      ],
+      "kind": "challenge",
+      "audiences": [],
+      "facts": [
+        {
+          "value": "5,4 mln",
+          "label": "osób z niepełnosprawnościami w Polsce, czyli 14,3% ludności (Spis Powszechny 2021)"
+        },
+        {
+          "value": "30,1%",
+          "label": "wskaźnik zatrudnienia osób z niepełnosprawnością w wieku 16–64 lata pod koniec 2023 r."
+        },
+        {
+          "value": "54,9%",
+          "label": "udział kobiet wśród osób z niepełnosprawnościami"
+        }
+      ]
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "mapa-bezdomnosc",
+      "title": "Bezdomność młodych osób i ciągłość wsparcia",
+      "summary": "Mapa Wyzwań wskazuje na trudność rozpoznawania bezdomności młodych osób i luki w przejściu między formami pomocy. Samo zapewnienie noclegu nie wyczerpuje potrzeb w budowaniu samodzielności.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 2",
+      "areas": [
+        "Bezdomność"
+      ],
+      "needs": [
+        "Dostęp do usług",
+        "Wsparcie emocjonalne",
+        "Aktywizacja zawodowa"
+      ],
+      "kind": "challenge",
+      "audiences": [],
+      "facts": [
+        {
+          "value": "0–25 lat",
+          "label": "grupa wiekowa, w której rośnie liczba osób w kryzysie bezdomności"
+        }
+      ]
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "mapa-ubostwo",
+      "title": "Ubóstwo i ograniczone możliwości uczestnictwa",
+      "summary": "Mapa Wyzwań opisuje ubóstwo jako problem wpływający na codzienne funkcjonowanie i dostęp do możliwości rozwoju. To punkt wyjścia do analizy potrzeb i zasobów w lokalnej społeczności.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 4",
+      "areas": [
+        "Ubóstwo"
+      ],
+      "needs": [
+        "Dostęp do usług",
+        "Aktywizacja zawodowa",
+        "Aktywizacja społeczna"
+      ],
+      "kind": "challenge",
+      "audiences": [],
+      "facts": [
+        {
+          "value": "6,6%",
+          "label": "gospodarstw domowych w ubóstwie skrajnym w 2023 r., o 2 pp. więcej niż rok wcześniej"
+        },
+        {
+          "value": "913 zł",
+          "label": "granica ubóstwa skrajnego dla gospodarstwa jednoosobowego w 2023 r."
+        },
+        {
+          "value": "14,1%",
+          "label": "rolników żyjących w ubóstwie skrajnym w 2023 r."
+        },
+        {
+          "value": "30%",
+          "label": "osób wyrażających lęk przed biedą, najwięcej od 2015 r."
+        }
+      ]
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "mapa-rodzina",
+      "title": "Wsparcie rodzin i stabilność pieczy zastępczej",
+      "summary": "Mapa Wyzwań wskazuje na potrzebę rozwoju rodzinnej pieczy zastępczej i współpracy instytucji. Podkreśla znaczenie stabilnej opieki, wsparcia rodzeństw i kompetencji opiekunów.",
+      "scope": "national",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2Cmapa-wyzwan-spolecznych%2C1048",
+      "sourceLabel": "Mapa Wyzwań Społecznych, rozdział 1",
+      "areas": [
+        "Rodzina i piecza zastępcza"
+      ],
+      "needs": [
+        "Wsparcie rodziców adopcyjnych",
+        "Psychoedukacja",
+        "Wsparcie emocjonalne",
+        "Kompetencje społeczne"
+      ],
+      "kind": "challenge",
+      "audiences": [],
+      "facts": [
+        {
+          "value": "+3,5%",
+          "label": "wzrost liczby dzieci w pieczy zastępczej w 2023 r. względem 2022 r. (GUS)"
+        },
+        {
+          "value": "poniżej 10 lat",
+          "label": "dzieci w tym wieku wciąż trafiają do placówek instytucjonalnych wbrew założeniom ustawy (NIK)"
+        }
+      ]
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": 2024,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "malopolska-piecza",
+      "title": "Piecza zastępcza w Małopolsce: stan, potrzeby, wyzwania",
+      "summary": "Raport ROPS z 2024 roku opisuje zasoby pieczy zastępczej w regionie, sytuację dzieci i plany powiatów. Pomaga uzupełnić ogólnopolską Mapę Wyzwań o kontekst Małopolski.",
+      "scope": "malopolska",
+      "sourceUrl": "https://rops.krakow.pl/aktualnosci/piecza-zastepcza-w-malopolsce-stan-potrzeby-wyzwania",
+      "sourceLabel": "ROPS Kraków, raport o pieczy zastępczej, 2024",
+      "areas": [
+        "Rodzina i piecza zastępcza"
+      ],
+      "needs": [
+        "Wsparcie rodziców adopcyjnych",
+        "Wsparcie opiekunów",
+        "Dostęp do usług"
+      ],
+      "kind": "report",
+      "audiences": []
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": 2025,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "malopolska-uslugi",
+      "title": "Usługi społeczne w Małopolsce: deficyty i potrzeby",
+      "summary": "Aktualizacja diagnozy z 2025 roku wspiera planowanie usług społecznych w regionie. Materiał pozwala sprawdzić lokalny kontekst przed wyborem i wdrożeniem innowacji.",
+      "scope": "malopolska",
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/artykul%2C2025-uslugi-spoleczne-w-malopolsce-deficyty-potrzeby-potencjal-rozwojowy-zaktualizowane-wnioski-z-diagnozy%2C1422",
+      "sourceLabel": "ROPS Kraków, diagnoza usług społecznych, 2025",
+      "areas": [
+        "Seniorzy",
+        "Zdrowie",
+        "Niepełnosprawność",
+        "Rodzina i piecza zastępcza",
+        "Bezdomność"
+      ],
+      "needs": [
+        "Dostęp do usług",
+        "Opieka domowa",
+        "Wsparcie opiekunów",
+        "Rehabilitacja"
+      ],
+      "kind": "report",
+      "audiences": []
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": 2019,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "przewodnik-innowacje",
+      "title": "Przewodnik po innowacjach społecznych",
+      "summary": "Przykłady rozwiązań rozwijanych w Małopolskim Inkubatorze Innowacji Społecznych. Materiał pomaga poznać odbiorców innowacji i sposoby wykorzystania rozwiązań w lokalnej społeczności.",
+      "kind": "education",
+      "scope": "general",
+      "areas": [
+        "Seniorzy",
+        "Niepełnosprawność",
+        "Zdrowie"
+      ],
+      "audiences": [],
+      "needs": [
+        "Aktywizacja społeczna",
+        "Dostęp do usług"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/aktualnosci/przewodnik-po-innowacjach-spolecznych",
+      "sourceLabel": "ROPS Kraków — Przewodnik po innowacjach społecznych"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": null,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "polacz-kropki",
+      "title": "Połącz kropki, czyli o sile innowacji społecznych",
+      "summary": "Publikacja przedstawia doświadczenia inkubacji i przykłady innowacji włączających osoby z różnymi potrzebami. Pomaga spojrzeć na rozwój rozwiązania jako proces współpracy z jego odbiorcami.",
+      "kind": "education",
+      "scope": "general",
+      "areas": [
+        "Niepełnosprawność",
+        "Seniorzy",
+        "Zdrowie psychiczne"
+      ],
+      "audiences": [],
+      "needs": [
+        "Dostępna komunikacja",
+        "Kompetencje społeczne"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/pliki-do-pobrania/wpis%2Cpolacz-kropki-publikacja-o-wlaczeniu-spolecznym%2C691",
+      "sourceLabel": "ROPS Kraków — Połącz kropki"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": 2025,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "abc-diagnozy",
+      "title": "ABC Diagnozy: badanie potrzeb usług społecznych w gminie",
+      "summary": "Praktyczny przewodnik dla gmin: jak zbadać potrzeby mieszkańców, dostępne usługi i potencjał podmiotów ekonomii społecznej. Zawiera narzędzia do planowania lokalnej diagnozy.",
+      "kind": "education",
+      "scope": "general",
+      "areas": [
+        "Seniorzy",
+        "Niepełnosprawność",
+        "Rodzina i piecza zastępcza",
+        "Ubóstwo",
+        "Bezdomność"
+      ],
+      "audiences": [],
+      "needs": [
+        "Dostęp do usług"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/aktualnosci/abc-diagnozy-badanie-podazy-i-popytu-na-uslugi-spoleczne-w-gminie-przewodnik-praktyczny",
+      "sourceLabel": "ROPS Kraków — ABC Diagnozy"
+    },
+    {
+      "verifiedAt": "2026-10-03",
+      "publicationYear": 2025,
+      "videoPageUrl": null,
+      "status": "published",
+      "id": "mieszkania-malopolska",
+      "title": "Mieszkania wspomagane i treningowe w Małopolsce",
+      "summary": "Raport z badania podmiotów prowadzących mieszkania treningowe i wspomagane. Omawia rozmieszczenie mieszkań, świadczone usługi oraz bariery rozwoju wsparcia w regionie.",
+      "kind": "report",
+      "scope": "malopolska",
+      "areas": [
+        "Niepełnosprawność",
+        "Bezdomność",
+        "Zdrowie psychiczne",
+        "Seniorzy"
+      ],
+      "audiences": [],
+      "needs": [
+        "Dostęp do usług"
+      ],
+      "sourceUrl": "https://rops.krakow.pl/badania-analizy-raporty/raporty-z-badan",
+      "sourceLabel": "ROPS Kraków — raport z badania, 2025; lista raportów"
+    }
+  ]
+}

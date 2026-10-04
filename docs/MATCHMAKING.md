@@ -14,6 +14,8 @@ Klucz jest odczytywany wyłącznie w API. Jedno wyszukiwanie wykonuje jedno żą
 
 ## Dane i ranking
 
+Po dodaniu [Zasobnika wiedzy](KNOWLEDGE.md) katalog produkcyjny pochodzi z opublikowanych zasobów PostgreSQL. Przed pierwszym uruchomieniem wykonaj migracje i `knowledge:seed` według instrukcji Zasobnika. Poniższe pliki JSON pozostają materiałem początkowym i katalogiem dla izolowanych testów, które nie korzystają z bazy. Edycje administratora w bazie są widoczne w kolejnym wyszukiwaniu, bez przebudowy aplikacji.
+
 Katalog: `apps/api/src/modules/matchmaking/catalog.v1.json`. Zawiera 15 rzeczywistych innowacji, krótkie autorskie podsumowania, źródła i datę weryfikacji. Opisy i adresy sprawdzono w indeksowanych treściach oficjalnych stron ROPS 3 października 2026. Bezpośredni odczyt części stron zwracał HTTP 403; data nie oznacza potwierdzenia dostępności wszystkich materiałów do pobrania. Tagi są redakcyjną klasyfikacją projektu, nie oficjalną klasyfikacją ROPS.
 
 Kategorie odbiorców odpowiadają dziewięciu kategoriom biblioteki ROPS. Osobnym wymiarem są obszary Mapy wyzwań społecznych. Słowniki i schematy są wspólne dla API i Angulara w `@repo/api-contracts`.
@@ -53,6 +55,6 @@ pnpm --filter api build
 pnpm --filter web build
 ```
 
-Testy automatyczne nie używają rzeczywistego modelu ani bazy: obejmują walidację, punktację i remisy, źródła, interpretację, timeout, błędy, wysłanie formularza i ponowienie.
+Testy automatyczne matchmakingu nie używają rzeczywistego modelu ani bazy: obejmują walidację, punktację i remisy, źródła, interpretację, timeout, błędy, wysłanie formularza i ponowienie. Osobne testy integracji Zasobnika z katalogiem wykonuje `node scripts/knowledge-test.mjs` na wydzielonym PostgreSQL. Dobrowolny formularz potrzeb jest opisany w dokumentacji Zasobnika; nie zapisuje treści opisu ani wyniku AI.
 
 Po uruchomieniu API ze skonfigurowanym OpenRouter wykonaj `node scripts/matchmaking-demo.mjs`. Skrypt wysyła trzy przykłady z UI, problem obsługi urządzeń przez seniorów i opis nieprecyzyjny. Oczekiwane innowacje w pierwszej trójce: Senior CUDER, Health Guide PL, Bez presji z depresji, Merkury. Nieprecyzyjny opis ma dać pytanie doprecyzowujące i zero innowacji. Sprawdzane są także powiązane informacje. Te pięć wywołań korzysta z rzeczywistego API i może generować opłaty. Skrypt nie wypisuje opisów ani kluczy. `temperature: 0` ogranicza zmienność, ale nie daje gwarancji identycznej interpretacji.

@@ -4,6 +4,8 @@ Monorepo na hackathon: **NestJS** (backend) + **Angular** (frontend) + **Postgre
 
 Komendy działają tak samo na **Windows (PowerShell)**, **macOS** i **Linux (bash)**.
 
+Funkcjonalności: [matchmaking społeczny](docs/MATCHMAKING.md) i [Zasobnik wiedzy](docs/KNOWLEDGE.md). Zasobnik wymaga migracji PostgreSQL, inicjalizacji katalogu i konfiguracji hasła administratora według swojej dokumentacji. Strony: `/matchmaking`, `/zasobnik`, `/zasobnik/admin`.
+
 ---
 
 ## Wymagania

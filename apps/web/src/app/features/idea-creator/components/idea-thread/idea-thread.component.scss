@@ -1,0 +1,71 @@
+:host {
+  display: block;
+}
+
+.thread {
+  padding: 20px;
+  border: 1px solid var(--mat-sys-outline-variant, #c4c6d0);
+  border-radius: 16px;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.state {
+  font-weight: 600;
+}
+
+.hint,
+.meta {
+  color: var(--mat-sys-on-surface-variant, #44474e);
+  font-size: 14px;
+}
+
+.messages {
+  list-style: none;
+  margin: 16px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.messages li {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container-high, #e5e6ea);
+}
+
+.messages li.rops {
+  background: var(--mat-sys-secondary-container, #d7e3f7);
+  color: var(--mat-sys-on-secondary-container, #101c2b);
+}
+
+.messages li.rops .meta {
+  color: inherit;
+}
+
+.meta {
+  margin: 0 0 4px;
+}
+
+.content {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.full {
+  width: 100%;
+}
+
+.error {
+  color: var(--mat-sys-error, #b3261e);
+  font-weight: 600;
+}
+
+button {
+  min-height: 44px;
+}

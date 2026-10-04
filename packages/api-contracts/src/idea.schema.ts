@@ -18,9 +18,14 @@ export const IdeaStageSchema = z.enum([
 /** Fiszka zgłaszana oddolnie vs. prezentowana dobra praktyka / rozwiązanie z mikroskali. */
 export const IdeaKindSchema = z.enum(["IDEA", "GOOD_PRACTICE"]);
 
-// Enum, a nie flaga logiczna: moderacja z panelu administratora dołoży tu
-// kolejne wartości bez migracji danych.
-export const IdeaStatusSchema = z.enum(["DRAFT", "PUBLISHED"]);
+// Autor wysyła szkic do ROPS (SUBMITTED); publiczna jest tylko fiszka PUBLISHED.
+export const IdeaStatusSchema = z.enum([
+  "DRAFT",
+  "SUBMITTED",
+  "NEEDS_CHANGES",
+  "REJECTED",
+  "PUBLISHED",
+]);
 
 export const IdeaInputSchema = z
   .object({
@@ -68,8 +73,53 @@ export const IdeaSchema = z
     visualId: z.string().nullable(),
     visualAltText: z.string().nullable(),
     hasCanvas: z.boolean(),
+    // Prawdziwe tylko dla właściciela tokenu edycji, gdy ROPS odpisał.
+    unreadReply: z.boolean(),
     createdAt: z.string(),
     updatedAt: z.string(),
+  })
+  .strict();
+
+export const IdeaMessageSchema = z
+  .object({
+    id: z.string().min(1),
+    author: z.enum(["AUTHOR", "ROPS"]),
+    content: z.string(),
+    createdAt: z.string(),
+  })
+  .strict();
+export const IdeaMessageRequestSchema = z
+  .object({ content: z.string().trim().min(1).max(2000) })
+  .strict();
+export const IdeaThreadDataSchema = z
+  .object({ status: IdeaStatusSchema, messages: z.array(IdeaMessageSchema) })
+  .strict();
+export const IdeaDecisionSchema = z.enum([
+  "PUBLISH",
+  "REQUEST_CHANGES",
+  "REJECT",
+]);
+export const IdeaDecisionRequestSchema = z
+  .object({
+    decision: IdeaDecisionSchema,
+    message: z.string().trim().max(2000).default(""),
+  })
+  .strict()
+  .refine((value) => value.decision === "PUBLISH" || value.message.length > 0);
+export const ModerationItemSchema = z
+  .object({ idea: IdeaSchema, awaitsRops: z.boolean() })
+  .strict();
+export const ModerationListDataSchema = z
+  .object({
+    items: z.array(ModerationItemSchema),
+    attention: z.number().int().nonnegative(),
+  })
+  .strict();
+export const ModerationDetailDataSchema = z
+  .object({
+    idea: IdeaSchema,
+    awaitsRops: z.boolean(),
+    messages: z.array(IdeaMessageSchema),
   })
   .strict();
 
@@ -132,11 +182,20 @@ export const plainLanguageJsonSchema = {
 
 export const IdeaListResponseSchema = apiSuccessSchema(IdeaListDataSchema);
 export const IdeaResponseSchema = apiSuccessSchema(IdeaDataSchema);
-export const CreatedIdeaResponseSchema = apiSuccessSchema(CreatedIdeaDataSchema);
+export const CreatedIdeaResponseSchema = apiSuccessSchema(
+  CreatedIdeaDataSchema,
+);
 
 export type IdeaStage = z.infer<typeof IdeaStageSchema>;
 export type IdeaKind = z.infer<typeof IdeaKindSchema>;
 export type IdeaStatus = z.infer<typeof IdeaStatusSchema>;
+export type IdeaMessage = z.infer<typeof IdeaMessageSchema>;
+export type IdeaMessageRequest = z.infer<typeof IdeaMessageRequestSchema>;
+export type IdeaThreadData = z.infer<typeof IdeaThreadDataSchema>;
+export type IdeaDecision = z.infer<typeof IdeaDecisionSchema>;
+export type IdeaDecisionRequest = z.infer<typeof IdeaDecisionRequestSchema>;
+export type ModerationListData = z.infer<typeof ModerationListDataSchema>;
+export type ModerationDetailData = z.infer<typeof ModerationDetailDataSchema>;
 export type IdeaInput = z.infer<typeof IdeaInputSchema>;
 export type CreateIdeaRequest = z.infer<typeof CreateIdeaRequestSchema>;
 export type UpdateIdeaRequest = z.infer<typeof UpdateIdeaRequestSchema>;

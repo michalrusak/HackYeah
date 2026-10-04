@@ -24,6 +24,16 @@
             <h3>
               <a [routerLink]="['/pomysly', entry.id]">{{ entry.title }}</a>
             </h3>
+            @if (states()[entry.id]; as state) {
+              <p class="meta">
+                {{ "ideaCreator.statuses." + state.status | translate }}
+                @if (state.unreadReply) {
+                  <strong class="unread">{{
+                    "ideaCreator.mine.unread" | translate
+                  }}</strong>
+                }
+              </p>
+            }
             <div class="row-actions">
               <a mat-stroked-button [routerLink]="['/pomysly', entry.id, 'canva']">
                 {{ "ideaCreator.mine.openCanvas" | translate }}
