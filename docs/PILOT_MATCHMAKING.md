@@ -26,7 +26,7 @@ Migracja dodaje wyłącznie tabelę dopuszczeń. Nie zmienia katalogu ROPS, rank
 
 ## Rzeczywisty przykład zewnętrzny: NeuroSTART
 
-Przykład po prawej dotyczy przygotowania młodych osób w spektrum autyzmu do pracy. Rekord w `external-pilots.v1.json` opisuje rzeczywisty narzędziownik Katarzyny Miąskowskiej na podstawie [zaproszenia autorki](https://pl.linkedin.com/posts/katarzyna-mi%C4%85skowska-831130226_neurostart-spektrumautyzmu-doradztwozawodoweasd-activity-7509705729986101248-2b8_), sprawdzonego 04.10.2026. Źródło opisuje projekt w TransferHUB, nie w Małopolskim Hubie. Nie potwierdzamy nieobecności w całej bibliotece ROPS — projekt nie znajduje się w lokalnym katalogu 15 rozwiązań.
+Przykład po prawej dotyczy przygotowania młodych osób w spektrum autyzmu do pracy. Rekord w `external-pilots.v1.json` opisuje rzeczywisty narzędziownik NeuroSTART na podstawie [zaproszenia autorki](https://www.linkedin.com/feed/update/urn:li:activity:7509705729986101248/), sprawdzonego 04.10.2026. Źródło opisuje projekt w TransferHUB, nie w Małopolskim Hubie. Nie potwierdzamy nieobecności w całej bibliotece ROPS — projekt nie znajduje się w lokalnym katalogu 15 rozwiązań.
 
 Brak daty końca naboru, trybu i czasu udziału jest pokazywany jawnie. Data `recheckAfter` jest wewnętrznym terminem ponownej weryfikacji źródła, nie terminem rekrutacji. Po tej dacie rekord przestaje być proponowany. Nie tworzymy konta w imieniu autorki i nie zapisujemy zainteresowania do fikcyjnego organizatora. Szczegóły rozwijają się w kafelku, a zgłoszenie wymaga skorzystania z kontaktu w oryginalnym ogłoszeniu.
 
