@@ -60,7 +60,7 @@ export class OpenRouterService {
             ),
             stream: false,
             temperature: 0,
-            max_tokens: 2000,
+            max_tokens: 1200,
             reasoning: { enabled: false },
             provider: { require_parameters: true, allow_fallbacks: false },
             response_format: {

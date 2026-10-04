@@ -54,7 +54,7 @@ export class TestersAiService {
               'qwen/qwen3.8-27b',
             ),
             stream: false,
-            max_tokens: 3500,
+            max_tokens: 1500,
             reasoning: { enabled: false },
             provider: { require_parameters: true, allow_fallbacks: false },
             response_format: {

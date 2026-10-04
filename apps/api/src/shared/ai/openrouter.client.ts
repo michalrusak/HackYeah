@@ -60,7 +60,7 @@ export class OpenRouterClient {
     const body = {
       model: this.textModel(),
       stream: false,
-      max_tokens: options.maxTokens ?? 2500,
+      max_tokens: options.maxTokens ?? 1500,
       reasoning: { enabled: false },
       provider: { require_parameters: true, allow_fallbacks: false },
       response_format: {
@@ -143,6 +143,8 @@ export class OpenRouterClient {
         body: JSON.stringify(body),
       });
       if (!response.ok) {
+        const errBody = await response.text().catch(() => '');
+        this.logger.error(`OpenRouter error HTTP ${response.status}: ${errBody}`);
         throw new AiError(
           response.status === 429
             ? ErrorCodes.RATE_LIMIT

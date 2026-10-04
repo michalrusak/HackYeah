@@ -167,7 +167,7 @@ Wybieraj identyfikatory źródeł wyłącznie z: rops, resources, team, individu
               'qwen/qwen3.8-27b',
             ),
             temperature: 0,
-            max_tokens: 4000,
+            max_tokens: 1500,
             stream: false,
             reasoning: { enabled: false },
             provider: { require_parameters: true, allow_fallbacks: false },
@@ -186,13 +186,16 @@ Wybieraj identyfikatory źródeł wyłącznie z: rops, resources, team, individu
           }),
         },
       );
-      if (!response.ok)
+      if (!response.ok) {
+        const errBody = await response.text().catch(() => '');
+        this.logger.error(`OpenRouter error HTTP ${response.status}: ${errBody}`);
         throw new InterpretationError(
           response.status === 429
             ? ErrorCodes.RATE_LIMIT
             : ErrorCodes.AI_UNAVAILABLE,
           response.status === 429 ? 429 : 503,
         );
+      }
       let advice;
       try {
         const raw: unknown = await response.json();
