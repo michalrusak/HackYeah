@@ -4,6 +4,10 @@ Moduł Blisko prezentuje wybrane publiczne zasoby ROPS Kraków: wyzwania, raport
 
 ## Korzystanie
 
+Usprawnienia prezentacji (4 października 2026): trzy wejścia według celu (wyzwanie, rozwiązanie, nauka), skróty do sytuacji mieszkańca, rozwijane filtry oraz usuwanie pojedynczych aktywnych wyborów. Tematy są dostępne w rozwijanej sekcji przed wynikami. Karty innowacji pokazują od razu odbiorców, sposób działania i potrzeby; linki do tematów łączą rozwiązanie z danymi, raportami i edukacją. Filmy zachowują odtwarzanie na żądanie, a pozostałe zasoby mają ilustracje typograficzne z ikoną obszaru. Treść nadal pochodzi z API i jest edytowana w istniejącym panelu. Błąd opcjonalnych liczników tematów nie blokuje listy materiałów.
+
+Audyt nowej ścieżki: `node scripts/knowledge-discovery-a11y.mjs`, z `QA_TOOLS_PATH`, `CHROME_BIN` jak w sekcji Weryfikacja oraz opcjonalnym `WEB_URL`. Publiczne odpowiedzi katalogu są atrapami na podstawie seeda: audyt nie zapisuje sygnałów potrzeb. Sprawdza skróty, filmy, usuwanie filtrów, odświeżenie adresu, błędy i ponowienie oraz wejście w temat klawiaturą; zapisuje zrzuty w `tmp/knowledge-discovery-qa/`.
+
 - `/zasobnik`: osiem tematów, wyszukiwanie w nazwach i opisach, filtry rodzaju, odbiorców i zakresu danych, filtr „Tylko z filmem”, paginacja, źródła oraz daty weryfikacji. Karty innowacji pokazują potrzeby, na które odpowiadają, a zasoby z filmem mają wyróżnione wejście do strony ROPS z nagraniem.
 - `/zasobnik/temat/:temat`: strona jednego tematu Mapy w układzie wyzwanie → kluczowe liczby → innowacje → raporty → materiały edukacyjne. Kafelki tematów na stronie głównej prowadzą do tego widoku.
 - `/zasobnik/admin`: logowanie, edycja i publikacja, wycofanie do szkicu, import JSON i trendy dostępne wyłącznie po uwierzytelnieniu.

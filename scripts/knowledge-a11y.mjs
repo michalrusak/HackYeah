@@ -114,6 +114,8 @@ try {
   );
   await audit("public-desktop");
 
+  await page.locator(".topics-section summary").click();
+
   await page
     .getByRole("link", { name: "Seniorzy", exact: false })
     .filter({ has: page.locator(".tile-count") })

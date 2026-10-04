@@ -67,7 +67,7 @@
     "descriptionLabel": "Twoja potrzeba",
     "placeholder": "Prowadzimy klub seniora. Uczestnicy przychodzą na zajęcia, ale mało ze sobą rozmawiają. Chcemy pomóc im lepiej się poznać…",
     "hint": "Napisz, kogo dotyczy problem i co jest trudne. Nie musisz znać gotowego rozwiązania.",
-    "privacy": "Opis trafia do AI przez OpenRouter. Nie wpisuj danych osobowych. Nie zapisujemy opisów ani wyników w aplikacji.",
+    "privacy": "Opis trafia do AI. Proszę nie wpisuj danych osobowych.",
     "submit": "Pokaż propozycje",
     "loading": "Szukamy innowacji…",
     "loadingDetail": "Interpretujemy potrzeby i porównujemy je z katalogiem. Może to potrwać do 30 sekund.",
@@ -853,13 +853,13 @@
     "title": "Zasobnik wiedzy",
     "nav": "Zasobnik wiedzy",
     "navigation": "Nawigacja główna",
-    "intro": "Poznaj wyzwania społeczne, znajdź sprawdzone pomysły i materiały ROPS Kraków.",
+    "intro": "Nie musisz znać fachowych pojęć. Poznaj wyzwania społeczne, zobacz pomysły, które pomagają ludziom, i znajdź wiedzę do działania.",
     "toMatchmaking": "Opisz problem i znajdź innowacje",
-    "areasTitle": "Od czego chcesz zacząć?",
-    "mapScope": "Wybierz temat. Pokażemy, na czym polega wyzwanie, kluczowe liczby i rozwiązania, które już działają.",
+    "areasTitle": "Wolisz wybrać temat? Poznaj wyzwania i rozwiązania",
+    "mapScope": "Od wyjaśnienia problemu i danych do innowacji i materiałów edukacyjnych. Wybierz temat, który jest Ci bliski.",
     "videoOnly": "Tylko z filmem",
     "facts": "Kluczowe liczby",
-    "answersNeeds": "Odpowiada na potrzeby",
+    "answersNeeds": "W czym pomaga?",
     "topic": {
       "breadcrumb": "Temat społeczny",
       "back": "Wszystkie tematy",
@@ -903,9 +903,7 @@
     "previous": "Poprzednia strona",
     "next": "Następna strona",
     "page": "Strona {{page}}",
-    "catalogNote": "To wybrany katalog demonstracyjny, a nie pełna biblioteka ROPS. Opisy są krótkimi opracowaniami redakcyjnymi; pełne informacje i zasady wykorzystania znajdziesz w źródłach.",
-    "videoNote": "Filmy pochodzą z kanału ROPS Kraków w serwisie YouTube i wczytują się po kliknięciu „Odtwórz film”. Dostępność napisów i tłumaczenia na PJM zależy od nagrania.",
-    "sourcesTitle": "Więcej wiedzy u źródła",
+    "sourcesTitle": "Więcej wiedzy",
     "sources": {
       "reports": "Raporty z badań",
       "innovations": "Biblioteka Innowacji Społecznych",
@@ -1096,6 +1094,51 @@
       "count": "Zgłoszenia"
     },
     "playVideo": "Odtwórz film",
-    "videoTitle": "Film o innowacji: {{title}}"
+    "videoTitle": "Film o innowacji: {{title}}",
+    "discovery": {
+      "eyebrow": "Wiedza i inspiracje ROPS Kraków",
+      "pathTitle": "Co chcesz dziś zrobić?",
+      "paths": {
+        "understand": {
+          "title": "Poznać wyzwania",
+          "description": "Zrozum problemy społeczne i poznaj dane."
+        },
+        "discover": {
+          "title": "Znaleźć rozwiązanie",
+          "description": "Zobacz innowacje, które pomagają w codziennym życiu."
+        },
+        "learn": {
+          "title": "Dowiedzieć się, jak działać",
+          "description": "Sięgnij po poradniki i materiały edukacyjne."
+        }
+      },
+      "placeholder": "Np. opieka, pamięć, szkoła",
+      "suggestions": "Szukasz inspiracji?",
+      "situations": {
+        "senior": "Chcę wesprzeć seniora",
+        "family": "Szukam wsparcia dla rodziny",
+        "accessibility": "Chcę ułatwić życie z niepełnosprawnością"
+      },
+      "moreFilters": "Doprecyzuj: temat, odbiorcy, region",
+      "applyFilters": "Pokaż pasujące materiały",
+      "libraryEyebrow": "Odkrywaj · oglądaj · korzystaj",
+      "allKinds": "Wszystkie materiały",
+      "activeFilters": "Twoje wybory:",
+      "removeFilter": "Usuń filtr: {{value}}",
+      "emptyTitle": "Poszukajmy inaczej",
+      "exploreTopic": "Poznaj temat",
+      "helpTitle": "Trudno znaleźć właściwe słowa?",
+      "helpDescription": "Opisz po swojemu, z czym się mierzysz. Asystent pomoże dopasować innowacje do Twojej sytuacji.",
+      "forWhom": "Dla kogo:",
+      "howItWorks": "Jak to działa?",
+      "context": "Poznaj wyzwania związane z tym materiałem:",
+      "exploreInnovation": "Poznaj rozwiązanie w ROPS",
+      "visuals": {
+        "innovation": "Pomysł na lepszą codzienność",
+        "education": "Wiedza, którą możesz wykorzystać",
+        "report": "Spojrzenie przez dane",
+        "challenge": "Zrozumieć, żeby pomóc"
+      }
+    }
   }
 }
