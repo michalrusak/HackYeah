@@ -83,7 +83,9 @@ export const IdeaSchema = z
 export const IdeaMessageSchema = z
   .object({
     id: z.string().min(1),
-    author: z.enum(["AUTHOR", "ROPS"]),
+    author: z.enum(["AUTHOR", "ROPS", "EXPERT"]),
+    // Imię i nazwisko eksperta; wiadomości autora i ROPS go nie mają.
+    authorName: z.string().nullable().default(null),
     content: z.string(),
     createdAt: z.string(),
   })

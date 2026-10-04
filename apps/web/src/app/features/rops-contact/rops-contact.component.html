@@ -110,6 +110,20 @@
                     | translate
                 }}</mat-hint>
               </mat-form-field>
+              @if (forExperts()) {
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ "rops-contact.area" | translate }}</mat-label>
+                  <mat-select formControlName="area">
+                    <mat-option value="">{{
+                      "rops-contact.anyArea" | translate
+                    }}</mat-option>
+                    @for (area of areas; track area) {
+                      <mat-option [value]="area">{{ area }}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-hint>{{ "rops-contact.areaHint" | translate }}</mat-hint>
+                </mat-form-field>
+              }
               <div class="name-fields">
                 <mat-form-field appearance="outline">
                   <mat-label>{{
@@ -207,6 +221,10 @@
                   "rops-contact.statuses." + data.conversation.status
                     | translate
                 }}
+                @if (data.conversation.expertName; as expertName) {
+                  ·
+                  {{ "rops-contact.expert" | translate: { name: expertName } }}
+                }
               </mat-card-subtitle>
             </mat-card-header>
             <mat-divider />
@@ -223,9 +241,12 @@
                   class="message-bubble"
                   [class.own-message]="item.author === 'USER'"
                 >
-                  <strong>{{
-                    "rops-contact.authors." + item.author | translate
-                  }}</strong>
+                  <strong
+                    >{{ "rops-contact.authors." + item.author | translate }}
+                    @if (item.authorName) {
+                      · {{ item.authorName }}
+                    }
+                  </strong>
                   <div class="message-content">{{ item.content }}</div>
                   <div class="message-time">
                     {{ item.createdAt | date: "dd.MM.yyyy HH:mm" }}

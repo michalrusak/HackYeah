@@ -1,12 +1,21 @@
 import { z } from 'zod'
+import { SocialAreaSchema } from './matchmaking.schema.js'
 import { apiSuccessSchema } from './response.types.js'
 
-export const ContactCategorySchema = z.enum(['QUESTION', 'MENTOR', 'PARTNERSHIP'])
+export const ContactCategorySchema = z.enum([
+	'QUESTION',
+	'MENTOR',
+	'JST_ADVICE',
+	'PARTNERSHIP',
+])
+// Te sprawy trafiają do ekspertów branżowych, pozostałe obsługuje ROPS.
+export const EXPERT_CATEGORIES: readonly ContactCategory[] = ['MENTOR', 'JST_ADVICE']
 export const ContactStatusSchema = z.enum(['AWAITING_ROPS', 'ANSWERED', 'CLOSED'])
 
 export const ContactMessageSchema = z.object({
 	id: z.string(),
-	author: z.enum(['USER', 'ROPS']),
+	author: z.enum(['USER', 'ROPS', 'EXPERT']),
+	authorName: z.string().nullable().default(null),
 	content: z.string(),
 	createdAt: z.string(),
 })
@@ -19,6 +28,9 @@ export const ContactConversationSchema = z.object({
 	firstName: z.string(),
 	lastName: z.string(),
 	organization: z.string().nullable(),
+	area: SocialAreaSchema.nullable().default(null),
+	// Ekspert, który przejął sprawę.
+	expertName: z.string().nullable().default(null),
 	createdAt: z.string(),
 	updatedAt: z.string(),
 })
@@ -28,6 +40,7 @@ export const CreateConversationSchema = z.object({
 	lastName: z.string().trim().min(1).max(100),
 	organization: z.string().trim().max(200).optional(),
 	category: ContactCategorySchema,
+	area: SocialAreaSchema.optional(),
 	subject: z.string().trim().min(1).max(200),
 	initialMessage: z.string().trim().min(1).max(4000),
 })

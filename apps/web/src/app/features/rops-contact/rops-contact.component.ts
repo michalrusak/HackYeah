@@ -28,9 +28,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   ContactCategorySchema,
+  EXPERT_CATEGORIES,
+  SocialAreaSchema,
   type ContactCategory,
   type ContactConversation,
   type ContactThreadData,
+  type SocialArea,
 } from '@repo/api-contracts';
 import {
   catchError,
@@ -76,6 +79,7 @@ export class RopsContactComponent {
   );
 
   readonly categories = ContactCategorySchema.options;
+  readonly areas = SocialAreaSchema.options;
   readonly checking = signal(true);
   readonly busy = signal(false);
   readonly errorKey = signal<string | null>(null);
@@ -101,6 +105,7 @@ export class RopsContactComponent {
     category: new FormControl<ContactCategory>('QUESTION', {
       nonNullable: true,
     }),
+    area: new FormControl<SocialArea | ''>('', { nonNullable: true }),
     subject: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(200)],
@@ -192,6 +197,11 @@ export class RopsContactComponent {
       });
   }
 
+  /** Prośby o mentora i doradztwo dla JST trafiają do ekspertów. */
+  forExperts(): boolean {
+    return EXPERT_CATEGORIES.includes(this.form.controls.category.value);
+  }
+
   startNew(): void {
     this.thread.set(null);
     this.creating.set(true);
@@ -216,9 +226,13 @@ export class RopsContactComponent {
       this.focus('input.ng-invalid, textarea.ng-invalid');
       return;
     }
-    const { message, ...value } = this.form.getRawValue();
+    const { message, area, ...value } = this.form.getRawValue();
     this.run(
-      this.service.create({ ...value, initialMessage: message }),
+      this.service.create({
+        ...value,
+        ...(area && this.forExperts() ? { area } : {}),
+        initialMessage: message,
+      }),
       'sending',
       () => {
         this.creating.set(false);

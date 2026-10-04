@@ -11,7 +11,8 @@
     "calls": "Nabory grantowe",
     "materials": "Materiały",
     "testers": "Znajdź testerów",
-    "rops_contact": "Kontakt z ROPS"
+    "rops_contact": "Kontakt z ROPS",
+    "expert": "Panel eksperta"
   },
   "layout": {
     "skipToContent": "Przejdź do treści"
@@ -397,7 +398,7 @@
     "thread": {
       "title": "Rozmowa z ROPS",
       "states": {
-        "SUBMITTED": "Pomysł czeka na weryfikację. ROPS odpowie w tym miejscu.",
+        "SUBMITTED": "Pomysł czeka na weryfikację. ROPS odpowie w tym miejscu, a opinię może dodać ekspert branżowy.",
         "NEEDS_CHANGES": "ROPS prosi o uzupełnienie. Odpowiedz poniżej i wyślij pomysł ponownie.",
         "REJECTED": "ROPS nie opublikował tego pomysłu. Powód znajdziesz w wiadomościach; możesz odpowiedzieć i wysłać pomysł ponownie.",
         "PUBLISHED": "Pomysł jest opublikowany. Nadal możesz napisać do ROPS."
@@ -405,7 +406,8 @@
       "empty": "Nie ma jeszcze wiadomości.",
       "authors": {
         "AUTHOR": "Ty",
-        "ROPS": "ROPS Kraków"
+        "ROPS": "ROPS Kraków",
+        "EXPERT": "Ekspert"
       },
       "label": "Twoja wiadomość do ROPS",
       "required": "Wpisz wiadomość.",
@@ -561,7 +563,7 @@
   },
   "rops-contact": {
     "title": "Kontakt z ROPS",
-    "intro": "Zadaj pytanie, poproś o wsparcie mentora albo zaproponuj partnerstwo. Zespół ROPS Kraków odpowie w tej samej rozmowie.",
+    "intro": "Zadaj pytanie, poproś o wsparcie mentora lub doradztwo dla samorządu albo zaproponuj partnerstwo. Odpowie zespół ROPS Kraków lub ekspert branżowy — w tej samej rozmowie.",
     "checking": "Sprawdzamy, czy jesteś zalogowany…",
     "loginTitle": "Zaloguj się, aby napisać do ROPS",
     "loginIntro": "Rozmowy są przypisane do Twojego konta. Dzięki temu wrócisz do nich na dowolnym urządzeniu i tylko Ty zobaczysz odpowiedzi.",
@@ -572,21 +574,24 @@
     "categories": {
       "QUESTION": "Pytanie",
       "MENTOR": "Wsparcie mentora",
+      "JST_ADVICE": "Doradztwo dla JST",
       "PARTNERSHIP": "Partnerstwo"
     },
     "categoryHints": {
       "QUESTION": "Szybkie pytanie do zespołu ROPS.",
-      "MENTOR": "Opisz, nad czym pracujesz i w czym potrzebujesz wsparcia mentora.",
+      "MENTOR": "Opisz, nad czym pracujesz i w czym potrzebujesz wsparcia. Sprawa trafi do ekspertów branżowych.",
+      "JST_ADVICE": "Dla samorządów: opisz wyzwanie w gminie lub powiecie. Sprawa trafi do ekspertów branżowych.",
       "PARTNERSHIP": "Opisz swoją organizację i to, jakiej współpracy szukasz."
     },
     "statuses": {
-      "AWAITING_ROPS": "Czeka na odpowiedź ROPS",
-      "ANSWERED": "ROPS odpowiedział",
+      "AWAITING_ROPS": "Czeka na odpowiedź",
+      "ANSWERED": "Jest odpowiedź",
       "CLOSED": "Zamknięta"
     },
     "authors": {
       "USER": "Ty",
-      "ROPS": "ROPS Kraków"
+      "ROPS": "ROPS Kraków",
+      "EXPERT": "Ekspert"
     },
     "firstName": "Imię",
     "lastName": "Nazwisko",
@@ -598,9 +603,13 @@
     "required": "To pole jest wymagane.",
     "send": "Wyślij",
     "typeMessage": "Napisz wiadomość",
-    "closedNote": "ROPS zamknął tę rozmowę. Jeśli napiszesz, otworzymy ją ponownie.",
+    "closedNote": "Ta rozmowa jest zamknięta. Jeśli napiszesz, otworzymy ją ponownie.",
     "selectConversation": "Wybierz rozmowę z listy albo rozpocznij nową.",
-    "error": "Nie udało się wykonać operacji. Odśwież stronę i spróbuj ponownie."
+    "error": "Nie udało się wykonać operacji. Odśwież stronę i spróbuj ponownie.",
+    "area": "Dziedzina (opcjonalnie)",
+    "anyArea": "Nie wiem / dowolna",
+    "areaHint": "Dziedzina kieruje sprawę do eksperta, który się nią zajmuje.",
+    "expert": "prowadzi ekspert: {{name}}"
   },
   "auth": {
     "login": "Zaloguj się",
@@ -1058,7 +1067,8 @@
         "threadEmpty": "Nie ma jeszcze wiadomości.",
         "authors": {
           "AUTHOR": "Autor",
-          "ROPS": "ROPS Kraków"
+          "ROPS": "ROPS Kraków",
+          "EXPERT": "Ekspert"
         },
         "message": "Wiadomość dla autora",
         "messageHint": "Wymagana przy prośbie o uzupełnienie i przy odrzuceniu. Przy publikacji opcjonalna.",
@@ -1078,7 +1088,7 @@
       "contact": {
         "tab": "Wiadomości ({{count}})",
         "title": "Wiadomości od użytkowników",
-        "intro": "Pytania, prośby o wsparcie mentora i propozycje partnerstw wysłane z ekranu „Kontakt z ROPS”. Odpowiedź pojawia się w rozmowie użytkownika.",
+        "intro": "Pytania, prośby o wsparcie mentora, doradztwo dla JST i propozycje partnerstw wysłane z ekranu „Kontakt z ROPS”. Prośby o mentora i doradztwo widzą też eksperci. Odpowiedź pojawia się w rozmowie użytkownika.",
         "attention": "Czeka na Twoją odpowiedź: {{count}}",
         "filterLabel": "Filtruj według rodzaju sprawy",
         "all": "Wszystkie",
@@ -1089,7 +1099,8 @@
         "from": "Od",
         "authors": {
           "USER": "Użytkownik",
-          "ROPS": "ROPS Kraków"
+          "ROPS": "ROPS Kraków",
+          "EXPERT": "Ekspert"
         },
         "message": "Odpowiedź dla użytkownika",
         "messageHint": "Użytkownik zobaczy ją w swojej rozmowie na ekranie „Kontakt z ROPS”.",
@@ -1100,6 +1111,31 @@
         "done": {
           "reply": "Odpowiedź wysłana.",
           "close": "Sprawa zakończona. Użytkownik może ją wznowić, pisząc ponownie."
+        },
+        "expert": "Sprawę prowadzi ekspert: {{name}}"
+      },
+      "experts": {
+        "tab": "Eksperci",
+        "title": "Eksperci branżowi",
+        "intro": "Ekspert odpowiada na prośby o wsparcie mentora i doradztwo dla JST oraz opiniuje pomysły ze swoich dziedzin. Rolę nadajesz istniejącemu kontu użytkownika.",
+        "formTitle": "Nadaj lub zmień rolę eksperta",
+        "login": "Login konta",
+        "loginHint": "Login, którym ekspert loguje się w aplikacji. Konto musi już istnieć.",
+        "name": "Imię i nazwisko",
+        "nameHint": "Tak ekspert będzie podpisany w rozmowach i opiniach.",
+        "areas": "Dziedziny",
+        "areasHint": "Ekspert zobaczy sprawy i pomysły z tych dziedzin oraz te bez wskazanej dziedziny.",
+        "grant": "Zapisz eksperta",
+        "listTitle": "Obecni eksperci",
+        "empty": "Nie ma jeszcze ekspertów.",
+        "edit": "Zmień",
+        "revoke": "Odbierz rolę",
+        "invalid": "Podaj login, imię i nazwisko oraz co najmniej jedną dziedzinę.",
+        "noAccount": "Nie ma konta o takim loginie. Ekspert musi najpierw założyć konto.",
+        "error": "Nie udało się wykonać operacji. Odśwież dane i spróbuj ponownie.",
+        "done": {
+          "grant": "Zapisano. Ekspert zobaczy swój panel po odświeżeniu strony.",
+          "revoke": "Rola odebrana. Sprawy tej osoby wróciły do puli."
         }
       }
     },
@@ -1228,5 +1264,60 @@
       "Zaproś do wspólnego testu"
     ],
     "stepsLabel": "Jak to działa"
+  },
+  "expert": {
+    "title": "Panel eksperta",
+    "intro": "Sprawy od innowatorów i samorządów oraz pomysły z Twoich dziedzin. Odpowiedź trafia od razu do rozmowy lub wątku pomysłu.",
+    "checking": "Sprawdzamy Twoje konto…",
+    "loginTitle": "Zaloguj się na konto eksperta",
+    "loginIntro": "Panel jest dostępny dla kont, którym ROPS nadał rolę eksperta.",
+    "notExpertTitle": "To konto nie ma roli eksperta",
+    "notExpert": "Rolę eksperta nadaje ROPS Kraków. Jeśli chcesz wspierać innowatorów i samorządy jako ekspert, napisz do ROPS.",
+    "signedIn": "Ekspert: {{name}}.",
+    "areas": "Dziedziny",
+    "close": "Zamknij podgląd",
+    "error": "Nie udało się wykonać operacji. Odśwież stronę i spróbuj ponownie.",
+    "taken": "Tę sprawę prowadzi już inny ekspert. Odśwież listę.",
+    "messageRequired": "Wpisz treść wiadomości.",
+    "opinionTooLong": "Opinia może mieć najwyżej 2000 znaków.",
+    "authors": {
+      "USER": "Użytkownik",
+      "AUTHOR": "Autor",
+      "ROPS": "ROPS Kraków",
+      "EXPERT": "Ekspert"
+    },
+    "done": {
+      "take": "Sprawa jest Twoja. Inni eksperci już jej nie widzą.",
+      "release": "Sprawa wróciła do puli ekspertów.",
+      "reply": "Odpowiedź wysłana. Sprawa jest przypisana do Ciebie.",
+      "opinion": "Opinia dodana do wątku pomysłu. Autor zobaczy ją na stronie pomysłu."
+    },
+    "conversations": {
+      "tab": "Sprawy ({{count}})",
+      "title": "Prośby o wsparcie i doradztwo",
+      "intro": "Prośby o wsparcie mentora i doradztwo dla JST z Twoich dziedzin oraz bez wskazanej dziedziny. Sprawy przejęte przez innych ekspertów są ukryte.",
+      "empty": "Nie ma teraz spraw w Twoich dziedzinach.",
+      "mine": "Prowadzisz",
+      "from": "Od",
+      "open": "Otwórz sprawę",
+      "message": "Odpowiedź",
+      "messageHint": "Użytkownik zobaczy ją w rozmowie na ekranie „Kontakt z ROPS”, podpisaną Twoim imieniem i nazwiskiem.",
+      "reply": "Wyślij odpowiedź",
+      "take": "Przejmij sprawę",
+      "release": "Oddaj sprawę"
+    },
+    "ideas": {
+      "tab": "Pomysły ({{count}})",
+      "title": "Pomysły do zaopiniowania",
+      "intro": "Pomysły zgłoszone do ROPS i opublikowane, z Twoich dziedzin albo jeszcze bez dziedziny. Opinia trafia do wątku, który widzą autor i ROPS; o publikacji decyduje ROPS.",
+      "empty": "Nie ma teraz pomysłów w Twoich dziedzinach.",
+      "noOpinion": "Bez opinii eksperta",
+      "open": "Otwórz pomysł",
+      "thread": "Wątek pomysłu",
+      "threadEmpty": "Nie ma jeszcze wiadomości.",
+      "message": "Twoja opinia",
+      "messageHint": "Do 2000 znaków. Autor zobaczy ją podpisaną Twoim imieniem i nazwiskiem.",
+      "send": "Dodaj opinię"
+    }
   }
 }

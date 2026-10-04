@@ -11,7 +11,11 @@ import { createApiSuccess } from '@repo/api-contracts';
 import { AuthService } from '../../core/services/auth.service';
 import { AuthDialogComponent } from './auth-dialog.component';
 
-const user = { id: '12345678-1234-4123-8123-123456789010', login: 'ala.test' };
+const user = {
+  id: '12345678-1234-4123-8123-123456789010',
+  login: 'ala.test',
+  expert: null,
+};
 const storageKey = 'hackyeah.tester-owner-key';
 
 describe('AuthDialogComponent', () => {

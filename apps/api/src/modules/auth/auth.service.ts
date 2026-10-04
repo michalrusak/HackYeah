@@ -7,6 +7,8 @@ import {
 import { createHash, randomBytes } from 'node:crypto';
 import {
   ErrorCodes,
+  SocialAreaSchema,
+  type AuthExpert,
   type AuthLoginInput,
   type AuthRegisterInput,
   type AuthUser,
@@ -21,8 +23,19 @@ export function credentialHash(value: string): string {
   return createHash('sha256').update(value).digest('hex');
 }
 
+/** Rola eksperta konta albo `null`, gdy ROPS jej nie nadał. */
+export function expertOf(account: Account): AuthExpert | null {
+  if (!account.expertName) return null;
+  return {
+    name: account.expertName,
+    areas: SocialAreaSchema.options.filter((area) =>
+      account.expertAreas.includes(area),
+    ),
+  };
+}
+
 export function publicUser(account: Account): AuthUser {
-  return { id: account.id, login: account.login };
+  return { id: account.id, login: account.login, expert: expertOf(account) };
 }
 
 @Injectable()

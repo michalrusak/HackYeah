@@ -1,23 +1,33 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type {
-  ContactConversation,
-  ContactListData,
-  ContactQueueData,
-  ContactThreadData,
-  CreateConversation,
+import {
+  SocialAreaSchema,
+  type ContactConversation,
+  type ContactListData,
+  type ContactQueueData,
+  type ContactThreadData,
+  type CreateConversation,
+  type ExpertConversation,
+  type ExpertQueueData,
+  type ExpertThreadData,
 } from '@repo/api-contracts';
-import type { Conversation } from '../../generated/prisma/client.js';
 import { DomainError } from '../../shared/errors/domain.error.js';
 import { MailService } from '../../shared/mail/mail.service.js';
-import { ContactRepository, type ThreadRow } from './contact.repository.js';
+import type { ExpertIdentity } from '../auth/expert.guard.js';
+import {
+  ContactRepository,
+  type ConversationRow,
+  type ThreadRow,
+} from './contact.repository.js';
 
 const CATEGORY_LABELS: Record<ContactConversation['category'], string> = {
   QUESTION: 'pytanie',
   MENTOR: 'wsparcie mentora',
+  JST_ADVICE: 'doradztwo dla JST',
   PARTNERSHIP: 'partnerstwo',
 };
 
-function toConversation(row: Conversation): ContactConversation {
+function toConversation(row: ConversationRow): ContactConversation {
+  const area = SocialAreaSchema.safeParse(row.area);
   return {
     id: row.id,
     subject: row.subject,
@@ -26,6 +36,8 @@ function toConversation(row: Conversation): ContactConversation {
     firstName: row.firstName,
     lastName: row.lastName,
     organization: row.organization,
+    area: area.success ? area.data : null,
+    expertName: row.expert?.expertName ?? null,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
@@ -37,10 +49,25 @@ function toThread(row: ThreadRow): ContactThreadData {
     messages: row.messages.map((message) => ({
       id: message.id,
       author: message.author,
+      authorName: message.authorName,
       content: message.content,
       createdAt: message.createdAt.toISOString(),
     })),
   };
+}
+
+function forExpert(
+  row: ConversationRow,
+  expert: ExpertIdentity,
+): ExpertConversation {
+  return { ...toConversation(row), mine: row.expertId === expert.id };
+}
+
+function toExpertThread(
+  row: ThreadRow,
+  expert: ExpertIdentity,
+): ExpertThreadData {
+  return { ...toThread(row), conversation: forExpert(row, expert) };
 }
 
 @Injectable()
@@ -65,6 +92,7 @@ export class ContactService {
       lastName: input.lastName,
       organization: input.organization || null,
       category: input.category,
+      area: input.area ?? null,
       subject: input.subject,
       initialMessage: input.initialMessage,
     });
@@ -113,6 +141,48 @@ export class ContactService {
     return toThread(await this.repository.setStatus(id, 'CLOSED'));
   }
 
+  async expertQueue(expert: ExpertIdentity): Promise<ExpertQueueData> {
+    const { items, attention } = await this.repository.expertQueue(expert);
+    return { items: items.map((row) => forExpert(row, expert)), attention };
+  }
+
+  async expertThread(
+    expert: ExpertIdentity,
+    id: string,
+  ): Promise<ExpertThreadData> {
+    return toExpertThread(await this.visibleTo(expert, id), expert);
+  }
+
+  async take(expert: ExpertIdentity, id: string): Promise<ExpertThreadData> {
+    const row = await this.visibleTo(expert, id);
+    if (!row.expertId && !(await this.repository.claim(id, expert.id))) {
+      throw DomainError.conflict('Tę sprawę przejął już inny ekspert.');
+    }
+    return this.expertThread(expert, id);
+  }
+
+  async release(expert: ExpertIdentity, id: string): Promise<ExpertThreadData> {
+    const row = await this.visibleTo(expert, id);
+    if (row.expertId !== expert.id) {
+      throw DomainError.conflict(
+        'Możesz oddać tylko sprawę, którą prowadzisz.',
+      );
+    }
+    return toExpertThread(await this.repository.release(id), expert);
+  }
+
+  async expertReply(
+    expert: ExpertIdentity,
+    id: string,
+    content: string,
+  ): Promise<ExpertThreadData> {
+    await this.visibleTo(expert, id);
+    return toExpertThread(
+      await this.repository.addMessage(id, 'EXPERT', content, expert),
+      expert,
+    );
+  }
+
   // Cudza rozmowa wygląda tak samo jak nieistniejąca.
   private async owned(accountId: string, id: string): Promise<ThreadRow> {
     const row = await this.existing(id);
@@ -122,6 +192,16 @@ export class ContactService {
 
   private async existing(id: string): Promise<ThreadRow> {
     const row = await this.repository.find(id);
+    if (!row) throw this.notFound();
+    return row;
+  }
+
+  // Sprawa spoza dziedzin eksperta albo prowadzona przez kogoś innego.
+  private async visibleTo(
+    expert: ExpertIdentity,
+    id: string,
+  ): Promise<ThreadRow> {
+    const row = await this.repository.findForExpert(id, expert);
     if (!row) throw this.notFound();
     return row;
   }

@@ -11,6 +11,7 @@ const ideaInclude = {
 export interface MessageRow {
   id: string;
   author: string;
+  authorName: string | null;
   content: string;
   createdAt: Date;
 }
@@ -33,6 +34,28 @@ export class ModerationRepository {
     return { items, attention };
   }
 
+  /**
+   * Pomysły dla eksperta: zgłoszone lub opublikowane, z jego dziedzin albo
+   * jeszcze bez dziedziny. `opinions` liczy dotychczasowe opinie ekspertów.
+   */
+  async expertQueue(
+    areas: string[],
+  ): Promise<{ row: IdeaRow; opinions: number }[]> {
+    const rows = await this.prisma.idea.findMany({
+      where: {
+        status: { in: ['SUBMITTED', 'NEEDS_CHANGES', 'PUBLISHED'] },
+        OR: [{ areas: { isEmpty: true } }, { areas: { hasSome: areas } }],
+      },
+      include: {
+        ...ideaInclude,
+        _count: { select: { thread: { where: { author: 'EXPERT' } } } },
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: 100,
+    });
+    return rows.map((row) => ({ row, opinions: row._count.thread }));
+  }
+
   async messages(ideaId: string): Promise<MessageRow[]> {
     return this.prisma.ideaMessage.findMany({
       where: { ideaId },
@@ -47,21 +70,27 @@ export class ModerationRepository {
     });
   }
 
-  /** Wiadomość i zmiana stanu fiszki zapisują się razem albo wcale. */
+  /**
+   * Wiadomość i zmiana stanu fiszki zapisują się razem albo wcale. Opinia
+   * eksperta nie zdejmuje pomysłu z kolejki ROPS.
+   */
   async addMessage(
     ideaId: string,
-    author: 'AUTHOR' | 'ROPS',
+    author: 'AUTHOR' | 'ROPS' | 'EXPERT',
     content: string,
     status?: IdeaStatus,
+    authorName?: string,
   ): Promise<IdeaRow> {
     return this.prisma.$transaction(async (tx) => {
       if (content)
-        await tx.ideaMessage.create({ data: { ideaId, author, content } });
+        await tx.ideaMessage.create({
+          data: { ideaId, author, content, authorName: authorName ?? null },
+        });
       return tx.idea.update({
         where: { id: ideaId },
         data: {
-          awaitsRops: author === 'AUTHOR',
-          ...(author === 'ROPS' ? { unreadReply: true } : {}),
+          ...(author === 'EXPERT' ? {} : { awaitsRops: author === 'AUTHOR' }),
+          ...(author === 'AUTHOR' ? {} : { unreadReply: true }),
           ...(status ? { status } : {}),
         },
         include: ideaInclude,

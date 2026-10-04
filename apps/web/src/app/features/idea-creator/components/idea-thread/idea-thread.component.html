@@ -9,11 +9,14 @@
   }
   <ol class="messages" aria-live="polite">
     @for (message of messages(); track message.id) {
-      <li [class.rops]="message.author === 'ROPS'">
+      <li [class.rops]="message.author !== 'AUTHOR'">
         <p class="meta">
-          <strong>{{
-            "ideaCreator.thread.authors." + message.author | translate
-          }}</strong>
+          <strong
+            >{{ "ideaCreator.thread.authors." + message.author | translate }}
+            @if (message.authorName) {
+              · {{ message.authorName }}
+            }
+          </strong>
           · {{ message.createdAt | date: "dd.MM.yyyy HH:mm" }}
         </p>
         <p class="content">{{ message.content }}</p>

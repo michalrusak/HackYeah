@@ -17,3 +17,4 @@ export * from "./contact.schema.js";
 export * from "./tester-projects.schema.js";
 export * from "./pilot-matches.schema.js";
 export * from "./knowledge.schema.js";
+export * from "./expert.schema.js";

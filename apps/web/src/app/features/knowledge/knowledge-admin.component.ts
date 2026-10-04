@@ -37,6 +37,7 @@ import {
 } from '@repo/api-contracts';
 import { catchError, EMPTY, filter, forkJoin, interval, switchMap } from 'rxjs';
 import { ContactInboxComponent } from './contact-inbox.component';
+import { ExpertAdminComponent } from './expert-admin.component';
 import { IdeaModerationComponent } from './idea-moderation.component';
 import { KnowledgeService } from './knowledge.service';
 import { knowledgeError } from './knowledge-error';
@@ -58,6 +59,7 @@ type QueueFilter = 'all' | 'draft' | 'published' | 'stale';
     ResourceEditorComponent,
     IdeaModerationComponent,
     ContactInboxComponent,
+    ExpertAdminComponent,
   ],
   templateUrl: './knowledge-admin.component.html',
   styleUrls: ['./knowledge.component.scss', './knowledge-admin.component.scss'],
@@ -103,9 +105,9 @@ export class KnowledgeAdminComponent {
   );
   readonly ideas = signal<ModerationListData | null>(null);
   readonly contact = signal<ContactQueueData | null>(null);
-  readonly tab = signal<'resources' | 'ideas' | 'contact' | 'trends'>(
-    'resources',
-  );
+  readonly tab = signal<
+    'resources' | 'ideas' | 'contact' | 'experts' | 'trends'
+  >('resources');
   readonly editing = signal(false);
   readonly selected = signal<KnowledgeResource | null>(null);
   readonly page = signal(1);

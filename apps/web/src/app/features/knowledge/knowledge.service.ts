@@ -5,6 +5,8 @@ import {
   AdminSessionSchema,
   ContactQueueDataSchema,
   ContactThreadDataSchema,
+  ExpertGrantRequestSchema,
+  ExpertListDataSchema,
   IdeaDecisionRequestSchema,
   IdeaMessageRequestSchema,
   ImportResultSchema,
@@ -24,6 +26,8 @@ import {
   type AdminSession,
   type ContactQueueData,
   type ContactThreadData,
+  type ExpertGrantRequest,
+  type ExpertListData,
   type IdeaDecisionRequest,
   type KnowledgeInput,
   type KnowledgeList,
@@ -187,6 +191,26 @@ export class KnowledgeService {
       `/knowledge/admin/contact/${encodeURIComponent(id)}/close`,
       {},
       ContactThreadDataSchema,
+      this.csrf(),
+    );
+  }
+
+  experts(): Observable<ExpertListData> {
+    return this.api.get('/knowledge/admin/experts', ExpertListDataSchema, true);
+  }
+  grantExpert(input: ExpertGrantRequest): Observable<ExpertListData> {
+    return this.api.post(
+      '/knowledge/admin/experts',
+      ExpertGrantRequestSchema.parse(input),
+      ExpertListDataSchema,
+      this.csrf(),
+    );
+  }
+  revokeExpert(id: string): Observable<ExpertListData> {
+    return this.api.post(
+      `/knowledge/admin/experts/${encodeURIComponent(id)}/revoke`,
+      {},
+      ExpertListDataSchema,
       this.csrf(),
     );
   }

@@ -12,6 +12,7 @@ import { KnowledgeModule } from './modules/knowledge/knowledge.module.js';
 import { TestersModule } from './modules/testers/testers.module.js';
 import { IdeaCreatorModule } from './modules/idea-creator/idea-creator.module.js';
 import { ContactModule } from './modules/contact/contact.module.js';
+import { ExpertsModule } from './modules/experts/experts.module.js';
 import { TesterProjectsModule } from './modules/tester-projects/tester-projects.module.js';
 
 import { AdaptationModule } from './modules/adaptation/adaptation.module.js';
@@ -33,7 +34,13 @@ const isTestEnv = process.env.NODE_ENV === 'test';
     // Kreator pomysłów wymaga bazy, więc dzieli los PrismaModule w testach.
     ...(isTestEnv
       ? []
-      : [PrismaModule, IdeaCreatorModule, KnowledgeModule, ContactModule]),
+      : [
+          PrismaModule,
+          IdeaCreatorModule,
+          KnowledgeModule,
+          ContactModule,
+          ExpertsModule,
+        ]),
     HealthModule,
     MatchmakingModule,
     AdaptationModule,

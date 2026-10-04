@@ -51,11 +51,16 @@
       }
       <ol class="messages">
         @for (item of data.messages; track item.id) {
-          <li [class.rops]="item.author === 'ROPS'">
+          <li [class.rops]="item.author !== 'AUTHOR'">
             <p class="note">
-              <strong>{{
-                "knowledge.admin.ideas.authors." + item.author | translate
-              }}</strong>
+              <strong
+                >{{
+                  "knowledge.admin.ideas.authors." + item.author | translate
+                }}
+                @if (item.authorName) {
+                  · {{ item.authorName }}
+                }
+              </strong>
               · {{ item.createdAt | date: "dd.MM.yyyy HH:mm" }}
             </p>
             <p class="content">{{ item.content }}</p>

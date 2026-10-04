@@ -15,6 +15,8 @@ import {
   IdeaDecisionRequestSchema,
   IdeaMessageRequestSchema,
   type ApiSuccessResponse,
+  type ExpertIdeaDetailData,
+  type ExpertIdeaListData,
   type IdeaDecisionRequest,
   type IdeaMessageRequest,
   type IdeaThreadData,
@@ -22,6 +24,11 @@ import {
   type ModerationListData,
 } from '@repo/api-contracts';
 import { ZodValidationPipe } from '../../../shared/pipes/zod-validation.pipe.js';
+import {
+  CurrentExpert,
+  ExpertGuard,
+  type ExpertIdentity,
+} from '../../auth/expert.guard.js';
 import { KnowledgeAdminGuard } from '../../knowledge/knowledge-admin.guard.js';
 import { ModerationService } from './moderation.service.js';
 
@@ -103,5 +110,42 @@ export class IdeaModerationController {
     body: IdeaMessageRequest,
   ): Promise<ApiSuccessResponse<ModerationDetailData>> {
     return createApiSuccess(await this.service.reply(id, body.content));
+  }
+}
+
+/** Opinie ekspertów: pomysły z ich dziedzin i wpis w wątku autora. */
+@Controller('experts/ideas')
+@UseGuards(ExpertGuard)
+export class IdeaExpertController {
+  constructor(
+    @Inject(ModerationService) private readonly service: ModerationService,
+  ) {}
+
+  @Get()
+  async queue(
+    @CurrentExpert() expert: ExpertIdentity,
+  ): Promise<ApiSuccessResponse<ExpertIdeaListData>> {
+    return createApiSuccess(await this.service.expertQueue(expert));
+  }
+
+  @Get(':id')
+  async detail(
+    @CurrentExpert() expert: ExpertIdentity,
+    @Param('id') id: string,
+  ): Promise<ApiSuccessResponse<ExpertIdeaDetailData>> {
+    return createApiSuccess(await this.service.expertDetail(expert, id));
+  }
+
+  @Post(':id/messages')
+  @HttpCode(200)
+  async opinion(
+    @CurrentExpert() expert: ExpertIdentity,
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(IdeaMessageRequestSchema, MESSAGE_ERROR))
+    body: IdeaMessageRequest,
+  ): Promise<ApiSuccessResponse<ExpertIdeaDetailData>> {
+    return createApiSuccess(
+      await this.service.expertOpinion(expert, id, body.content),
+    );
   }
 }

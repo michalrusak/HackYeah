@@ -25,6 +25,8 @@ describe('AuthService', () => {
       ownerHash: 'a'.repeat(64),
       createdAt: new Date(),
       updatedAt: new Date(),
+      expertName: null,
+      expertAreas: [],
     };
   });
 
@@ -46,7 +48,11 @@ describe('AuthService', () => {
       login: 'test.user',
       password: 'Test-password-123!',
     });
-    expect(result.user).toEqual({ id: account.id, login: account.login });
+    expect(result.user).toEqual({
+      id: account.id,
+      login: account.login,
+      expert: null,
+    });
     expect(result.token).toMatch(/^[a-f0-9]{64}$/);
     expect(repository.createSession).toHaveBeenCalledWith(
       expect.objectContaining({

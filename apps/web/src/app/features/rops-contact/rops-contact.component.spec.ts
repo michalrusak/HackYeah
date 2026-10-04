@@ -18,6 +18,8 @@ const conversation: ContactConversation = {
   firstName: 'Anna',
   lastName: 'Testowa',
   organization: null,
+  area: null,
+  expertName: null,
   createdAt: '2026-10-04T08:00:00.000Z',
   updatedAt: '2026-10-04T09:00:00.000Z',
 };

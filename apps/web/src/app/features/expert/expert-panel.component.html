@@ -1,0 +1,355 @@
+<h1>{{ "expert.title" | translate }}</h1>
+<p>{{ "expert.intro" | translate }}</p>
+
+@if (checking()) {
+  <p role="status">{{ "expert.checking" | translate }}</p>
+} @else if (!auth.user()) {
+  <section class="login-panel">
+    <h2>{{ "expert.loginTitle" | translate }}</h2>
+    <p>{{ "expert.loginIntro" | translate }}</p>
+    <button mat-flat-button type="button" (click)="login()">
+      {{ "auth.login" | translate }}
+    </button>
+  </section>
+} @else {
+  @if (auth.user()?.expert; as expert) {
+    <p class="note">
+      {{ "expert.signedIn" | translate: { name: expert.name } }}
+      {{ "expert.areas" | translate }}: {{ expert.areas.join(", ") }}
+    </p>
+    <div class="actions">
+      <button
+        mat-stroked-button
+        type="button"
+        [attr.aria-pressed]="tab() === 'conversations'"
+        (click)="select('conversations')"
+      >
+        {{
+          "expert.conversations.tab"
+            | translate: { count: queue()?.attention ?? 0 }
+        }}
+      </button>
+      <button
+        mat-stroked-button
+        type="button"
+        [attr.aria-pressed]="tab() === 'ideas'"
+        (click)="select('ideas')"
+      >
+        {{ "expert.ideas.tab" | translate: { count: ideaCount() } }}
+      </button>
+    </div>
+
+    @if (tab() === "conversations") {
+      <section aria-labelledby="expert-conversations">
+        <h2 id="expert-conversations">
+          {{ "expert.conversations.title" | translate }}
+        </h2>
+        <p>{{ "expert.conversations.intro" | translate }}</p>
+
+        @if (thread(); as data) {
+          <article class="search-section idea-detail">
+            <h3 #heading tabindex="-1">{{ data.conversation.subject }}</h3>
+            <div class="badges">
+              <span
+                class="badge"
+                [class.badge-attention]="
+                  data.conversation.status === 'AWAITING_ROPS'
+                "
+                >{{
+                  "rops-contact.statuses." + data.conversation.status
+                    | translate
+                }}</span
+              >
+              <span>{{
+                "rops-contact.categories." + data.conversation.category
+                  | translate
+              }}</span>
+              @if (data.conversation.area) {
+                <span>{{ data.conversation.area }}</span>
+              }
+              @if (data.conversation.mine) {
+                <span class="badge">{{
+                  "expert.conversations.mine" | translate
+                }}</span>
+              }
+            </div>
+            <p class="note">
+              {{ "expert.conversations.from" | translate }}:
+              {{ data.conversation.firstName }}
+              {{ data.conversation.lastName }}
+              @if (data.conversation.organization) {
+                · {{ data.conversation.organization }}
+              }
+            </p>
+
+            <ol class="messages">
+              @for (item of data.messages; track item.id) {
+                <li [class.rops]="item.author !== 'USER'">
+                  <p class="note">
+                    <strong
+                      >{{ "expert.authors." + item.author | translate }}
+                      @if (item.authorName) {
+                        · {{ item.authorName }}
+                      }
+                    </strong>
+                    · {{ item.createdAt | date: "dd.MM.yyyy HH:mm" }}
+                  </p>
+                  <p class="content">{{ item.content }}</p>
+                </li>
+              }
+            </ol>
+
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>{{
+                "expert.conversations.message" | translate
+              }}</mat-label>
+              <textarea
+                matInput
+                rows="4"
+                maxlength="4000"
+                [formControl]="message"
+              ></textarea>
+              <mat-hint>{{
+                "expert.conversations.messageHint" | translate
+              }}</mat-hint>
+            </mat-form-field>
+            @if (errorKey(); as key) {
+              <p class="error" role="alert">{{ key | translate }}</p>
+            }
+            @if (noticeKey(); as key) {
+              <p role="status">{{ key | translate }}</p>
+            }
+            <div class="actions">
+              <button
+                mat-flat-button
+                type="button"
+                [disabled]="busy()"
+                (click)="reply()"
+              >
+                {{ "expert.conversations.reply" | translate }}
+              </button>
+              @if (data.conversation.mine) {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [disabled]="busy()"
+                  (click)="assign('release')"
+                >
+                  {{ "expert.conversations.release" | translate }}
+                </button>
+              } @else {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [disabled]="busy()"
+                  (click)="assign('take')"
+                >
+                  {{ "expert.conversations.take" | translate }}
+                </button>
+              }
+              <button mat-button type="button" (click)="close()">
+                {{ "expert.close" | translate }}
+              </button>
+            </div>
+          </article>
+        } @else if (errorKey()) {
+          <p class="error" role="alert">{{ errorKey() ?? "" | translate }}</p>
+        }
+
+        @if (queue(); as data) {
+          @if (!data.items.length) {
+            <p>{{ "expert.conversations.empty" | translate }}</p>
+          }
+          <div class="resource-grid">
+            @for (item of data.items; track item.id) {
+              <article class="resource-card">
+                <div class="badges">
+                  <span
+                    class="badge"
+                    [class.badge-attention]="item.status === 'AWAITING_ROPS'"
+                    >{{
+                      "rops-contact.statuses." + item.status | translate
+                    }}</span
+                  >
+                  <span class="badge">{{
+                    "rops-contact.categories." + item.category | translate
+                  }}</span>
+                  @if (item.mine) {
+                    <span class="badge">{{
+                      "expert.conversations.mine" | translate
+                    }}</span>
+                  }
+                </div>
+                <h3>{{ item.subject }}</h3>
+                <p>
+                  {{ item.firstName }} {{ item.lastName }}
+                  @if (item.organization) {
+                    · {{ item.organization }}
+                  }
+                </p>
+                <p class="note">
+                  @if (item.area) {
+                    {{ item.area }} ·
+                  }
+                  {{ item.updatedAt | date: "dd.MM.yyyy HH:mm" }}
+                </p>
+                <div class="actions card-actions">
+                  <button
+                    mat-stroked-button
+                    type="button"
+                    [disabled]="busy()"
+                    (click)="openThread(item.id)"
+                  >
+                    {{ "expert.conversations.open" | translate
+                    }}<span class="sr-only"> — {{ item.subject }}</span>
+                  </button>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </section>
+    }
+
+    @if (tab() === "ideas") {
+      <section aria-labelledby="expert-ideas">
+        <h2 id="expert-ideas">{{ "expert.ideas.title" | translate }}</h2>
+        <p>{{ "expert.ideas.intro" | translate }}</p>
+
+        @if (idea(); as data) {
+          <article class="search-section idea-detail">
+            <h3 #heading tabindex="-1">{{ data.idea.title }}</h3>
+            <div class="badges">
+              <span class="badge">{{
+                "ideaCreator.statuses." + data.idea.status | translate
+              }}</span>
+              <span>{{
+                "ideaCreator.stages." + data.idea.stage | translate
+              }}</span>
+              @for (area of data.idea.areas; track area) {
+                <span>{{ area }}</span>
+              }
+            </div>
+            <dl>
+              <dt>{{ "ideaCreator.fields.essence" | translate }}</dt>
+              <dd>{{ data.idea.essence }}</dd>
+              <dt>{{ "ideaCreator.fields.problem" | translate }}</dt>
+              <dd>{{ data.idea.problem }}</dd>
+              <dt>{{ "ideaCreator.fields.targetAudience" | translate }}</dt>
+              <dd>{{ data.idea.targetAudience }}</dd>
+              @if (data.idea.description) {
+                <dt>{{ "ideaCreator.fields.description" | translate }}</dt>
+                <dd>{{ data.idea.description }}</dd>
+              }
+            </dl>
+
+            <h4>{{ "expert.ideas.thread" | translate }}</h4>
+            @if (!data.messages.length) {
+              <p class="note">{{ "expert.ideas.threadEmpty" | translate }}</p>
+            }
+            <ol class="messages">
+              @for (item of data.messages; track item.id) {
+                <li [class.rops]="item.author !== 'AUTHOR'">
+                  <p class="note">
+                    <strong
+                      >{{ "expert.authors." + item.author | translate }}
+                      @if (item.authorName) {
+                        · {{ item.authorName }}
+                      }
+                    </strong>
+                    · {{ item.createdAt | date: "dd.MM.yyyy HH:mm" }}
+                  </p>
+                  <p class="content">{{ item.content }}</p>
+                </li>
+              }
+            </ol>
+
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>{{ "expert.ideas.message" | translate }}</mat-label>
+              <textarea
+                matInput
+                rows="4"
+                maxlength="2000"
+                [formControl]="message"
+              ></textarea>
+              <mat-hint>{{ "expert.ideas.messageHint" | translate }}</mat-hint>
+            </mat-form-field>
+            @if (errorKey(); as key) {
+              <p class="error" role="alert">{{ key | translate }}</p>
+            }
+            @if (noticeKey(); as key) {
+              <p role="status">{{ key | translate }}</p>
+            }
+            <div class="actions">
+              <button
+                mat-flat-button
+                type="button"
+                [disabled]="busy()"
+                (click)="addOpinion()"
+              >
+                {{ "expert.ideas.send" | translate }}
+              </button>
+              <button mat-button type="button" (click)="close()">
+                {{ "expert.close" | translate }}
+              </button>
+            </div>
+          </article>
+        } @else if (errorKey()) {
+          <p class="error" role="alert">{{ errorKey() ?? "" | translate }}</p>
+        }
+
+        @if (ideas(); as data) {
+          @if (!data.items.length) {
+            <p>{{ "expert.ideas.empty" | translate }}</p>
+          }
+          <div class="resource-grid">
+            @for (item of data.items; track item.idea.id) {
+              <article class="resource-card">
+                <div class="badges">
+                  @if (!item.opinions) {
+                    <span class="badge badge-attention">{{
+                      "expert.ideas.noOpinion" | translate
+                    }}</span>
+                  }
+                  <span class="badge">{{
+                    "ideaCreator.statuses." + item.idea.status | translate
+                  }}</span>
+                </div>
+                <h3>{{ item.idea.title }}</h3>
+                <p>{{ item.idea.essence }}</p>
+                <p class="note">
+                  @if (item.idea.areas.length) {
+                    {{ item.idea.areas.join(", ") }} ·
+                  }
+                  {{ item.idea.updatedAt | date: "dd.MM.yyyy HH:mm" }}
+                </p>
+                <div class="actions card-actions">
+                  <button
+                    mat-stroked-button
+                    type="button"
+                    [disabled]="busy()"
+                    (click)="openIdea(item.idea.id)"
+                  >
+                    {{ "expert.ideas.open" | translate
+                    }}<span class="sr-only"> — {{ item.idea.title }}</span>
+                  </button>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </section>
+    }
+  } @else {
+    @if (errorKey(); as key) {
+      <p class="error" role="alert">{{ key | translate }}</p>
+    }
+    <section class="login-panel">
+      <h2>{{ "expert.notExpertTitle" | translate }}</h2>
+      <p>{{ "expert.notExpert" | translate }}</p>
+      <a mat-stroked-button routerLink="/rops-contact">
+        {{ "nav.rops_contact" | translate }}
+      </a>
+    </section>
+  }
+}

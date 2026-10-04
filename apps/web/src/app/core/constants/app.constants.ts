@@ -8,12 +8,13 @@ export const NAV_ITEMS: NavItem[] = [
     icon: 'tune',
   },
   { labelKey: 'knowledge.nav', path: '/zasobnik', icon: 'library_books' },
+  { labelKey: 'nav.testers', path: '/tester-innowacji', icon: 'groups' },
+  { labelKey: 'nav.ideas', path: '/pomysly', icon: 'lightbulb' },
+  { labelKey: 'nav.rops_contact', path: '/rops-contact', icon: 'forum' },
   {
     labelKey: 'knowledge.admin.nav',
     path: '/zasobnik/admin',
     icon: 'admin_panel_settings',
   },
-  { labelKey: 'nav.testers', path: '/tester-innowacji', icon: 'groups' },
-  { labelKey: 'nav.ideas', path: '/pomysly', icon: 'lightbulb' },
-  { labelKey: 'nav.rops_contact', path: '/rops-contact', icon: 'forum' },
+  { labelKey: 'nav.expert', path: '/ekspert', icon: 'support_agent' },
 ];

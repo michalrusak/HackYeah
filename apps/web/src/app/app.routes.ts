@@ -94,6 +94,14 @@ export const routes: Routes = [
           ),
         data: { breadcrumb: 'nav.rops_contact' },
       },
+      {
+        path: 'ekspert',
+        loadComponent: () =>
+          import('./features/expert/expert-panel.component').then(
+            (m) => m.ExpertPanelComponent,
+          ),
+        data: { breadcrumb: 'nav.expert' },
+      },
       { path: 'contact', redirectTo: 'rops-contact', pathMatch: 'full' },
     ],
   },

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from '../../prisma/prisma.module.js';
 import { AiModule } from '../../shared/ai/ai.module.js';
+import { AuthModule } from '../auth/auth.module.js';
 import { MatchmakingModule } from '../matchmaking/matchmaking.module.js';
 import { ApplicationsController } from './applications/applications.controller.js';
 import { ApplicationsRepository } from './applications/applications.repository.js';
@@ -22,6 +23,7 @@ import { IdeasService } from './ideas/ideas.service.js';
 import { MaterialsController } from './materials/materials.controller.js';
 import { MailService } from '../../shared/mail/mail.service.js';
 import {
+  IdeaExpertController,
   IdeaModerationController,
   IdeaThreadController,
 } from './moderation/moderation.controller.js';
@@ -29,7 +31,13 @@ import { ModerationRepository } from './moderation/moderation.repository.js';
 import { ModerationService } from './moderation/moderation.service.js';
 
 @Module({
-  imports: [ConfigModule, PrismaModule, AiModule, MatchmakingModule],
+  imports: [
+    ConfigModule,
+    PrismaModule,
+    AiModule,
+    MatchmakingModule,
+    AuthModule,
+  ],
   controllers: [
     IdeasController,
     CanvasController,
@@ -39,6 +47,7 @@ import { ModerationService } from './moderation/moderation.service.js';
     MaterialsController,
     IdeaThreadController,
     IdeaModerationController,
+    IdeaExpertController,
   ],
   providers: [
     IdeasService,

@@ -19,6 +19,10 @@ model Account {
   testerApplications TesterProjectApplication[]
   testerFeedback TesterProjectFeedback[]
   conversations Conversation[]
+  // Rola eksperta branżowego: nadaje ją ROPS; `expertName` puste = zwykłe konto.
+  expertName   String?   @map("expert_name") @db.VarChar(100)
+  expertAreas  String[]  @default([]) @map("expert_areas")
+  expertConversations Conversation[] @relation("ConversationExpert")
 
   @@map("accounts")
 }
@@ -173,6 +177,7 @@ enum IdeaStatus {
 enum IdeaMessageAuthor {
   AUTHOR
   ROPS
+  EXPERT
 }
 
 enum ApplicationStatus {
@@ -306,6 +311,8 @@ model IdeaMessage {
   ideaId  String
   idea    Idea              @relation(fields: [ideaId], references: [id], onDelete: Cascade)
   author  IdeaMessageAuthor
+  // Imię i nazwisko eksperta w chwili wpisu.
+  authorName String?
   content String
 
   createdAt DateTime @default(now())
@@ -330,6 +337,7 @@ enum ContactCategory {
   QUESTION
   MENTOR
   PARTNERSHIP
+  JST_ADVICE
 }
 
 enum ContactStatus {
@@ -341,6 +349,7 @@ enum ContactStatus {
 enum ContactAuthor {
   USER
   ROPS
+  EXPERT
 }
 
 model Conversation {
@@ -354,6 +363,10 @@ model Conversation {
   firstName    String          @map("first_name")
   lastName     String          @map("last_name")
   organization String?
+  // Dziedzina sprawy kieruje ją do ekspertów; `expert` to ten, który ją przejął.
+  area         String?
+  expertId     String?         @map("expert_id") @db.Uuid
+  expert       Account?        @relation("ConversationExpert", fields: [expertId], references: [id], onDelete: SetNull)
 
   messages     Message[]
 
@@ -362,6 +375,7 @@ model Conversation {
 
   @@index([accountId, updatedAt])
   @@index([status, updatedAt])
+  @@index([expertId])
   @@map("conversations")
 }
 
@@ -369,6 +383,7 @@ model Message {
   id             String        @id @default(cuid())
   content        String
   author         ContactAuthor
+  authorName     String?       @map("author_name")
 
   conversationId String        @map("conversation_id")
   conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)

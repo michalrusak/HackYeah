@@ -6,13 +6,18 @@ import { AuthModule } from '../auth/auth.module.js';
 import {
   ContactAdminController,
   ContactController,
+  ContactExpertController,
 } from './contact.controller.js';
 import { ContactRepository } from './contact.repository.js';
 import { ContactService } from './contact.service.js';
 
 @Module({
   imports: [ConfigModule, PrismaModule, AuthModule],
-  controllers: [ContactController, ContactAdminController],
+  controllers: [
+    ContactController,
+    ContactAdminController,
+    ContactExpertController,
+  ],
   providers: [ContactService, ContactRepository, MailService],
 })
 export class ContactModule {}

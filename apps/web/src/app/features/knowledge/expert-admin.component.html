@@ -1,0 +1,93 @@
+<section aria-labelledby="experts-heading">
+  <h2 id="experts-heading">
+    {{ "knowledge.admin.experts.title" | translate }}
+  </h2>
+  <p>{{ "knowledge.admin.experts.intro" | translate }}</p>
+
+  <form class="search-section" [formGroup]="form" (ngSubmit)="grant()">
+    <h3>{{ "knowledge.admin.experts.formTitle" | translate }}</h3>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "knowledge.admin.experts.login" | translate }}</mat-label>
+      <input
+        matInput
+        formControlName="login"
+        autocomplete="off"
+        maxlength="40"
+      />
+      <mat-hint>{{ "knowledge.admin.experts.loginHint" | translate }}</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "knowledge.admin.experts.name" | translate }}</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        autocomplete="off"
+        maxlength="100"
+      />
+      <mat-hint>{{ "knowledge.admin.experts.nameHint" | translate }}</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "knowledge.admin.experts.areas" | translate }}</mat-label>
+      <mat-select formControlName="areas" multiple>
+        @for (area of areas; track area) {
+          <mat-option [value]="area">{{ area }}</mat-option>
+        }
+      </mat-select>
+      <mat-hint>{{ "knowledge.admin.experts.areasHint" | translate }}</mat-hint>
+    </mat-form-field>
+    @if (errorKey(); as key) {
+      <p class="error" role="alert">{{ key | translate }}</p>
+    }
+    @if (noticeKey(); as key) {
+      <p role="status">{{ key | translate }}</p>
+    }
+    <div class="actions">
+      <button mat-flat-button type="submit" [disabled]="busy()">
+        {{ "knowledge.admin.experts.grant" | translate }}
+      </button>
+    </div>
+  </form>
+
+  <h3>{{ "knowledge.admin.experts.listTitle" | translate }}</h3>
+  @if (experts(); as list) {
+    @if (!list.length) {
+      <p>{{ "knowledge.admin.experts.empty" | translate }}</p>
+    }
+    <div class="resource-grid">
+      @for (expert of list; track expert.id) {
+        <article class="resource-card">
+          <h4>{{ expert.name }}</h4>
+          <p class="note">
+            {{ "knowledge.admin.experts.login" | translate }}:
+            {{ expert.login }}
+          </p>
+          <div class="badges">
+            @for (area of expert.areas; track area) {
+              <span class="badge">{{ area }}</span>
+            }
+          </div>
+          <div class="actions card-actions">
+            <button
+              mat-stroked-button
+              type="button"
+              [disabled]="busy()"
+              (click)="edit(expert)"
+            >
+              {{ "knowledge.admin.experts.edit" | translate
+              }}<span class="sr-only"> — {{ expert.name }}</span>
+            </button>
+            <button
+              mat-button
+              type="button"
+              [disabled]="busy()"
+              (click)="revoke(expert)"
+            >
+              {{ "knowledge.admin.experts.revoke" | translate
+              }}<span class="sr-only"> — {{ expert.name }}</span>
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

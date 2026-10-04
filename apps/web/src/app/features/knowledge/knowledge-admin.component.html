@@ -69,6 +69,13 @@
     ><button
       mat-stroked-button
       type="button"
+      [attr.aria-pressed]="tab() === 'experts'"
+      (click)="tab.set('experts')"
+    >
+      {{ "knowledge.admin.experts.tab" | translate }}</button
+    ><button
+      mat-stroked-button
+      type="button"
       [attr.aria-pressed]="tab() === 'trends'"
       (click)="tab.set('trends')"
     >
@@ -289,6 +296,9 @@
     @if (contact(); as queue) {
       <app-contact-inbox [queue]="queue" (changed)="load()" />
     }
+  }
+  @if (tab() === "experts") {
+    <app-expert-admin />
   }
   @if (tab() === "trends") {
     @if (trends(); as data) {
