@@ -11,7 +11,7 @@
     "calls": "Nabory grantowe",
     "materials": "Materiały",
     "testers": "Znajdź testerów",
-    "rops_contact": "Kontakt z ROPS",
+    "rops_contact": "Platforma aktywnej komunikacji",
     "expert": "Panel eksperta"
   },
   "layout": {
@@ -569,7 +569,7 @@
     "resultsAnnouncement": "Wyszukiwanie zakończone. Liczba dopasowanych osób: {{count}}."
   },
   "rops-contact": {
-    "title": "Kontakt z ROPS",
+    "title": "Kontakt z ROPS — Platforma aktywnej komunikacji",
     "intro": "Zadaj pytanie, poproś o wsparcie mentora lub doradztwo dla samorządu albo zaproponuj partnerstwo. Odpowie zespół ROPS Kraków lub ekspert branżowy — w tej samej rozmowie.",
     "checking": "Sprawdzamy, czy jesteś zalogowany…",
     "loginTitle": "Zaloguj się, aby napisać do ROPS",
@@ -1107,7 +1107,7 @@
       "contact": {
         "tab": "Wiadomości ({{count}})",
         "title": "Wiadomości od użytkowników",
-        "intro": "Pytania, prośby o wsparcie mentora, doradztwo dla JST i propozycje partnerstw wysłane z ekranu „Kontakt z ROPS”. Prośby o mentora i doradztwo widzą też eksperci. Odpowiedź pojawia się w rozmowie użytkownika.",
+        "intro": "Pytania, prośby o wsparcie mentora, doradztwo dla JST i propozycje partnerstw wysłane z ekranu „Platforma aktywnej komunikacji”. Prośby o mentora i doradztwo widzą też eksperci. Odpowiedź pojawia się w rozmowie użytkownika.",
         "attention": "Czeka na Twoją odpowiedź: {{count}}",
         "filterLabel": "Filtruj według rodzaju sprawy",
         "all": "Wszystkie",
@@ -1122,7 +1122,7 @@
           "EXPERT": "Ekspert"
         },
         "message": "Odpowiedź dla użytkownika",
-        "messageHint": "Użytkownik zobaczy ją w swojej rozmowie na ekranie „Kontakt z ROPS”.",
+        "messageHint": "Użytkownik zobaczy ją w swojej rozmowie na ekranie „Platforma aktywnej komunikacji”.",
         "messageRequired": "Napisz odpowiedź.",
         "reply": "Wyślij odpowiedź",
         "finish": "Zakończ sprawę",
@@ -1350,7 +1350,7 @@
       "from": "Od",
       "open": "Otwórz sprawę",
       "message": "Odpowiedź",
-      "messageHint": "Użytkownik zobaczy ją w rozmowie na ekranie „Kontakt z ROPS”, podpisaną Twoim imieniem i nazwiskiem.",
+      "messageHint": "Użytkownik zobaczy ją w rozmowie na ekranie „Platforma aktywnej komunikacji”, podpisaną Twoim imieniem i nazwiskiem.",
       "reply": "Wyślij odpowiedź",
       "take": "Przejmij sprawę",
       "release": "Oddaj sprawę"
