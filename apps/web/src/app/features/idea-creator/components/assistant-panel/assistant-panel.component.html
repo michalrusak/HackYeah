@@ -8,7 +8,12 @@
   <mat-tab-group [attr.aria-label]="'ideaCreator.assistant.title' | translate">
     <mat-tab [label]="'ideaCreator.assistant.chatTab' | translate">
       <div class="tab-body">
-        <ol class="chat" aria-live="polite">
+        <ol
+          class="chat"
+          aria-live="polite"
+          aria-relevant="additions"
+          [attr.aria-label]="'ideaCreator.assistant.chatTab' | translate"
+        >
           @for (entry of entries(); track $index) {
             <li [class.from-user]="entry.role === 'user'">
               <span class="who">
@@ -29,7 +34,10 @@
         </ol>
 
         @if (chatLoading()) {
-          <mat-progress-bar mode="indeterminate" />
+          <mat-progress-bar
+            mode="indeterminate"
+            [attr.aria-label]="'a11y.loading' | translate"
+          />
           <p class="status" role="status">
             {{ "ideaCreator.assistant.thinking" | translate }}
           </p>
@@ -40,17 +48,22 @@
             <p id="follow-ups-label">
               {{ "ideaCreator.assistant.followUps" | translate }}
             </p>
-            <mat-chip-set aria-labelledby="follow-ups-label">
+            <div
+              class="follow-ups"
+              role="group"
+              aria-labelledby="follow-ups-label"
+            >
               @for (question of followUps(); track question) {
-                <mat-chip-option
-                  [selectable]="true"
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [disabled]="chatLoading()"
                   (click)="send(question)"
-                  (keydown.enter)="send(question)"
                 >
                   {{ question }}
-                </mat-chip-option>
+                </button>
               }
-            </mat-chip-set>
+            </div>
           </div>
         }
 
@@ -62,6 +75,7 @@
             <textarea
               matInput
               rows="3"
+              maxlength="2000"
               [formControl]="message"
               [attr.aria-describedby]="'assistant-privacy'"
             ></textarea>
@@ -99,7 +113,10 @@
           </p>
         }
         @if (variantsLoading()) {
-          <mat-progress-bar mode="indeterminate" />
+          <mat-progress-bar
+            mode="indeterminate"
+            [attr.aria-label]="'a11y.loading' | translate"
+          />
           <p class="status" role="status">
             {{ "ideaCreator.assistant.thinking" | translate }}
           </p>
@@ -111,9 +128,7 @@
               <p>{{ variant.description }}</p>
               <p class="meta">
                 <strong
-                  >{{
-                    "ideaCreator.assistant.whyUnusual" | translate
-                  }}:</strong
+                  >{{ "ideaCreator.assistant.whyUnusual" | translate }}:</strong
                 >
                 {{ variant.whyUnusual }}
               </p>

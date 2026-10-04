@@ -1,3 +1,5 @@
+import { of } from 'rxjs';
+import { PilotMatchesService } from './pilots/pilot-matches.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
@@ -68,6 +70,10 @@ describe('MatchmakingComponent', () => {
         provideHttpClientTesting(),
         provideNoopAnimations(),
         provideTranslateService(),
+        {
+          provide: PilotMatchesService,
+          useValue: { match: () => of({ matches: [] }) },
+        },
       ],
     }).compileComponents();
     const translate = TestBed.inject(TranslateService);
@@ -79,7 +85,11 @@ describe('MatchmakingComponent', () => {
           migrants: {
             description: 'Migranci potrzebują informacji o przychodni.',
           },
-          school: { description: 'Uczniowie wracają po terapii.' },
+          homelessness: {
+            description:
+              'Nie mam stałego miejsca zamieszkania. Potrzebuję wsparcia.',
+          },
+          pilot: { description: 'Chcemy przetestować mapę punktów pomocy.' },
         },
       },
     });
@@ -95,7 +105,9 @@ describe('MatchmakingComponent', () => {
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
   });
-  afterEach(() => http.verify());
+  afterEach(() => {
+    http.verify();
+  });
 
   function submitDescription(value = 'Seniorzy potrzebują spotkań.'): void {
     const textarea = root.querySelector<HTMLTextAreaElement>('textarea');
@@ -341,20 +353,20 @@ describe('MatchmakingComponent', () => {
     );
   });
 
-  it('offers all three editable examples without automatically calling AI', () => {
-    expect(root.querySelectorAll('.examples button').length).toBe(3);
+  it('offers all four editable examples without automatically calling AI', () => {
+    expect(root.querySelectorAll('.examples button').length).toBe(4);
     const texts = new Set<string>();
     for (const example of fixture.componentInstance.examples) {
       fixture.componentInstance.useExample(example);
       texts.add(fixture.componentInstance.description.value);
     }
-    expect(texts.size).toBe(3);
+    expect(texts.size).toBe(4);
     expect(fixture.componentInstance.description.value).toBe(
-      'Uczniowie wracają po terapii.',
+      'Chcemy przetestować mapę punktów pomocy.',
     );
     http.expectNone('/api/matchmaking');
   });
-  function showClarification(): void {
+  function showClarification(options?: string[]): void {
     submitDescription('Chcemy pomóc.');
     http.expectOne('/api/matchmaking').flush(
       createApiSuccess({
@@ -363,6 +375,7 @@ describe('MatchmakingComponent', () => {
         clarification: {
           reason: 'no_matches',
           question: 'Komu pomagamy?',
+          options,
           round: 1,
           maxRounds: 3,
           totalMatches: 0,
@@ -456,5 +469,62 @@ describe('MatchmakingComponent', () => {
       root.querySelector('.clarification-card a')?.getAttribute('href'),
     ).toBe('/rops-contact');
     expect(root.querySelector('.innovation-card')).not.toBeNull();
+  });
+
+  it('shows three choices and other, and waits for submission before searching', () => {
+    showClarification(['Sobie.', 'Bliskiej osobie.', 'Grupie mieszkańców.']);
+    expect(root.querySelectorAll('mat-radio-button').length).toBe(4);
+    expect(root.querySelector('.clarification-card textarea')).toBeNull();
+    fixture.componentInstance.submitAnswer();
+    fixture.detectChanges();
+    expect(root.querySelector('#choice-error')).not.toBeNull();
+    root.querySelector<HTMLInputElement>('mat-radio-button input')?.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.answer.value).toBe('Sobie.');
+    http.expectNone('/api/matchmaking');
+    fixture.componentInstance.submitAnswer();
+    const request = http.expectOne('/api/matchmaking');
+    expect(request.request.body.answers).toEqual([
+      { question: 'Komu pomagamy?', answer: 'Sobie.' },
+    ]);
+    request.flush(createApiSuccess(result));
+  });
+
+  it('opens a custom answer and keeps its draft when switching choices', async () => {
+    showClarification(['Sobie.', 'Bliskiej osobie.', 'Grupie mieszkańców.']);
+    const radios = root.querySelectorAll<HTMLInputElement>(
+      'mat-radio-button input',
+    );
+    radios[3]?.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const textarea = root.querySelector<HTMLTextAreaElement>(
+      '.clarification-card textarea',
+    );
+    expect(textarea).not.toBeNull();
+    expect(document.activeElement).toBe(textarea);
+    fixture.componentInstance.answer.setValue(
+      'Osobom bez stałego miejsca zamieszkania.',
+    );
+    radios[0]?.click();
+    fixture.detectChanges();
+    radios[3]?.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.answer.value).toBe(
+      'Osobom bez stałego miejsca zamieszkania.',
+    );
+    fixture.componentInstance.submitAnswer();
+    const request = http.expectOne('/api/matchmaking');
+    expect(request.request.body.answers[0].answer).toBe(
+      'Osobom bez stałego miejsca zamieszkania.',
+    );
+    request.flush(
+      { success: false, error: { code: 'AI_TIMEOUT', message: 'Timeout' } },
+      { status: 504, statusText: 'Timeout' },
+    );
+    expect(fixture.componentInstance.selectedOption()).toBe(-1);
+    expect(fixture.componentInstance.answer.value).toBe(
+      'Osobom bez stałego miejsca zamieszkania.',
+    );
   });
 });

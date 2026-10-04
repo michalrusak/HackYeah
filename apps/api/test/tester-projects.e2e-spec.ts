@@ -1,3 +1,8 @@
+import { PilotMatchesModule } from '../src/modules/matchmaking/pilot-matches.module.js';
+import {
+  PilotConditionsSchema,
+  PilotMatchesDataSchema,
+} from '@repo/api-contracts';
 import { randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -147,7 +152,7 @@ describe.skipIf(!databaseUrl)('Tester projects with PostgreSQL', () => {
     );
     await database.$connect();
     const module = await Test.createTestingModule({
-      imports: [TestersModule, TesterProjectsModule],
+      imports: [TestersModule, TesterProjectsModule, PilotMatchesModule],
     })
       .overrideProvider(PrismaService)
       .useValue(database)
@@ -162,6 +167,84 @@ describe.skipIf(!databaseUrl)('Tester projects with PostgreSQL', () => {
     participant = await account('Anna Testerka');
     secondParticipant = await account('Jan Tester');
     stranger = await account();
+  });
+
+  it('offers only reviewed pilots and rechecks admission while submitting interest', async () => {
+    const project = (await create()).project;
+    const interpretation = {
+      summary: 'Potrzebuję dostępnej mapy',
+      audiences: ['Osoby o ograniczonej mobilności'],
+      needs: ['Dostęp do usług'],
+      areas: ['Niepełnosprawność'],
+      missingInformation: [],
+    };
+    const query = () =>
+      request(app.getHttpServer())
+        .post('/api/matchmaking/pilots')
+        .send({ interpretation })
+        .expect(201);
+    expect(
+      PilotMatchesDataSchema.parse((await query()).body.data).matches.find(
+        (item) => item.id === project.id,
+      ),
+    ).toBeUndefined();
+    const stored = await database.testerProject.findUniqueOrThrow({
+      where: { id: project.id },
+    });
+    const conditions = PilotConditionsSchema.parse({
+      audiences: interpretation.audiences,
+      needs: interpretation.needs,
+      areas: interpretation.areas,
+      recruitmentEndsAt: new Date(Date.now() + 86400000).toISOString(),
+      testSchedule: 'Dwa spotkania',
+      commitment: 'Dwie godziny zdalnie',
+      participants: 'either',
+    });
+    await database.testerPilotListing.create({
+      data: {
+        projectId: project.id,
+        conditions,
+        reviewer: 'Test reviewer',
+        reviewedProjectUpdatedAt: stored.updatedAt,
+      },
+    });
+    expect(
+      PilotMatchesDataSchema.parse((await query()).body.data).matches.find(
+        (item) => item.id === project.id,
+      )?.deploymentApproved,
+    ).toBe(false);
+    const send = () =>
+      authenticated(
+        request(app.getHttpServer()).put(
+          `/api/testers/projects/${project.id}/pilot-interest`,
+        ),
+        participant,
+      ).send({ message: 'Chcę poznać warunki.' });
+    const first = data(await send().expect(200));
+    expect(first.myApplication?.status).toBe('pending');
+    expect(data(await send().expect(200)).myApplication?.id).toBe(
+      first.myApplication?.id,
+    );
+    expect(
+      await database.testerProjectApplication.count({
+        where: { projectId: project.id },
+      }),
+    ).toBe(1);
+    await authenticated(
+      request(app.getHttpServer()).put(`/api/testers/projects/${project.id}`),
+      organizer,
+    )
+      .send({
+        ...projectInput,
+        requirements: 'Nowe wymagania udziału w testach.',
+      })
+      .expect(200);
+    expect(
+      PilotMatchesDataSchema.parse((await query()).body.data).matches.find(
+        (item) => item.id === project.id,
+      ),
+    ).toBeUndefined();
+    await send().expect(409);
   });
 
   afterAll(async () => {

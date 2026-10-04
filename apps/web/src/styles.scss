@@ -144,3 +144,99 @@ a[mat-stroked-button] {
   white-space: nowrap;
   padding-left: 8px;
 }
+
+/* Shared accessibility rules apply to overlays as well as routed screens. */
+.mat-mdc-button-base:not(.mat-mdc-icon-button) {
+  height: auto;
+  min-height: 48px;
+  padding-block: 12px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.mat-mdc-form-field {
+  min-width: 0;
+}
+.mat-mdc-form-field-subscript-wrapper {
+  min-height: 1.25em;
+  height: auto;
+}
+.mat-mdc-form-field-hint-wrapper,
+.mat-mdc-form-field-error-wrapper {
+  position: static;
+}
+.mat-mdc-option {
+  height: auto;
+  white-space: normal;
+}
+.mat-mdc-select-value-text {
+  white-space: normal;
+}
+.mat-expansion-panel-header {
+  height: auto;
+  min-height: 48px;
+  padding-block: 12px;
+}
+.mat-mdc-chip {
+  max-width: 100%;
+  height: auto;
+  min-height: 32px;
+}
+.mat-mdc-chip .mdc-evolution-chip__text-label {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.mat-mdc-chip .mdc-evolution-chip__action {
+  white-space: normal;
+  padding-block: 6px;
+}
+.mat-mdc-dialog-content {
+  overflow-wrap: anywhere;
+}
+.mat-mdc-dialog-actions {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mat-mdc-tab:focus-visible,
+.mat-mdc-option:focus-visible,
+.mat-mdc-button-base:focus-visible,
+.mat-mdc-select:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--hub-brand);
+  outline-offset: -3px;
+}
+input,
+textarea {
+  scroll-margin-block: 80px;
+}
+[tabindex="-1"],
+h1,
+h2,
+h3 {
+  scroll-margin-top: 24px;
+}
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 3px solid Highlight !important;
+  }
+  button,
+  a[mat-stroked-button],
+  .mat-mdc-card {
+    border: 1px solid ButtonText;
+  }
+  .nav-link.active {
+    outline: 2px solid Highlight;
+  }
+}
+
+/* A two-color focus ring stays visible on filled controls too. */
+.mat-mdc-unelevated-button:focus-visible,
+.mat-mdc-fab:focus-visible {
+  outline-color: #fff;
+  outline-offset: -6px;
+  box-shadow: 0 0 0 3px var(--hub-brand);
+}
+.new-idea .mat-mdc-tab-body-active,
+.new-idea .mat-mdc-tab-body-content {
+  overflow-y: visible;
+}

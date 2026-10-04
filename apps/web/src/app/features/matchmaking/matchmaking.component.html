@@ -141,25 +141,56 @@
               <p id="clarification-question" class="clarification-question">
                 {{ question }}
               </p>
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                <mat-label>{{
-                  "matchmaking.assistant.answer" | translate
-                }}</mat-label>
-                <textarea
-                  #answerInput
-                  matInput
-                  [formControl]="answer"
-                  rows="3"
-                  maxlength="1000"
-                  aria-describedby="clarification-question"
-                ></textarea>
-                <mat-hint align="end"
-                  >{{ answer.value.length }} / 1000</mat-hint
+              @if (clarification.options?.length) {
+                <mat-radio-group
+                  class="clarification-options"
+                  aria-labelledby="clarification-question"
+                  [value]="selectedOption()"
+                  [disabled]="loading()"
+                  (change)="selectAnswer($event.value)"
+                  [attr.aria-invalid]="selectionRequired()"
+                  [attr.aria-describedby]="
+                    selectionRequired() ? 'choice-error' : null
+                  "
                 >
-                <mat-error>{{
-                  "matchmaking.assistant.validation" | translate
-                }}</mat-error>
-              </mat-form-field>
+                  @for (option of clarification.options; track $index) {
+                    <mat-radio-button [value]="$index">{{
+                      "matchmaking.assistant.optionLabel"
+                        | translate
+                          : { letter: optionLetters[$index], answer: option }
+                    }}</mat-radio-button>
+                  }
+                  <mat-radio-button [value]="-1">{{
+                    "matchmaking.assistant.otherAnswer" | translate
+                  }}</mat-radio-button>
+                </mat-radio-group>
+                @if (selectionRequired()) {
+                  <p id="choice-error" class="choice-error" role="alert">
+                    {{ "matchmaking.assistant.chooseAnswer" | translate }}
+                  </p>
+                }
+              }
+              @if (!clarification.options?.length || selectedOption() === -1) {
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>{{
+                    "matchmaking.assistant.answer" | translate
+                  }}</mat-label>
+                  <textarea
+                    #answerInput
+                    matInput
+                    [formControl]="answer"
+                    rows="3"
+                    maxlength="1000"
+                    aria-describedby="clarification-question"
+                  ></textarea>
+                  <mat-hint align="end"
+                    >{{ answer.value.length }} / 1000</mat-hint
+                  >
+                  <mat-error>{{
+                    "matchmaking.assistant.validation" | translate
+                  }}</mat-error>
+                </mat-form-field>
+              }
               <div class="clarification-actions">
                 <button mat-flat-button type="submit" [disabled]="loading()">
                   {{ "matchmaking.assistant.submit" | translate }}
@@ -414,6 +445,10 @@
         </div>
       }
     </section>
+    <app-pilot-matches
+      [interpretation]="data.interpretation"
+      [automatic]="data.matches.length === 0"
+    />
     @if (data.relatedInformation.length) {
       <section class="related-information" aria-labelledby="information-title">
         <h2 id="information-title">

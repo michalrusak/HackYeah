@@ -1,3 +1,4 @@
+import { activePilotConditions } from '../matchmaking/pilot-eligibility.js';
 import { Inject, Injectable } from '@nestjs/common';
 import {
   createApiSuccess,
@@ -132,6 +133,7 @@ export class TesterProjectsService {
     id: string,
     input: TesterApplicationInput,
     account: TesterAccountIdentity,
+    pilotOnly = false,
   ): Promise<TesterOutcome<TesterProjectDetailData>> {
     return this.repository.withProjectLock(id, async (store) => {
       const project = await store.project(id);
@@ -140,12 +142,21 @@ export class TesterProjectsService {
         return forbidden('Organizator nie może zgłosić się do własnego testu.');
       if (project.status !== 'open')
         return conflict('Nabór do tego testu jest zamknięty.');
+      if (
+        pilotOnly &&
+        !activePilotConditions(project, await store.pilotListing(id))
+      )
+        return conflict(
+          'Ten projekt nie jest już dostępny do testowania w matchmakingu.',
+        );
       const profile = await store.ownProfile(account.ownerHash);
       if (!profile)
         return conflict(
           'Uzupełnij profil testera przed zgłoszeniem do testów.',
         );
       const current = await store.application(id, account.id);
+      if (pilotOnly && current && current.status !== 'withdrawn')
+        return this.details(store, project, account);
       if (current && !['pending', 'withdrawn'].includes(current.status))
         return conflict('Organizator podjął już decyzję o tym zgłoszeniu.');
       await store.apply(id, account.id, profile.id, input.message);

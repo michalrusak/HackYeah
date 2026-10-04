@@ -11,12 +11,15 @@
     <p class="error" role="alert">{{ key | translate }}</p>
   }
 
-  <mat-stepper
-    orientation="vertical"
-    linear="false"
-    (selectionChange)="onStepChange($event)"
+  <mat-tab-group
+    [selectedIndex]="selectedStep()"
+    (selectedTabChange)="onStepChange($event)"
+    (animationDone)="focusStep()"
+    [dynamicHeight]="true"
+    animationDuration="0ms"
+    [attr.aria-label]="'a11y.ideaSteps' | translate"
   >
-    <mat-step [label]="'ideaCreator.new.step1' | translate">
+    <mat-tab [label]="'ideaCreator.new.step1' | translate">
       <h2 #stepHeading tabindex="-1" class="step-heading">
         {{ "ideaCreator.new.step1" | translate }}
       </h2>
@@ -27,6 +30,7 @@
             matInput
             rows="3"
             formControlName="seed"
+            maxlength="2000"
             [placeholder]="'ideaCreator.new.seedPlaceholder' | translate"
             aria-describedby="seed-hint"
           ></textarea>
@@ -44,28 +48,45 @@
           {{ "ideaCreator.new.expand" | translate }}
         </button>
         @if (expanding()) {
-          <mat-progress-bar mode="indeterminate" />
+          <mat-progress-bar
+            mode="indeterminate"
+            [attr.aria-label]="'a11y.loading' | translate"
+          />
           <p class="status" role="status">
             {{ "ideaCreator.new.expanding" | translate }}
           </p>
         }
       </form>
       <div class="step-actions">
-        <button mat-stroked-button matStepperNext type="button">
+        <button
+          mat-stroked-button
+          (click)="selectedStep.set(selectedStep() + 1)"
+          type="button"
+        >
           {{ "ideaCreator.new.next" | translate }}
         </button>
       </div>
-    </mat-step>
+    </mat-tab>
 
-    <mat-step [label]="'ideaCreator.new.step2' | translate">
+    <mat-tab [label]="'ideaCreator.new.step2' | translate">
       <h2 #stepHeading tabindex="-1" class="step-heading">
         {{ "ideaCreator.new.step2" | translate }}
       </h2>
       <form [formGroup]="coreForm" class="fields">
         <mat-form-field appearance="outline" class="full">
           <mat-label>{{ "ideaCreator.fields.title" | translate }}</mat-label>
-          <input matInput formControlName="title" required />
-          @if (coreForm.controls.title.touched && coreForm.controls.title.invalid) {
+          <input
+            matInput
+            formControlName="title"
+            [attr.aria-invalid]="
+              coreForm.controls.title.touched && coreForm.controls.title.invalid
+            "
+            maxlength="120"
+            required
+          />
+          @if (
+            coreForm.controls.title.touched && coreForm.controls.title.invalid
+          ) {
             <mat-error>{{
               "ideaCreator.new.errors.title" | translate
             }}</mat-error>
@@ -78,11 +99,19 @@
             matInput
             rows="3"
             formControlName="essence"
+            [attr.aria-invalid]="
+              coreForm.controls.essence.touched &&
+              coreForm.controls.essence.invalid
+            "
+            maxlength="600"
             required
           ></textarea>
-          <mat-hint>{{ "ideaCreator.fields.essenceHint" | translate }}</mat-hint>
+          <mat-hint>{{
+            "ideaCreator.fields.essenceHint" | translate
+          }}</mat-hint>
           @if (
-            coreForm.controls.essence.touched && coreForm.controls.essence.invalid
+            coreForm.controls.essence.touched &&
+            coreForm.controls.essence.invalid
           ) {
             <mat-error>{{
               "ideaCreator.new.errors.essence" | translate
@@ -96,11 +125,19 @@
             matInput
             rows="4"
             formControlName="problem"
+            [attr.aria-invalid]="
+              coreForm.controls.problem.touched &&
+              coreForm.controls.problem.invalid
+            "
+            maxlength="1500"
             required
           ></textarea>
-          <mat-hint>{{ "ideaCreator.fields.problemHint" | translate }}</mat-hint>
+          <mat-hint>{{
+            "ideaCreator.fields.problemHint" | translate
+          }}</mat-hint>
           @if (
-            coreForm.controls.problem.touched && coreForm.controls.problem.invalid
+            coreForm.controls.problem.touched &&
+            coreForm.controls.problem.invalid
           ) {
             <mat-error>{{
               "ideaCreator.new.errors.problem" | translate
@@ -116,6 +153,11 @@
             matInput
             rows="2"
             formControlName="targetAudience"
+            [attr.aria-invalid]="
+              coreForm.controls.targetAudience.touched &&
+              coreForm.controls.targetAudience.invalid
+            "
+            maxlength="600"
             required
           ></textarea>
           @if (
@@ -129,16 +171,24 @@
         </mat-form-field>
       </form>
       <div class="step-actions">
-        <button mat-button matStepperPrevious type="button">
+        <button
+          mat-button
+          (click)="selectedStep.set(selectedStep() - 1)"
+          type="button"
+        >
           {{ "ideaCreator.new.back" | translate }}
         </button>
-        <button mat-stroked-button matStepperNext type="button">
+        <button
+          mat-stroked-button
+          (click)="selectedStep.set(selectedStep() + 1)"
+          type="button"
+        >
           {{ "ideaCreator.new.next" | translate }}
         </button>
       </div>
-    </mat-step>
+    </mat-tab>
 
-    <mat-step [label]="'ideaCreator.new.step3' | translate">
+    <mat-tab [label]="'ideaCreator.new.step3' | translate">
       <h2 #stepHeading tabindex="-1" class="step-heading">
         {{ "ideaCreator.new.step3" | translate }}
       </h2>
@@ -168,40 +218,64 @@
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "ideaCreator.fields.region" | translate }}</mat-label>
-          <input matInput formControlName="region" />
+          <input matInput formControlName="region" maxlength="120" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{ "ideaCreator.fields.contact" | translate }}</mat-label>
-          <input matInput type="email" formControlName="contactEmail" />
-          <mat-hint>{{ "ideaCreator.fields.contactHint" | translate }}</mat-hint>
+          <input
+            matInput
+            type="email"
+            autocomplete="email"
+            formControlName="contactEmail"
+            maxlength="200"
+          />
+          <mat-hint>{{
+            "ideaCreator.fields.contactHint" | translate
+          }}</mat-hint>
+          <mat-error>{{ "a11y.emailError" | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full">
           <mat-label>{{
             "ideaCreator.fields.description" | translate
           }}</mat-label>
-          <textarea matInput rows="4" formControlName="description"></textarea>
+          <textarea
+            matInput
+            rows="4"
+            formControlName="description"
+            maxlength="4000"
+          ></textarea>
         </mat-form-field>
       </form>
       <div class="step-actions">
-        <button mat-button matStepperPrevious type="button">
+        <button
+          mat-button
+          (click)="selectedStep.set(selectedStep() - 1)"
+          type="button"
+        >
           {{ "ideaCreator.new.back" | translate }}
         </button>
-        <button mat-stroked-button matStepperNext type="button">
+        <button
+          mat-stroked-button
+          (click)="selectedStep.set(selectedStep() + 1)"
+          type="button"
+        >
           {{ "ideaCreator.new.next" | translate }}
         </button>
       </div>
-    </mat-step>
+    </mat-tab>
 
-    <mat-step [label]="'ideaCreator.new.step4' | translate">
+    <mat-tab [label]="'ideaCreator.new.step4' | translate">
       <h2 #stepHeading tabindex="-1" class="step-heading">
         {{ "ideaCreator.new.step4" | translate }}
       </h2>
       <p class="hint">{{ "ideaCreator.new.tagsHint" | translate }}</p>
       <form [formGroup]="tagsForm" class="fields">
         <mat-form-field appearance="outline" class="full">
-          <mat-label>{{ "ideaCreator.fields.audiences" | translate }}</mat-label>
+          <mat-label>{{
+            "ideaCreator.fields.audiences" | translate
+          }}</mat-label>
           <mat-select formControlName="audiences" multiple>
             @for (audience of audienceOptions; track audience) {
               <mat-option [value]="audience">{{ audience }}</mat-option>
@@ -242,14 +316,21 @@
       }
 
       @if (saving()) {
-        <mat-progress-bar mode="indeterminate" />
+        <mat-progress-bar
+          mode="indeterminate"
+          [attr.aria-label]="'a11y.loading' | translate"
+        />
         <p class="status" role="status">
           {{ "ideaCreator.new.saving" | translate }}
         </p>
       }
 
       <div class="step-actions">
-        <button mat-button matStepperPrevious type="button">
+        <button
+          mat-button
+          (click)="selectedStep.set(selectedStep() - 1)"
+          type="button"
+        >
           {{ "ideaCreator.new.back" | translate }}
         </button>
         <button
@@ -270,6 +351,6 @@
         </button>
       </div>
       <p class="hint">{{ "ideaCreator.new.tokenNotice" | translate }}</p>
-    </mat-step>
-  </mat-stepper>
+    </mat-tab>
+  </mat-tab-group>
 </section>

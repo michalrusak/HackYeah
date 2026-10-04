@@ -98,6 +98,7 @@ model TesterProject {
   status        String @default("open") @db.VarChar(6)
   createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  pilotListing  TesterPilotListing?
   applications  TesterProjectApplication[]
   feedback      TesterProjectFeedback[]
 
@@ -353,4 +354,15 @@ model Message {
   createdAt      DateTime     @default(now()) @map("created_at")
 
   @@map("messages")
+}
+
+model TesterPilotListing {
+  projectId String @id @map("project_id") @db.Uuid
+  project TesterProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  conditions Json
+  reviewedProjectUpdatedAt DateTime @map("reviewed_project_updated_at") @db.Timestamptz(3)
+  approvedAt DateTime @default(now()) @map("approved_at") @db.Timestamptz(3)
+  reviewer String @db.VarChar(120)
+
+  @@map("tester_pilot_listings")
 }

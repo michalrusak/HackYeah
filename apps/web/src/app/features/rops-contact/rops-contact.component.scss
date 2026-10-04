@@ -1,6 +1,6 @@
 .rops-contact-container {
   padding: 16px;
-  height: calc(100vh - 64px - 32px); // Assuming header is ~64px
+  min-height: 60vh;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -15,11 +15,12 @@
   display: flex;
   gap: 16px;
   flex-grow: 1;
-  overflow: hidden;
+  flex-wrap: wrap;
 }
 
 .sidebar {
-  width: 300px;
+  flex: 1 1 260px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 
@@ -41,7 +42,8 @@
 }
 
 .chat-area {
-  flex-grow: 1;
+  flex: 2 1 360px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
@@ -88,9 +90,6 @@
 
 .chat-input-area {
   padding: 8px 16px !important;
-  .mat-mdc-form-field {
-    margin-bottom: -1.25em; // Hide padding bottom
-  }
 }
 
 .empty-state {
@@ -128,4 +127,48 @@
 }
 .mb-2 {
   margin-bottom: 8px;
+}
+
+.name-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.name-fields > * {
+  flex: 1 1 180px;
+}
+.conversation-list {
+  list-style: none;
+  padding: 8px;
+  margin: 0;
+}
+.conversation-list button {
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  background: var(--hub-surface);
+  color: var(--hub-ink);
+  border: 1px solid var(--hub-border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.conversation-list span,
+.conversation-list strong {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.conversation-list .active {
+  background: var(--hub-soft);
+  border: 2px solid var(--hub-brand);
+}
+.error-message {
+  color: var(--hub-error);
+}
+@media (max-width: 600px) {
+  .rops-contact-container {
+    padding: 0;
+  }
+  .message-bubble {
+    max-width: 100%;
+  }
 }

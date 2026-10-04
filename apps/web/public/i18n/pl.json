@@ -88,9 +88,13 @@
         "label": "Integracja migrantów",
         "description": "Nasza organizacja wspiera rodziny z Ukrainy mieszkające w Polsce i mające prawo do publicznej opieki zdrowotnej. Nie wiedzą, jak wybrać lekarza rodzinnego, zapisać dziecko na szczepienie i korzystać z przychodni. Potrzebujemy zrozumiałych informacji po ukraińsku, aby ułatwić im dostęp do usług."
       },
-      "school": {
-        "label": "Powrót do szkoły",
-        "description": "W naszej szkole uczniowie w wieku 10–13 lat wracają po długiej nieobecności związanej z terapią lub leczeniem psychiatrycznym. Potrzebujemy materiałów psychoedukacyjnych dla nich, rodziców, nauczycieli i klasy, żeby wspierać powrót do szkoły, radzenie sobie z emocjami i odbudowę relacji z rówieśnikami."
+      "homelessness": {
+        "label": "Nie mam gdzie mieszkać",
+        "description": "Nie mam stałego miejsca zamieszkania. Potrzebuję bezpiecznego miejsca do życia i wsparcia w załatwieniu formalności oraz znalezieniu pracy. Chcę krok po kroku odzyskać samodzielność."
+      },
+      "pilot": {
+        "label": "Autyzm — przygotowanie do pracy",
+        "description": "Pracuję z młodymi osobami w spektrum autyzmu, które przygotowują się do pierwszej pracy. Szukamy wsparcia w aktywizacji zawodowej: materiałów do doradztwa zawodowego dostosowanych do ich sposobu uczenia się. Chcemy pomóc im rozpoznać mocne strony i przygotować się do wejścia na rynek pracy. Możemy przetestować nowy narzędziownik i przekazać uwagi."
       }
     },
     "interpretationTitle": "Tak rozumiemy Twoje wyzwanie",
@@ -135,6 +139,9 @@
       "intro": "Odpowiedz na krótkie pytanie. Uwzględnimy Twój opis i wcześniejsze odpowiedzi w kolejnym wyszukiwaniu.",
       "progress": "Pytanie {{round}} z maksymalnie {{max}}",
       "answer": "Twoja odpowiedź",
+      "otherAnswer": "Inna odpowiedź",
+      "optionLabel": "{{letter}}. {{answer}}",
+      "chooseAnswer": "Wybierz jedną z propozycji albo zaznacz „Inna odpowiedź”.",
       "validation": "Wpisz odpowiedź od 1 do 1000 znaków.",
       "submit": "Doprecyzuj i szukaj",
       "skip": "Pomiń pytania",
@@ -241,7 +248,8 @@
         "essence": "Opisz istotę pomysłu — od 10 do 600 znaków.",
         "problem": "Opisz problem — od 10 do 1500 znaków.",
         "targetAudience": "Napisz, komu dedykowany jest pomysł — co najmniej 3 znaki."
-      }
+      },
+      "seedPlaceholder": "Na przykład: chcę pomóc starszym sąsiadom w codziennych zakupach."
     },
     "detail": {
       "loading": "Wczytujemy fiszkę…",
@@ -262,7 +270,8 @@
       "tags": "Tagi",
       "callTitle": "Trwa nabór grantowy",
       "startApplication": "Przygotuj wniosek",
-      "callNeedsOwnership": "Wniosek może złożyć osoba, która zgłosiła ten pomysł. Użyj opcji „Wykorzystaj u siebie”, aby utworzyć własną wersję."
+      "callNeedsOwnership": "Wniosek może złożyć osoba, która zgłosiła ten pomysł. Użyj opcji „Wykorzystaj u siebie”, aby utworzyć własną wersję.",
+      "needs": "Potrzebne wsparcie"
     },
     "canvas": {
       "back": "Wróć do fiszki",
@@ -710,5 +719,88 @@
     "opinions": "Opinie uczestników",
     "noOpinions": "Nie ma jeszcze opinii o tym teście.",
     "ratingError": "Wybierz ocenę od 1 do 5."
+  },
+  "a11y": {
+    "title": "Dostępność",
+    "loading": "Trwa ładowanie…",
+    "sending": "Wysyłanie wiadomości…",
+    "sent": "Wiadomość została wysłana.",
+    "loadError": "Nie udało się wczytać rozmów. Spróbuj ponownie, odświeżając stronę.",
+    "sendError": "Nie udało się wysłać wiadomości. Twój tekst pozostał w formularzu. Spróbuj ponownie.",
+    "contactValidation": "Uzupełnij imię, nazwisko, temat i wiadomość. Wiadomość może mieć maksymalnie 4000 znaków.",
+    "required": "Uzupełnij to pole.",
+    "messageLimit": "Maksymalnie 4000 znaków.",
+    "ideaSteps": "Etapy tworzenia pomysłu",
+    "emailError": "Wpisz poprawny adres e-mail, np. kontakt@organizacja.pl, lub pozostaw pole puste.",
+    "ideaDetail": "Opis pomysłu",
+    "fieldError": "Uzupełnij to pole i sprawdź dopuszczalną długość tekstu.",
+    "reviewApplication": "Sprawdź wszystkie odpowiedzi przed wysłaniem. Po wysłaniu wniosku nie będzie można go edytować.",
+    "confirmApplication": "Potwierdzam, że sprawdzono treść wniosku.",
+    "scope": "Rozwijamy Łącznik z myślą o wymaganiach WCAG 2.1 na poziomie AA. Wprowadzone udogodnienia i testy automatyczne nie stanowią deklaracji pełnej zgodności. Pełna weryfikacja wymaga także testów ręcznych z technologiami asystującymi.",
+    "keyboardTitle": "Obsługa klawiaturą i powiększenie",
+    "keyboard": "Klawisz Tab przechodzi do kolejnego elementu, Shift + Tab do poprzedniego. Enter uruchamia linki, a Enter lub Spacja przyciski. Pierwszy link pozwala przejść do treści. Escape zamyka menu i okna dialogowe, gdy nie trwa zapis. W zakładkach i listach wyboru używaj strzałek. Możesz powiększyć stronę w przeglądarce.",
+    "supportTitle": "Zgłoś barierę",
+    "support": "Jeśli nie możesz wykonać czynności, opisz ekran, problem i preferowany sposób kontaktu. Nie podawaj haseł ani danych wrażliwych.",
+    "reportBarrier": "Przejdź do kontaktu z ROPS",
+    "paginator": {
+      "items": "Liczba elementów na stronie",
+      "next": "Następna strona",
+      "previous": "Poprzednia strona",
+      "first": "Pierwsza strona",
+      "last": "Ostatnia strona",
+      "range": "{{start}}–{{end}} z {{total}}"
+    }
+  },
+  "pilots": {
+    "alternative": "Nie znalazłeś odpowiedniego rozwiązania? Sprawdź projekty, które szukają uczestników testów.",
+    "noneFit": "Żadna propozycja nie odpowiada mojej potrzebie",
+    "title": "Innowacje, które możesz pomóc przetestować",
+    "intro": "To propozycje w fazie testów. Poznaj warunki i zgłoś zainteresowanie organizatorowi.",
+    "loading": "Szukamy pasujących projektów testowych…",
+    "count": "Liczba propozycji testowych: {{count}}",
+    "error": "Nie udało się pobrać projektów testowych. Twoje wyniki pozostają dostępne.",
+    "empty": "Nie znaleźliśmy obecnie pasującego projektu z otwartym naborem. Możesz uzupełnić opis potrzeby lub skontaktować się z Hubem.",
+    "contactHub": "Porozmawiaj z Hubem",
+    "badge": "Innowacja w fazie testów · Trwa nabór",
+    "warning": "To rozwiązanie nie zostało jeszcze zatwierdzone do wdrożenia. Możesz zgłosić zainteresowanie jego testowaniem.",
+    "demo": "Przykład demonstracyjny — fikcyjny projekt i nabór do prezentacji działania aplikacji.",
+    "why": "Dlaczego ta propozycja:",
+    "eligibility": "Dopasowanie dotyczy opisanej potrzeby. Możliwość udziału potwierdzi organizator po sprawdzeniu wymagań.",
+    "organizer": "Organizator",
+    "where": "Gdzie",
+    "who": "Kogo szukamy",
+    "deadline": "Zgłoszenia do",
+    "participants": {
+      "person": "Osoby indywidualne",
+      "organization": "Organizacje i instytucje",
+      "either": "Osoby indywidualne, organizacje i instytucje"
+    },
+    "conditions": "Poznaj warunki testu",
+    "requirements": "Wymagania udziału",
+    "schedule": "Termin i przebieg",
+    "commitment": "Zaangażowanie i informacja zwrotna",
+    "interested": "Zgłoś zainteresowanie testem",
+    "formTitle": "Porozmawiajmy o Twoim udziale",
+    "formHint": "Napisz, jak możesz pomóc w testowaniu, lub zadaj pytanie. Zgłoszenie nie oznacza automatycznego przyjęcia do testu.",
+    "message": "Wiadomość do organizatora (opcjonalnie)",
+    "profileHint": "Organizator zobaczy Twój profil testera i tę wiadomość. Opis potrzeby z wyszukiwarki nie zostanie wysłany automatycznie.",
+    "send": "Wyślij zainteresowanie",
+    "loginToSend": "Zaloguj się i wyślij zainteresowanie",
+    "sending": "Przygotowujemy zgłoszenie…",
+    "sent": "Zainteresowanie zgłoszone — oczekujesz na decyzję organizatora.",
+    "activityHint": "Status zgłoszenia znajdziesz także w module Tester innowacji, w swojej aktywności.",
+    "unavailable": "Ten nabór został zamknięty albo warunki projektu się zmieniły. Wróć do propozycji i wyszukaj testy ponownie.",
+    "owner": "Jesteś organizatorem tego testu. Zgłoszeniami możesz zarządzać w module Tester innowacji.",
+    "detailError": "Nie udało się odczytać aktualnego statusu projektu. Spróbujemy ponownie przed wysłaniem zgłoszenia.",
+    "sendError": "Nie udało się wysłać zainteresowania. Wiadomość została zachowana; sprawdź status naboru i spróbuj ponownie.",
+    "externalBadge": "Projekt zewnętrzny · Zaproszenie do testów",
+    "externalWarning": "Autorka ogłosiła nabór do testów. Aktualność zaproszenia i warunki udziału potwierdź bezpośrednio u niej. Nie jest to oferta zatwierdzona przez Małopolski Hub.",
+    "source": "Źródło",
+    "verifiedAt": "Źródło sprawdzono",
+    "unknownDeadline": "Nie podano — zapytaj autorkę",
+    "unknownMode": "Do potwierdzenia",
+    "externalContact": "Kontakt i zgłoszenie u autorki",
+    "externalContactHint": "Opis projektu pozostaje w tym kafelku. Zgłoszenie odbywa się przez kontakt wskazany w ogłoszeniu autorki; Łącznik nie wysyła go w Twoim imieniu.",
+    "externalLinkHint": "— otwiera się w nowej karcie"
   }
 }

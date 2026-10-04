@@ -1,0 +1,29 @@
+[
+  {
+    "id": "72569310-43af-4ef8-91bd-fd1c165c1c9d",
+    "title": "NeuroSTART — przygotowanie do pracy w spektrum autyzmu",
+    "description": "Rozwijany narzędziownik dla nauczycieli, terapeutów i doradców zawodowych wspierających młodzież w spektrum autyzmu. Autorka zaprasza do grupy testującej materiały.",
+    "organizerName": "Katarzyna Miąskowska — autorka NeuroSTART",
+    "requirements": "Projekt adresowany do specjalistów wspierających młodzież w spektrum autyzmu. Szczegółowe kryteria udziału należy potwierdzić u autorki.",
+    "location": "Polska; miejsce i sposób testowania do potwierdzenia u autorki",
+    "mode": null,
+    "conditions": {
+      "isDemo": false,
+      "audiences": ["Osoby w spektrum autyzmu"],
+      "needs": ["Aktywizacja zawodowa"],
+      "areas": ["Niepełnosprawność"],
+      "recruitmentEndsAt": null,
+      "testSchedule": "W ogłoszeniu podano okres projektu: wrzesień 2026 – sierpień 2027. Termin udziału w testach wymaga potwierdzenia.",
+      "commitment": "Czas testowania i sposób przekazywania uwag nie zostały podane w ogłoszeniu. Zapytaj autorkę przed zgłoszeniem.",
+      "participants": "either"
+    },
+    "status": "testing",
+    "deploymentApproved": false,
+    "external": {
+      "sourceUrl": "https://pl.linkedin.com/posts/katarzyna-mi%C4%85skowska-831130226_neurostart-spektrumautyzmu-doradztwozawodoweasd-activity-7509705729986101248-2b8_",
+      "sourceLabel": "Zaproszenie do testów opublikowane przez autorkę (LinkedIn)",
+      "verifiedAt": "2026-10-04"
+    },
+    "recheckAfter": "2026-11-04T00:00:00Z"
+  }
+]

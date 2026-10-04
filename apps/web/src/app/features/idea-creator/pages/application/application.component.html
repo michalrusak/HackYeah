@@ -1,5 +1,11 @@
+@if (!data()) {
+  <h1>{{ "ideaCreator.application.title" | translate }}</h1>
+}
 @if (loading()) {
-  <mat-progress-bar mode="indeterminate" />
+  <mat-progress-bar
+    mode="indeterminate"
+    [attr.aria-label]="'a11y.loading' | translate"
+  />
   <p role="status">{{ "ideaCreator.application.loading" | translate }}</p>
 }
 
@@ -29,8 +35,12 @@
     @if (submitted()) {
       <mat-card class="submitted-notice">
         <mat-card-content>
-          <h2>{{ "ideaCreator.application.submittedTitle" | translate }}</h2>
-          <p>{{ "ideaCreator.application.submittedDescription" | translate }}</p>
+          <h2 tabindex="-1">
+            {{ "ideaCreator.application.submittedTitle" | translate }}
+          </h2>
+          <p>
+            {{ "ideaCreator.application.submittedDescription" | translate }}
+          </p>
         </mat-card-content>
       </mat-card>
     } @else {
@@ -39,7 +49,7 @@
           mat-flat-button
           type="button"
           (click)="generate()"
-          [disabled]="generating()"
+          [disabled]="generating() || submitting() || saveState() === 'saving'"
         >
           <mat-icon aria-hidden="true">auto_awesome</mat-icon>
           {{ "ideaCreator.application.generate" | translate }}
@@ -58,11 +68,16 @@
           }
         </p>
       </div>
-      <p class="hint">{{ "ideaCreator.application.generateHint" | translate }}</p>
+      <p class="hint">
+        {{ "ideaCreator.application.generateHint" | translate }}
+      </p>
     }
 
     @if (generating()) {
-      <mat-progress-bar mode="indeterminate" />
+      <mat-progress-bar
+        mode="indeterminate"
+        [attr.aria-label]="'a11y.loading' | translate"
+      />
       <p class="status" role="status">
         {{ "ideaCreator.application.generating" | translate }}
       </p>
@@ -79,10 +94,15 @@
                 matInput
                 rows="8"
                 [formControlName]="section.id"
+                [attr.aria-invalid]="
+                  form.controls[section.id].touched &&
+                  form.controls[section.id].invalid
+                "
                 [maxlength]="section.maxLength"
                 [required]="section.required"
                 [attr.aria-describedby]="section.id + '-hint'"
               ></textarea>
+              <mat-error>{{ "a11y.fieldError" | translate }}</mat-error>
             </mat-form-field>
             <p [id]="section.id + '-hint'" class="section-hint">
               {{ section.help }}
@@ -98,6 +118,15 @@
       }
     </form>
 
+    @if (!submitted()) {
+      <p>{{ "a11y.reviewApplication" | translate }}</p>
+      <mat-checkbox
+        id="application-review"
+        [formControl]="reviewed"
+        [disabled]="submitting()"
+        >{{ "a11y.confirmApplication" | translate }}</mat-checkbox
+      >
+    }
     <div class="actions">
       <button mat-stroked-button type="button" (click)="exportMarkdown()">
         <mat-icon aria-hidden="true">download</mat-icon>
@@ -108,7 +137,7 @@
           mat-flat-button
           type="button"
           (click)="submit()"
-          [disabled]="submitting()"
+          [disabled]="submitting() || generating() || saveState() === 'saving'"
         >
           <mat-icon aria-hidden="true">send</mat-icon>
           {{ "ideaCreator.application.submit" | translate }}

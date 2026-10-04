@@ -4,12 +4,17 @@
       <mat-icon aria-hidden="true">arrow_back</mat-icon>
       {{ "ideaCreator.canvas.back" | translate }}
     </a>
-    <h1 id="canvas-title">{{ title() }}</h1>
+    <h1 id="canvas-title">
+      {{ title() || ("ideaCreator.detail.canvas" | translate) }}
+    </h1>
     <p>{{ description() }}</p>
   </header>
 
   @if (loading()) {
-    <mat-progress-bar mode="indeterminate" />
+    <mat-progress-bar
+      mode="indeterminate"
+      [attr.aria-label]="'a11y.loading' | translate"
+    />
     <p role="status">{{ "ideaCreator.canvas.loading" | translate }}</p>
   }
 
@@ -50,14 +55,19 @@
   }
 
   @if (suggesting()) {
-    <mat-progress-bar mode="indeterminate" />
+    <mat-progress-bar
+      mode="indeterminate"
+      [attr.aria-label]="'a11y.loading' | translate"
+    />
   }
 
   <form [formGroup]="form" class="board">
     @for (group of columns(); track group.column) {
       <fieldset class="column">
         <legend class="visually-hidden">
-          {{ "ideaCreator.canvas.column" | translate: { number: group.column } }}
+          {{
+            "ideaCreator.canvas.column" | translate: { number: group.column }
+          }}
         </legend>
         @for (field of group.fields; track field.id) {
           <mat-card class="field-card">

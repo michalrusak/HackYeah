@@ -15,7 +15,7 @@
     [disabled]="saving()"
     [aria-label]="'testers.close' | translate"
   >
-    <mat-icon>close</mat-icon>
+    <mat-icon aria-hidden="true">close</mat-icon>
   </button>
 </div>
 <mat-dialog-content>
@@ -155,7 +155,7 @@
     form="tester-profile-form"
     [disabled]="saving()"
   >
-    <mat-icon>check</mat-icon
+    <mat-icon aria-hidden="true">check</mat-icon
     >{{
       (saving() ? "testers.profile.saving" : "testers.profile.save") | translate
     }}

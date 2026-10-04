@@ -48,7 +48,7 @@
     </a>
 
     <div class="header-actions">
-      <details class="help">
+      <details class="help" #help>
         <summary>{{ "hub.help" | translate }}</summary>
         <div class="help-panel">
           <h2>{{ "hub.helpTitle" | translate }}</h2>
@@ -131,12 +131,16 @@
         <router-outlet />
       </main>
       <footer class="footer">
+        <a routerLink="/dostepnosc">{{ "a11y.title" | translate }}</a>
         <span>{{ "hub.sourceNote" | translate }}</span>
         <a
           href="https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/kategorie"
           target="_blank"
           rel="noopener noreferrer"
-          >{{ "hub.library" | translate }}</a
+          >{{ "hub.library" | translate
+          }}<span class="sr-only">{{
+            "matchmaking.newTab" | translate
+          }}</span></a
         >
       </footer>
     </mat-sidenav-content>

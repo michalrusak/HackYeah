@@ -1,11 +1,10 @@
-import type { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { afterNextRender, Injector, viewChild } from '@angular/core';
 import {
   Component,
   DestroyRef,
   ElementRef,
   inject,
   signal,
-  viewChildren,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -21,7 +20,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { MatStepperModule } from '@angular/material/stepper';
+import {
+  MatTabGroup,
+  MatTabsModule,
+  type MatTabChangeEvent,
+} from '@angular/material/tabs';
 import { Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import {
@@ -52,7 +55,7 @@ import { IdeaCreatorApiService } from '../../services/idea-creator-api.service';
     MatInputModule,
     MatProgressBarModule,
     MatSelectModule,
-    MatStepperModule,
+    MatTabsModule,
     TranslatePipe,
   ],
   templateUrl: './idea-new.component.html',
@@ -66,8 +69,10 @@ export class IdeaNewComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly assistant = inject(AssistantContextService);
 
-  readonly stepHeadings =
-    viewChildren<ElementRef<HTMLElement>>('stepHeading');
+  readonly selectedStep = signal(0);
+  private readonly tabs = viewChild(MatTabGroup);
+  private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   readonly stages = IdeaStageSchema.options;
   readonly kinds = IdeaKindSchema.options;
@@ -156,16 +161,27 @@ export class IdeaNewComponent {
   }
 
   /** Zmiana kroku jest ogłaszana czytnikowi i przenosi fokus na nagłówek. */
-  onStepChange(event: StepperSelectionEvent): void {
+  onStepChange(event: MatTabChangeEvent): void {
+    this.selectedStep.set(event.index);
     this.stepAnnouncement.set(
       this.translate.instant('ideaCreator.new.stepAnnouncement', {
-        current: event.selectedIndex + 1,
+        current: event.index + 1,
         total: 4,
       }),
     );
-    queueMicrotask(() => {
-      this.stepHeadings()[event.selectedIndex]?.nativeElement.focus();
-    });
+  }
+
+  focusStep(): void {
+    const panel = this.element.nativeElement.querySelector(
+      '.mat-mdc-tab-body-active',
+    );
+    const invalid =
+      this.errorKey() === 'ideaCreator.errors.validation'
+        ? panel?.querySelector<HTMLElement>(
+            'input.ng-invalid, textarea.ng-invalid, mat-select.ng-invalid',
+          )
+        : null;
+    (invalid ?? panel?.querySelector<HTMLElement>('.step-heading'))?.focus();
   }
 
   expandWithAssistant(): void {
@@ -202,9 +218,26 @@ export class IdeaNewComponent {
 
   save(publish: boolean): void {
     if (this.saving()) return;
+    for (const control of Object.values(this.coreForm.controls)) {
+      control.setValue(control.value.trim());
+    }
     this.coreForm.markAllAsTouched();
+    this.contextForm.markAllAsTouched();
     if (this.coreForm.invalid || this.contextForm.invalid) {
       this.errorKey.set('ideaCreator.errors.validation');
+      const step = this.coreForm.invalid ? 1 : 2;
+      this.selectedStep.set(step);
+      const tabs = this.tabs();
+      if (tabs) tabs.selectedIndex = step;
+      afterNextRender(
+        () =>
+          this.element.nativeElement
+            .querySelector<HTMLElement>(
+              'input.ng-invalid, textarea.ng-invalid, mat-select.ng-invalid',
+            )
+            ?.focus(),
+        { injector: this.injector },
+      );
       return;
     }
     const parsed = CreateIdeaRequestSchema.safeParse({

@@ -83,6 +83,12 @@ export class TesterProjectsStore {
     });
   }
 
+  pilotListing(projectId: string) {
+    return this.database.testerPilotListing.findUnique({
+      where: { projectId },
+    });
+  }
+
   ownProfile(ownerHash: string): Promise<TesterProfile | null> {
     return this.database.testerProfile.findUnique({ where: { ownerHash } });
   }

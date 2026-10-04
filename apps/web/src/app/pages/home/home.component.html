@@ -1,26 +1,26 @@
 <mat-card>
   <mat-card-header>
-    <mat-card-title>{{
-      'home.title' | translate: { name: ('app.name' | translate) }
-    }}</mat-card-title>
-    <mat-card-subtitle>{{ 'home.subtitle' | translate }}</mat-card-subtitle>
+    <h1>{{ "home.title" | translate: { name: ("app.name" | translate) } }}</h1>
+    <mat-card-subtitle>{{ "home.subtitle" | translate }}</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <p>{{ 'home.description' | translate }}</p>
+    <p>{{ "home.description" | translate }}</p>
 
     @if (apiError()) {
-      <p class="api-error">{{ 'home.apiError' | translate }}</p>
+      <p class="api-error">{{ "home.apiError" | translate }}</p>
     } @else {
       <div class="api-status">
         @if (apiMessage()) {
           <mat-chip-set>
-            <mat-chip>{{ 'home.apiLabel' | translate }}: {{ apiMessage() }}</mat-chip>
+            <mat-chip
+              >{{ "home.apiLabel" | translate }}: {{ apiMessage() }}</mat-chip
+            >
           </mat-chip-set>
         }
         @if (dbStatus()) {
           <mat-chip-set>
             <mat-chip [highlighted]="dbStatus() === 'up'">
-              {{ 'home.dbLabel' | translate }}: {{ dbStatus() }}
+              {{ "home.dbLabel" | translate }}: {{ dbStatus() }}
             </mat-chip>
           </mat-chip-set>
         }
@@ -29,8 +29,8 @@
   </mat-card-content>
   <mat-card-actions align="end">
     <button mat-raised-button color="primary">
-      <mat-icon>rocket_launch</mat-icon>
-      {{ 'home.cta' | translate }}
+      <mat-icon aria-hidden="true">rocket_launch</mat-icon>
+      {{ "home.cta" | translate }}
     </button>
   </mat-card-actions>
 </mat-card>

@@ -1,0 +1,56 @@
+<section class="interest" [attr.aria-busy]="busy() || loading()">
+  <h4>{{ "pilots.formTitle" | translate }}</h4>
+  @if (loading()) {
+    <p role="status">{{ "projects.loading" | translate }}</p>
+  }
+  @if (error(); as key) {
+    <p role="alert">{{ key | translate }}</p>
+  }
+  @if (sent()) {
+    <p role="status">{{ "pilots.sent" | translate }}</p>
+  }
+  @if (detail()?.myApplication; as application) {
+    @if (application.status !== "withdrawn") {
+      <p class="application-status">
+        {{ "projects.applicationStatus." + application.status | translate }}
+      </p>
+      <p>{{ "pilots.activityHint" | translate }}</p>
+    }
+  }
+  @if (unavailable() || detail()?.project?.status === "closed") {
+    <p role="status">{{ "pilots.unavailable" | translate }}</p>
+  } @else if (detail()?.project?.isOwner) {
+    <p>{{ "pilots.owner" | translate }}</p>
+  } @else if (
+    !loading() &&
+    (!detail()?.myApplication ||
+      detail()?.myApplication?.status === "withdrawn")
+  ) {
+    <p>{{ "pilots.formHint" | translate }}</p>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>{{ "pilots.message" | translate }}</mat-label>
+        <textarea
+          matInput
+          [formControl]="message"
+          rows="4"
+          maxlength="1000"
+          [readonly]="busy()"
+        ></textarea>
+        <mat-hint align="end">{{ message.value.length }} / 1000</mat-hint>
+        <mat-error>{{ "projects.messageError" | translate }}</mat-error>
+      </mat-form-field>
+      <p class="privacy">{{ "pilots.profileHint" | translate }}</p>
+      <button mat-flat-button type="submit" [disabled]="busy()">
+        {{
+          (busy()
+            ? "pilots.sending"
+            : auth.user()
+              ? "pilots.send"
+              : "pilots.loginToSend"
+          ) | translate
+        }}
+      </button>
+    </form>
+  }
+</section>

@@ -147,6 +147,20 @@ export class TesterProjectsController {
     return respond(response, await this.service.apply(id, input, account));
   }
 
+  @Put('projects/:id/pilot-interest')
+  async pilotInterest(
+    @Param('id', new TesterValidationPipe(TesterIdSchema)) id: string,
+    @Body(new TesterValidationPipe(TesterApplicationInputSchema))
+    input: TesterApplicationInput,
+    @ProjectAccount() account: TesterAccountIdentity,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<ApiSuccessResponse<TesterProjectDetailData> | ApiErrorResponse> {
+    return respond(
+      response,
+      await this.service.apply(id, input, account, true),
+    );
+  }
+
   @Delete('projects/:id/applications/me')
   async withdraw(
     @Param('id', new TesterValidationPipe(TesterIdSchema)) id: string,

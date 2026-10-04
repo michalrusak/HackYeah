@@ -9,7 +9,7 @@
 }
 
 .assistant-drawer {
-  width: min(460px, 100vw);
+  width: min(460px, 100%);
 }
 
 .drawer-header {
@@ -19,8 +19,9 @@
 }
 
 .assistant-trigger {
-  position: fixed;
-  right: 24px;
+  position: sticky;
+  margin: 16px 0 16px auto;
+  display: flex;
   bottom: 24px;
   z-index: 10;
   /* Cel dotykowy powyżej 44 px zgodnie z WCAG 2.5.5. */

@@ -1,5 +1,11 @@
+@if (!idea()) {
+  <h1>{{ "a11y.ideaDetail" | translate }}</h1>
+}
 @if (loading()) {
-  <mat-progress-bar mode="indeterminate" />
+  <mat-progress-bar
+    mode="indeterminate"
+    [attr.aria-label]="'a11y.loading' | translate"
+  />
   <p role="status">{{ "ideaCreator.detail.loading" | translate }}</p>
 }
 
@@ -99,7 +105,10 @@
     </div>
 
     @if (busyAction()) {
-      <mat-progress-bar mode="indeterminate" />
+      <mat-progress-bar
+        mode="indeterminate"
+        [attr.aria-label]="'a11y.loading' | translate"
+      />
       <p class="status" role="status">
         {{ "ideaCreator.detail.working" | translate }}
       </p>

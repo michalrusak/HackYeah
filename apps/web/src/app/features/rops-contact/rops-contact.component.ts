@@ -1,7 +1,16 @@
 import { ContactDraftService } from '../../core/services/contact-draft.service';
-import { Component, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  ElementRef,
+  afterNextRender,
+  Injector,
+  viewChild,
+  viewChildren,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgModel } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,7 +18,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { RopsContactService } from './rops-contact.service';
 import type { Conversation, Message } from '@repo/api-contracts';
 
@@ -33,7 +42,16 @@ import type { Conversation, Message } from '@repo/api-contracts';
 })
 export class RopsContactComponent implements OnInit {
   public contactService = inject(RopsContactService);
-  private translate = inject(TranslateService);
+  private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  private readonly conversationHeading = viewChild<ElementRef<HTMLElement>>(
+    'conversationHeading',
+  );
+  private readonly fields = viewChildren(NgModel);
+  loading = false;
+  sending = false;
+  errorKey = '';
+  announcement = '';
 
   conversations: Conversation[] = [];
   selectedConversation: Conversation | null = null;
@@ -76,20 +94,40 @@ export class RopsContactComponent implements OnInit {
   }
 
   loadConversations() {
+    this.loading = true;
+    this.errorKey = '';
     this.contactService.getConversations().subscribe({
       next: (data) => {
         this.conversations = data;
+        this.loading = false;
       },
-      error: (err) => console.error(err),
+      error: () => {
+        this.loading = false;
+        this.errorKey = 'a11y.loadError';
+      },
     });
   }
 
   selectConversation(conv: Conversation) {
     this.selectedConversation = conv;
+    this.messages = [];
+    this.errorKey = '';
+    this.loading = true;
     this.isCreatingNew = false;
     this.contactService.getMessages(conv.id).subscribe({
-      next: (data) => (this.messages = data),
-      error: (err) => console.error(err),
+      next: (data) => {
+        if (this.selectedConversation?.id !== conv.id) return;
+        this.messages = data;
+        this.loading = false;
+        afterNextRender(
+          () => this.conversationHeading()?.nativeElement.focus(),
+          { injector: this.injector },
+        );
+      },
+      error: () => {
+        this.loading = false;
+        this.errorKey = 'a11y.loadError';
+      },
     });
   }
 
@@ -100,10 +138,45 @@ export class RopsContactComponent implements OnInit {
     this.newMessage = '';
     this.newFirstName = '';
     this.newLastName = '';
+    afterNextRender(
+      () =>
+        this.element.nativeElement
+          .querySelector<HTMLElement>('[name=firstName]')
+          ?.focus(),
+      { injector: this.injector },
+    );
   }
 
   sendMessage() {
-    if (!this.newMessage.trim()) return;
+    if (this.sending || (!this.isCreatingNew && !this.selectedConversation))
+      return;
+    this.errorKey = '';
+    this.announcement = '';
+    for (const field of this.fields()) field.control.markAsTouched();
+    if (
+      !this.newMessage.trim() ||
+      this.newMessage.length > 4000 ||
+      (this.isCreatingNew &&
+        (!this.newSubject.trim() ||
+          !this.newFirstName.trim() ||
+          !this.newLastName.trim()))
+    ) {
+      this.errorKey = 'a11y.contactValidation';
+      afterNextRender(
+        () =>
+          (
+            this.element.nativeElement.querySelector<HTMLElement>(
+              'input.ng-invalid, textarea.ng-invalid',
+            ) ??
+            this.element.nativeElement.querySelector<HTMLElement>(
+              '[role=alert]',
+            )
+          )?.focus(),
+        { injector: this.injector },
+      );
+      return;
+    }
+    this.sending = true;
 
     if (
       this.isCreatingNew &&
@@ -120,11 +193,16 @@ export class RopsContactComponent implements OnInit {
         })
         .subscribe({
           next: (conv) => {
+            this.sending = false;
+            this.announcement = 'a11y.sent';
             this.loadConversations();
             this.selectConversation(conv);
             this.newMessage = '';
           },
-          error: (err) => console.error(err),
+          error: () => {
+            this.sending = false;
+            this.errorKey = 'a11y.sendError';
+          },
         });
     } else if (this.selectedConversation) {
       this.contactService
@@ -133,10 +211,15 @@ export class RopsContactComponent implements OnInit {
         })
         .subscribe({
           next: (msg) => {
+            this.sending = false;
+            this.announcement = 'a11y.sent';
             this.messages.push(msg);
             this.newMessage = '';
           },
-          error: (err) => console.error(err),
+          error: () => {
+            this.sending = false;
+            this.errorKey = 'a11y.sendError';
+          },
         });
     }
   }
