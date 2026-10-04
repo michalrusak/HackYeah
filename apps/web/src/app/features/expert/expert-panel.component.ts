@@ -100,7 +100,7 @@ export class ExpertPanelComponent {
       validators: [Validators.required],
     }),
   });
-  /** Konto eksperta dla jury — `null` poza trybem demo. */
+  /** Konto eksperta demo — `null` poza trybem demo. */
   readonly demoExpert = computed(
     () =>
       this.demo.data()?.accounts.find(({ role }) => role === 'expert') ?? null,

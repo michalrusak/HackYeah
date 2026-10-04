@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { DemoDataSchema, type DemoData } from '@repo/api-contracts';
 import { ApiService } from './api.service';
 
-/** Dane logowania demo dla jury; `null` poza trybem demo. */
+/** Dane logowania demo; `null` poza trybem demo. */
 @Injectable({ providedIn: 'root' })
 export class DemoService {
   private readonly api = inject(ApiService);

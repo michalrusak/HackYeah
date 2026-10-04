@@ -118,7 +118,7 @@ describe('AuthDialogComponent', () => {
     expect(close).not.toHaveBeenCalled();
   });
 
-  it('prefills a demo account when logging in and lets the jury pick another one', () => {
+  it('prefills a demo account when logging in and lets the user pick another one', () => {
     const accounts = [
       { login: 'demo-tester', password: 'demo password 1', role: 'tester' },
       { login: 'demo-ekspert', password: 'demo password 1', role: 'expert' },

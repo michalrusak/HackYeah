@@ -18,7 +18,7 @@ import { demoAccounts, demoExpertGrant, demoExpertName } from './demo.data.js';
 import { DemoRepository } from './demo.repository.js';
 
 /**
- * Tryb demo przygotowuje konta i przykładowe treści dla jury oraz udostępnia
+ * Tryb demo przygotowuje konta i przykładowe treści oraz udostępnia
  * dane logowania, którymi frontend uzupełnia formularze. Jest domyślnie
  * włączony; przy `DEMO_MODE=false` niczego nie zapisuje ani nie ujawnia.
  */

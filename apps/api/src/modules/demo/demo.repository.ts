@@ -36,7 +36,7 @@ export class DemoRepository {
     });
   }
 
-  /** Dodaje tylko brakujące wpisy — zmiany wprowadzone przez jury zostają. */
+  /** Dodaje tylko brakujące wpisy — zmiany wprowadzone w trakcie demo zostają. */
   async ensureContent(tester: Account, organizer: Account): Promise<void> {
     const { id: projectId, ...project } = demoProject;
     const { initialMessage, ...conversation } = demoConversation;

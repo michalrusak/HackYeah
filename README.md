@@ -6,7 +6,7 @@ Komendy działają tak samo na **Windows (PowerShell)**, **macOS** i **Linux (ba
 
 Funkcjonalności: [matchmaking społeczny](docs/MATCHMAKING.md) i [Zasobnik wiedzy](docs/KNOWLEDGE.md). Zasobnik wymaga migracji PostgreSQL, inicjalizacji katalogu i konfiguracji hasła administratora według swojej dokumentacji. Strony: `/matchmaking`, `/zasobnik`, `/zasobnik/admin`.
 
-Przygotowanie wersji dla jury: [instrukcja demo i scenariusz odbioru](docs/DEMO.md).
+Przygotowanie wersji demonstracyjnej: [instrukcja demo i scenariusz odbioru](docs/DEMO.md).
 Kontrola działającej aplikacji: `pnpm demo:check`. Pełne testy API z lokalnym
 PostgreSQL: `pnpm test:db`.
 
@@ -135,7 +135,7 @@ Plik `.env` jest w **rootcie** repozytoria. Turbo ładuje go automatycznie.
 | `API_URL` | `http://localhost:3000` | Frontend → backend |
 | `DATABASE_URL` | `postgresql://hackyeah:hackyeah@localhost:5432/hackyeah` | Prisma |
 | `POSTGRES_*` | `hackyeah` / `5432` | Docker Compose |
-| `DEMO_MODE`, `DEMO_ADMIN_PASSWORD`, `DEMO_ACCOUNT_PASSWORD` | tryb demo włączony | Dane logowania dla jury — [docs/DEMO.md](docs/DEMO.md) |
+| `DEMO_MODE`, `DEMO_ADMIN_PASSWORD`, `DEMO_ACCOUNT_PASSWORD` | tryb demo włączony | Dane logowania demo — [docs/DEMO.md](docs/DEMO.md) |
 
 ---
 

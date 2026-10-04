@@ -251,7 +251,7 @@ describe('ExpertAdminComponent', () => {
     http.verify();
   });
 
-  it('prefills the grant form with demo data for the jury', () => {
+  it('prefills the grant form with demo data', () => {
     TestBed.configureTestingModule({
       imports: [ExpertAdminComponent],
       providers,

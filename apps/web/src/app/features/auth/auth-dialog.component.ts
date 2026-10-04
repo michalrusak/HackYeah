@@ -70,7 +70,7 @@ export class AuthDialogComponent {
     password: ['', [Validators.required, Validators.maxLength(128)]],
   });
 
-  /** Konta demo dla jury — puste poza trybem demo i przy rejestracji. */
+  /** Konta demo — puste poza trybem demo i przy rejestracji. */
   readonly demoAccounts = computed(() =>
     this.mode() === 'login' ? (this.demo.data()?.accounts ?? []) : [],
   );

@@ -22,9 +22,9 @@ export const demoExpertGrant: ExpertGrantRequest = {
 };
 
 export const demoProfile: TesterProfileInput = {
-  displayName: 'Tester demonstracyjny (konto jury)',
+  displayName: 'Tester demonstracyjny',
   city: 'Kraków',
-  bio: 'Fikcyjny profil przygotowany dla jury. Sprawdzam, czy nowe usługi są zrozumiałe dla osób starszych i ich opiekunów.',
+  bio: 'Fikcyjny profil demonstracyjny. Sprawdzam, czy nowe usługi są zrozumiałe dla osób starszych i ich opiekunów.',
   skills: ['Ocena prostoty obsługi', 'Rozmowy z seniorami'],
   resources: ['Smartfon Android', 'Laptop'],
   accessibilityNeeds: '',
@@ -37,7 +37,7 @@ export const demoProject: TesterProjectInput & { id: string } = {
   organizerName: 'Zespół demonstracyjny (fikcyjny)',
   title: 'Telefon zaufania sąsiedzkiego — test rozmów (demo)',
   description:
-    'Fikcyjne ogłoszenie przygotowane dla jury. Szukamy osób, które sprawdzą scenariusz cotygodniowej rozmowy telefonicznej wolontariusza z samotnym seniorem i ocenią, czy instrukcja jest zrozumiała.',
+    'Fikcyjne ogłoszenie demonstracyjne. Szukamy osób, które sprawdzą scenariusz cotygodniowej rozmowy telefonicznej wolontariusza z samotnym seniorem i ocenią, czy instrukcja jest zrozumiała.',
   requirements:
     'Dwie rozmowy po 20 minut w ciągu tygodnia i krótka opinia. Nie podawaj danych prawdziwych osób.',
   location: 'Kraków',
@@ -58,7 +58,7 @@ export const demoConversation = {
   area: 'Seniorzy',
   subject: 'Szukam mentora do testu usługi dla seniorów (demo)',
   initialMessage:
-    'Przygotowujemy test cotygodniowych rozmów telefonicznych z samotnymi seniorami. Jak dobrać wskaźnik, który pokaże, że usługa zmniejsza poczucie samotności? Wiadomość fikcyjna, przygotowana dla jury.',
+    'Przygotowujemy test cotygodniowych rozmów telefonicznych z samotnymi seniorami. Jak dobrać wskaźnik, który pokaże, że usługa zmniejsza poczucie samotności? Wiadomość fikcyjna, przygotowana na potrzeby demo.',
 } as const;
 
 export const demoIdea = {
@@ -67,7 +67,7 @@ export const demoIdea = {
   essence:
     'Przeszkoleni wolontariusze raz w tygodniu dzwonią do samotnych seniorów z tej samej gminy. Stała pora i ten sam rozmówca budują relację bez wychodzenia z domu.',
   problem:
-    'Seniorzy o ograniczonej mobilności nie docierają do klubów seniora, a ośrodek pomocy nie ma zasobów na regularne wizyty. Zgłoszenie fikcyjne, przygotowane dla jury.',
+    'Seniorzy o ograniczonej mobilności nie docierają do klubów seniora, a ośrodek pomocy nie ma zasobów na regularne wizyty. Zgłoszenie fikcyjne, przygotowane na potrzeby demo.',
   targetAudience:
     'Osoby powyżej 70. roku życia mieszkające samotnie oraz wolontariusze z tej samej miejscowości.',
   description:

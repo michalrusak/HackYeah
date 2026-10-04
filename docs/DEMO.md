@@ -1,4 +1,4 @@
-# Demo dla jury
+# Demo aplikacji
 
 Poniższe kroki przygotowują i sprawdzają aplikację. Nie wykonują deploymentu.
 
@@ -15,7 +15,7 @@ pnpm start
 
 `db:seed` dodaje katalog ROPS, 210 fikcyjnych testerów, 6 opublikowanych pomysłów
 i 2 przykładowe nabory. Jest idempotentny: nie usuwa ani nie nadpisuje istniejących
-wpisów. Nie tworzy kont jury i nie publikuje zgłoszeń użytkowników — konta jury
+wpisów. Nie tworzy kont demo i nie publikuje zgłoszeń użytkowników — konta demo
 przygotowuje tryb demo opisany niżej.
 Istniejące pomysły oczekujące na moderację nadal wymagają decyzji administratora.
 
@@ -23,7 +23,7 @@ Przykładowy otwarty nabór kończy się 21 dni po pierwszym seedowaniu.
 Ponowny seed nie przesuwa tego terminu. Przed późniejszą prezentacją sprawdź
 datę naboru; nie zmieniaj dat rzeczywistych konkursów w celu prezentacji.
 
-## Tryb demo: gotowe dane logowania dla jury
+## Tryb demo: gotowe dane logowania
 
 Tryb demo jest domyślnie włączony; wyłącza go `DEMO_MODE=false` w środowisku
 API. Bez `DEMO_ADMIN_PASSWORD` i `DEMO_ACCOUNT_PASSWORD` niczego nie tworzy
@@ -55,7 +55,7 @@ i nie podaje tych danych w formularzu.
 każdy, kto zna adres, może moderować treści. Po zakończeniu oceny ustaw
 `DEMO_MODE=false`, zmień hasło administratora (`--rotate`) i uruchom API ponownie.
 
-Gdzie jury używa tych danych:
+Gdzie używa się tych danych:
 
 | Miejsce | Dane |
 |---------|------|
@@ -144,5 +144,5 @@ pomysł prowadzi rozmowę bez dostępu do historii autora.
   W Dockerze (`docs/DEPLOY.md`) wpisz je do `.env` obok pozostałych zmiennych —
   `docker-compose.prod.yml` przekazuje je do kontenera API.
 
-Do ustalenia z zespołem: ostateczny scenariusz jury oraz czas dostępności
+Do ustalenia z zespołem: ostateczny scenariusz prezentacji oraz czas dostępności
 demonstracyjnego naboru.
