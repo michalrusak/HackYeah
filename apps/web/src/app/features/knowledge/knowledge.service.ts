@@ -3,6 +3,8 @@ import {
   AcknowledgementSchema,
   AdminLoginSchema,
   AdminSessionSchema,
+  ContactQueueDataSchema,
+  ContactThreadDataSchema,
   IdeaDecisionRequestSchema,
   IdeaMessageRequestSchema,
   ImportResultSchema,
@@ -18,7 +20,10 @@ import {
   ModerationDetailDataSchema,
   ModerationListDataSchema,
   NeedSignalSchema,
+  SendMessageSchema,
   type AdminSession,
+  type ContactQueueData,
+  type ContactThreadData,
   type IdeaDecisionRequest,
   type KnowledgeInput,
   type KnowledgeList,
@@ -151,6 +156,37 @@ export class KnowledgeService {
       `/knowledge/admin/ideas/${encodeURIComponent(id)}/messages`,
       IdeaMessageRequestSchema.parse({ content }),
       ModerationDetailDataSchema,
+      this.csrf(),
+    );
+  }
+
+  contactQueue(): Observable<ContactQueueData> {
+    return this.api.get(
+      '/knowledge/admin/contact',
+      ContactQueueDataSchema,
+      true,
+    );
+  }
+  contactThread(id: string): Observable<ContactThreadData> {
+    return this.api.get(
+      `/knowledge/admin/contact/${encodeURIComponent(id)}`,
+      ContactThreadDataSchema,
+      true,
+    );
+  }
+  replyToContact(id: string, content: string): Observable<ContactThreadData> {
+    return this.api.post(
+      `/knowledge/admin/contact/${encodeURIComponent(id)}/messages`,
+      SendMessageSchema.parse({ content }),
+      ContactThreadDataSchema,
+      this.csrf(),
+    );
+  }
+  closeContact(id: string): Observable<ContactThreadData> {
+    return this.api.post(
+      `/knowledge/admin/contact/${encodeURIComponent(id)}/close`,
+      {},
+      ContactThreadDataSchema,
       this.csrf(),
     );
   }

@@ -28,6 +28,7 @@ import {
   KnowledgeImportSchema,
   KnowledgeInputSchema,
   KnowledgeQuerySchema,
+  type ContactQueueData,
   type KnowledgeList,
   type KnowledgeResource,
   type KnowledgeSummary,
@@ -35,6 +36,7 @@ import {
   type ModerationListData,
 } from '@repo/api-contracts';
 import { catchError, EMPTY, filter, forkJoin, interval, switchMap } from 'rxjs';
+import { ContactInboxComponent } from './contact-inbox.component';
 import { IdeaModerationComponent } from './idea-moderation.component';
 import { KnowledgeService } from './knowledge.service';
 import { knowledgeError } from './knowledge-error';
@@ -55,6 +57,7 @@ type QueueFilter = 'all' | 'draft' | 'published' | 'stale';
     MatProgressBarModule,
     ResourceEditorComponent,
     IdeaModerationComponent,
+    ContactInboxComponent,
   ],
   templateUrl: './knowledge-admin.component.html',
   styleUrls: ['./knowledge.component.scss', './knowledge-admin.component.scss'],
@@ -99,7 +102,10 @@ export class KnowledgeAdminComponent {
     () => this.trends()?.areas.filter((area) => area.rising) ?? [],
   );
   readonly ideas = signal<ModerationListData | null>(null);
-  readonly tab = signal<'resources' | 'ideas' | 'trends'>('resources');
+  readonly contact = signal<ContactQueueData | null>(null);
+  readonly tab = signal<'resources' | 'ideas' | 'contact' | 'trends'>(
+    'resources',
+  );
   readonly editing = signal(false);
   readonly selected = signal<KnowledgeResource | null>(null);
   readonly page = signal(1);
@@ -120,16 +126,22 @@ export class KnowledgeAdminComponent {
       });
   }
 
-  /** Licznik nowych pomysłów odświeża się sam, gdy panel jest otwarty. */
-  private readonly ideasPoll = interval(30_000)
+  /** Liczniki pomysłów i wiadomości odświeżają się same, gdy panel jest otwarty. */
+  private readonly queuesPoll = interval(30_000)
     .pipe(
       filter(() => this.service.session() !== null && !this.loading()),
       switchMap(() =>
-        this.service.moderationQueue().pipe(catchError(() => EMPTY)),
+        forkJoin({
+          ideas: this.service.moderationQueue(),
+          contact: this.service.contactQueue(),
+        }).pipe(catchError(() => EMPTY)),
       ),
       takeUntilDestroyed(this.destroyRef),
     )
-    .subscribe((queue) => this.ideas.set(queue));
+    .subscribe(({ ideas, contact }) => {
+      this.ideas.set(ideas);
+      this.contact.set(contact);
+    });
 
   login(): void {
     if (this.loading() || this.form.invalid) {
@@ -163,6 +175,7 @@ export class KnowledgeAdminComponent {
           this.list.set(null);
           this.summary.set(null);
           this.ideas.set(null);
+          this.contact.set(null);
           this.trends.set(null);
           this.editing.set(false);
           this.error.set(null);
@@ -191,6 +204,7 @@ export class KnowledgeAdminComponent {
       list: this.service.list(parsed.data, true),
       summary: this.service.summary(),
       ideas: this.service.moderationQueue(),
+      contact: this.service.contactQueue(),
       trends: this.service.trends(),
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -199,6 +213,7 @@ export class KnowledgeAdminComponent {
           this.list.set(data.list);
           this.summary.set(data.summary);
           this.ideas.set(data.ideas);
+          this.contact.set(data.contact);
           this.trends.set(data.trends);
           this.loading.set(false);
         },
@@ -338,6 +353,7 @@ export class KnowledgeAdminComponent {
       this.list.set(null);
       this.summary.set(null);
       this.ideas.set(null);
+      this.contact.set(null);
       this.trends.set(null);
       this.editing.set(false);
     }

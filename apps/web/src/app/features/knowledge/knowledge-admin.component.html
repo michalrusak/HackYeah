@@ -59,6 +59,16 @@
     ><button
       mat-stroked-button
       type="button"
+      [attr.aria-pressed]="tab() === 'contact'"
+      (click)="tab.set('contact')"
+    >
+      {{
+        "knowledge.admin.contact.tab"
+          | translate: { count: contact()?.attention ?? 0 }
+      }}</button
+    ><button
+      mat-stroked-button
+      type="button"
       [attr.aria-pressed]="tab() === 'trends'"
       (click)="tab.set('trends')"
     >
@@ -273,6 +283,11 @@
   @if (tab() === "ideas") {
     @if (ideas(); as queue) {
       <app-idea-moderation [queue]="queue" (changed)="load()" />
+    }
+  }
+  @if (tab() === "contact") {
+    @if (contact(); as queue) {
+      <app-contact-inbox [queue]="queue" (changed)="load()" />
     }
   }
   @if (tab() === "trends") {

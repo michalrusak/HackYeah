@@ -10,10 +10,8 @@
     "ideas": "Kreator pomysłów",
     "calls": "Nabory grantowe",
     "materials": "Materiały",
-    "about": "O projekcie",
-    "contact": "Kontakt",
     "testers": "Tester innowacji",
-    "rops_contact": "Kontakt ROPS"
+    "rops_contact": "Kontakt z ROPS"
   },
   "layout": {
     "skipToContent": "Przejdź do treści"
@@ -49,10 +47,6 @@
     "apiLabel": "API",
     "dbLabel": "Baza danych",
     "apiError": "Nie udało się połączyć z API. Uruchom pnpm dev i pnpm docker:up."
-  },
-  "about": {
-    "title": "O projekcie",
-    "description": "Placeholder — opisz tu swój projekt hackathonowy."
   },
   "matchmaking": {
     "productName": "Łącznik · innowacje społeczne",
@@ -380,10 +374,6 @@
       "sending": "Wysyłamy…"
     }
   },
-  "contact": {
-    "title": "Kontakt",
-    "description": "Placeholder — email, social media, formularz kontaktowy."
-  },
   "hub": {
     "skip": "Przejdź do treści",
     "subtitle": "Małopolski Hub Innowacji Społecznych",
@@ -524,20 +514,46 @@
     "resultsAnnouncement": "Wyszukiwanie zakończone. Liczba dopasowanych osób: {{count}}."
   },
   "rops-contact": {
-    "simulate_role": "Symuluj rolę (Prototyp)",
-    "roles": {
-      "citizen": "Użytkownik prywatny / Mieszkaniec",
-      "employee": "Pracownik ROPS"
+    "title": "Kontakt z ROPS",
+    "intro": "Zadaj pytanie, poproś o wsparcie mentora albo zaproponuj partnerstwo. Zespół ROPS Kraków odpowie w tej samej rozmowie.",
+    "checking": "Sprawdzamy, czy jesteś zalogowany…",
+    "loginTitle": "Zaloguj się, aby napisać do ROPS",
+    "loginIntro": "Rozmowy są przypisane do Twojego konta. Dzięki temu wrócisz do nich na dowolnym urządzeniu i tylko Ty zobaczysz odpowiedzi.",
+    "conversations": "Twoje rozmowy",
+    "empty": "Nie masz jeszcze żadnej rozmowy.",
+    "newConversation": "Nowa rozmowa",
+    "category": "Rodzaj sprawy",
+    "categories": {
+      "QUESTION": "Pytanie",
+      "MENTOR": "Wsparcie mentora",
+      "PARTNERSHIP": "Partnerstwo"
     },
-    "conversations": "Twoje konwersacje",
-    "new_conversation": "Nowa rozmowa",
-    "first_name": "Imię",
-    "last_name": "Nazwisko",
-    "subject": "Temat / Czego dotyczy sprawa?",
+    "categoryHints": {
+      "QUESTION": "Szybkie pytanie do zespołu ROPS.",
+      "MENTOR": "Opisz, nad czym pracujesz i w czym potrzebujesz wsparcia mentora.",
+      "PARTNERSHIP": "Opisz swoją organizację i to, jakiej współpracy szukasz."
+    },
+    "statuses": {
+      "AWAITING_ROPS": "Czeka na odpowiedź ROPS",
+      "ANSWERED": "ROPS odpowiedział",
+      "CLOSED": "Zamknięta"
+    },
+    "authors": {
+      "USER": "Ty",
+      "ROPS": "ROPS Kraków"
+    },
+    "firstName": "Imię",
+    "lastName": "Nazwisko",
+    "organization": "Organizacja (opcjonalnie)",
+    "organizationHint": "Np. stowarzyszenie, urząd, firma lub szkoła, którą reprezentujesz.",
+    "subject": "Temat — czego dotyczy sprawa?",
     "message": "Treść pierwszej wiadomości",
+    "required": "To pole jest wymagane.",
     "send": "Wyślij",
-    "type_message": "Napisz wiadomość...",
-    "select_conversation": "Wybierz konwersację z listy po lewej, aby rozpocząć rozmowę."
+    "typeMessage": "Napisz wiadomość",
+    "closedNote": "ROPS zamknął tę rozmowę. Jeśli napiszesz, otworzymy ją ponownie.",
+    "selectConversation": "Wybierz rozmowę z listy albo rozpocznij nową.",
+    "error": "Nie udało się wykonać operacji. Odśwież stronę i spróbuj ponownie."
   },
   "auth": {
     "login": "Zaloguj się",
@@ -922,6 +938,33 @@
           "REQUEST_CHANGES": "Wysłano prośbę o uzupełnienie.",
           "REJECT": "Pomysł odrzucony. Autor dostał uzasadnienie.",
           "REPLY": "Odpowiedź wysłana do autora."
+        }
+      },
+      "contact": {
+        "tab": "Wiadomości ({{count}})",
+        "title": "Wiadomości od użytkowników",
+        "intro": "Pytania, prośby o wsparcie mentora i propozycje partnerstw wysłane z ekranu „Kontakt z ROPS”. Odpowiedź pojawia się w rozmowie użytkownika.",
+        "attention": "Czeka na Twoją odpowiedź: {{count}}",
+        "filterLabel": "Filtruj według rodzaju sprawy",
+        "all": "Wszystkie",
+        "empty": "Brak wiadomości w tej kategorii.",
+        "updated": "Ostatnia zmiana",
+        "open": "Otwórz rozmowę",
+        "close": "Zamknij podgląd",
+        "from": "Od",
+        "authors": {
+          "USER": "Użytkownik",
+          "ROPS": "ROPS Kraków"
+        },
+        "message": "Odpowiedź dla użytkownika",
+        "messageHint": "Użytkownik zobaczy ją w swojej rozmowie na ekranie „Kontakt z ROPS”.",
+        "messageRequired": "Napisz odpowiedź.",
+        "reply": "Wyślij odpowiedź",
+        "finish": "Zakończ sprawę",
+        "error": "Nie udało się wykonać operacji. Odśwież dane i spróbuj ponownie.",
+        "done": {
+          "reply": "Odpowiedź wysłana.",
+          "close": "Sprawa zakończona. Użytkownik może ją wznowić, pisząc ponownie."
         }
       }
     },

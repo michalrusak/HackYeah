@@ -1,110 +1,84 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import type { ContactCategory, ContactStatus } from '@repo/api-contracts';
 import { PrismaService } from '../../prisma/prisma.service.js';
-import type { Prisma } from '../../generated/prisma/client.js';
-import { UserRole } from '../../generated/prisma/client.js';
+import type { Conversation, Message } from '../../generated/prisma/client.js';
+
+const withMessages = {
+  messages: { orderBy: { createdAt: 'asc' } },
+} as const;
+
+export type ThreadRow = Conversation & { messages: Message[] };
 
 @Injectable()
 export class ContactRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
-  async createConversation(data: {
-    subject: string;
-    citizenId: string;
+  async listForAccount(accountId: string): Promise<Conversation[]> {
+    return this.prisma.conversation.findMany({
+      where: { accountId },
+      orderBy: { updatedAt: 'desc' },
+    });
+  }
+
+  /** Skrzynka ROPS: najpierw sprawy czekające na odpowiedź, zamknięte na końcu. */
+  async queue(): Promise<{ items: Conversation[]; attention: number }> {
+    const [items, attention] = await this.prisma.$transaction([
+      this.prisma.conversation.findMany({
+        orderBy: [{ status: 'asc' }, { updatedAt: 'desc' }],
+        take: 100,
+      }),
+      this.prisma.conversation.count({ where: { status: 'AWAITING_ROPS' } }),
+    ]);
+    return { items, attention };
+  }
+
+  async find(id: string): Promise<ThreadRow | null> {
+    return this.prisma.conversation.findUnique({
+      where: { id },
+      include: withMessages,
+    });
+  }
+
+  async create(data: {
+    accountId: string;
     firstName: string;
     lastName: string;
+    organization: string | null;
+    category: ContactCategory;
+    subject: string;
     initialMessage: string;
-  }) {
-    // Ensure citizen exists
-    await this.prisma.user.upsert({
-      where: { id: data.citizenId },
-      update: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-      },
-      create: {
-        id: data.citizenId,
-        email: `citizen_${data.citizenId}@example.com`,
-        role: UserRole.CITIZEN,
-        firstName: data.firstName,
-        lastName: data.lastName,
-      },
-    });
-
+  }): Promise<ThreadRow> {
+    const { initialMessage, ...conversation } = data;
     return this.prisma.conversation.create({
       data: {
-        subject: data.subject,
-        citizenId: data.citizenId,
-        messages: {
-          create: {
-            content: data.initialMessage,
-            senderId: data.citizenId,
-          },
-        },
+        ...conversation,
+        messages: { create: { author: 'USER', content: initialMessage } },
       },
-      include: {
-        messages: { include: { sender: true } },
-        citizen: true,
+      include: withMessages,
+    });
+  }
+
+  /** Wiadomość i stan sprawy zapisują się razem albo wcale. */
+  async addMessage(
+    id: string,
+    author: 'USER' | 'ROPS',
+    content: string,
+  ): Promise<ThreadRow> {
+    return this.prisma.conversation.update({
+      where: { id },
+      data: {
+        status: author === 'USER' ? 'AWAITING_ROPS' : 'ANSWERED',
+        messages: { create: { author, content } },
       },
+      include: withMessages,
     });
   }
 
-  async getConversations(userId: string, role: string) {
-    if (role === UserRole.ROPS_EMPLOYEE) {
-      return this.prisma.conversation.findMany({
-        orderBy: { updatedAt: 'desc' },
-        include: { citizen: true },
-      });
-    } else {
-      return this.prisma.conversation.findMany({
-        where: { citizenId: userId },
-        orderBy: { updatedAt: 'desc' },
-        include: { citizen: true },
-      });
-    }
-  }
-
-  async getMessages(conversationId: string) {
-    return this.prisma.message.findMany({
-      where: { conversationId },
-      orderBy: { createdAt: 'asc' },
-      include: { sender: true },
+  async setStatus(id: string, status: ContactStatus): Promise<ThreadRow> {
+    return this.prisma.conversation.update({
+      where: { id },
+      data: { status },
+      include: withMessages,
     });
-  }
-
-  async addMessage(data: {
-    conversationId: string;
-    senderId: string;
-    content: string;
-  }) {
-    // Ensure sender exists (could be rops employee)
-    const exists = await this.prisma.user.findUnique({
-      where: { id: data.senderId },
-    });
-    if (!exists) {
-      await this.prisma.user.create({
-        data: {
-          id: data.senderId,
-          email: `employee_${data.senderId}@example.com`,
-          role: UserRole.ROPS_EMPLOYEE,
-        },
-      });
-    }
-
-    // Add message and update conversation updatedAt
-    const [message] = await this.prisma.$transaction([
-      this.prisma.message.create({
-        data: {
-          content: data.content,
-          conversationId: data.conversationId,
-          senderId: data.senderId,
-        },
-        include: { sender: true }
-      }),
-      this.prisma.conversation.update({
-        where: { id: data.conversationId },
-        data: { updatedAt: new Date() },
-      }),
-    ]);
-    return message;
   }
 }

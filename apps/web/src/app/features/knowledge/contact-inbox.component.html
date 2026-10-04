@@ -1,0 +1,160 @@
+<section aria-labelledby="contact-heading">
+  <h2 id="contact-heading">
+    {{ "knowledge.admin.contact.title" | translate }}
+  </h2>
+  <p>{{ "knowledge.admin.contact.intro" | translate }}</p>
+  <p role="status">
+    {{
+      "knowledge.admin.contact.attention"
+        | translate: { count: queue().attention }
+    }}
+  </p>
+
+  @if (detail(); as data) {
+    <article class="search-section idea-detail">
+      <h3 #heading tabindex="-1">{{ data.conversation.subject }}</h3>
+      <div class="badges">
+        <span
+          class="badge"
+          [class.badge-attention]="data.conversation.status === 'AWAITING_ROPS'"
+          >{{
+            "rops-contact.statuses." + data.conversation.status | translate
+          }}</span
+        >
+        <span>{{
+          "rops-contact.categories." + data.conversation.category | translate
+        }}</span>
+      </div>
+      <p class="note">
+        {{ "knowledge.admin.contact.from" | translate }}:
+        {{ data.conversation.firstName }} {{ data.conversation.lastName }}
+        @if (data.conversation.organization) {
+          · {{ data.conversation.organization }}
+        }
+      </p>
+
+      <ol class="messages">
+        @for (item of data.messages; track item.id) {
+          <li [class.rops]="item.author === 'ROPS'">
+            <p class="note">
+              <strong>{{
+                "knowledge.admin.contact.authors." + item.author | translate
+              }}</strong>
+              · {{ item.createdAt | date: "dd.MM.yyyy HH:mm" }}
+            </p>
+            <p class="content">{{ item.content }}</p>
+          </li>
+        }
+      </ol>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"
+        ><mat-label>{{
+          "knowledge.admin.contact.message" | translate
+        }}</mat-label
+        ><textarea
+          matInput
+          rows="4"
+          maxlength="4000"
+          [formControl]="message"
+        ></textarea
+        ><mat-hint>{{
+          "knowledge.admin.contact.messageHint" | translate
+        }}</mat-hint></mat-form-field
+      >
+      @if (errorKey(); as key) {
+        <p class="error" role="alert">{{ key | translate }}</p>
+      }
+      @if (noticeKey(); as key) {
+        <p role="status">{{ key | translate }}</p>
+      }
+      <div class="actions">
+        <button
+          mat-flat-button
+          type="button"
+          [disabled]="busy()"
+          (click)="reply()"
+        >
+          {{ "knowledge.admin.contact.reply" | translate }}
+        </button>
+        @if (data.conversation.status !== "CLOSED") {
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="busy()"
+            (click)="finish()"
+          >
+            {{ "knowledge.admin.contact.finish" | translate }}
+          </button>
+        }
+        <button mat-button type="button" (click)="close()">
+          {{ "knowledge.admin.contact.close" | translate }}
+        </button>
+      </div>
+    </article>
+  } @else if (errorKey()) {
+    <p class="error" role="alert">{{ errorKey() ?? "" | translate }}</p>
+  }
+
+  <div
+    class="actions"
+    role="group"
+    [attr.aria-label]="'knowledge.admin.contact.filterLabel' | translate"
+  >
+    @for (item of filters; track item) {
+      <button
+        mat-stroked-button
+        type="button"
+        [attr.aria-pressed]="category() === item"
+        (click)="category.set(item)"
+      >
+        {{
+          (item === "ALL"
+            ? "knowledge.admin.contact.all"
+            : "rops-contact.categories." + item
+          ) | translate
+        }}
+      </button>
+    }
+  </div>
+  @if (!items().length) {
+    <p>{{ "knowledge.admin.contact.empty" | translate }}</p>
+  }
+  <div class="resource-grid">
+    @for (item of items(); track item.id) {
+      <article class="resource-card">
+        <div class="badges">
+          <span
+            class="badge"
+            [class.badge-attention]="item.status === 'AWAITING_ROPS'"
+            >{{ "rops-contact.statuses." + item.status | translate }}</span
+          >
+          <span class="badge">{{
+            "rops-contact.categories." + item.category | translate
+          }}</span>
+        </div>
+        <h3>{{ item.subject }}</h3>
+        <p>
+          {{ item.firstName }} {{ item.lastName }}
+          @if (item.organization) {
+            · {{ item.organization }}
+          }
+        </p>
+        <p class="note">
+          {{ "knowledge.admin.contact.updated" | translate }}:
+          {{ item.updatedAt | date: "dd.MM.yyyy HH:mm" }}
+        </p>
+        <div class="actions card-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="busy()"
+            (click)="open(item.id)"
+          >
+            {{ "knowledge.admin.contact.open" | translate
+            }}<span class="sr-only"> — {{ item.subject }}</span>
+          </button>
+        </div>
+      </article>
+    }
+  </div>
+</section>
