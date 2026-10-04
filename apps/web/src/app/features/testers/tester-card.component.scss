@@ -23,7 +23,8 @@
   border-color: #178272;
 }
 .card-top {
-  display: flex;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
   align-items: center;
   gap: 12px;
 }
@@ -40,12 +41,11 @@
 }
 .identity {
   min-width: 0;
-  flex: 1;
 }
 h3 {
   margin: 0 0 6px;
   font-size: 17px;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 .identity > span {
   display: flex;
@@ -60,7 +60,10 @@ h3 {
   width: 15px;
 }
 .demo-badge {
-  align-self: flex-start;
+  grid-column: 2;
+  justify-self: start;
+  max-width: 100%;
+  box-sizing: border-box;
   border: 1px solid var(--tester-border);
   border-radius: 5px;
   padding: 4px 6px;
