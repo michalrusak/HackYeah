@@ -134,6 +134,17 @@
     }
   </details>
   <div class="actions card-actions">
+    @if (item.kind === "innovation") {
+      <a
+        mat-flat-button
+        [routerLink]="['/dostosuj', item.id]"
+        [queryParams]="{ title: item.title }"
+      >
+        <mat-icon aria-hidden="true">tune</mat-icon>
+        {{ "adaptation.cta" | translate }}
+        <span class="sr-only"> — {{ item.title }}</span>
+      </a>
+    }
     @if (sourceEmbedUrl()) {
       <button
         #sourceToggle

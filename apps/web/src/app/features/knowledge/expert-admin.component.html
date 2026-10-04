@@ -6,6 +6,11 @@
 
   <form class="search-section" [formGroup]="form" (ngSubmit)="grant()">
     <h3>{{ "knowledge.admin.experts.formTitle" | translate }}</h3>
+    @if (demo.data()?.expertGrant) {
+      <p class="demo-note" role="note">
+        {{ "demo.expertIntro" | translate }}
+      </p>
+    }
     <mat-form-field appearance="outline">
       <mat-label>{{ "knowledge.admin.experts.login" | translate }}</mat-label>
       <input

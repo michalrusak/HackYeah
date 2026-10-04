@@ -15,12 +15,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import {
-  RopsUrlSchema,
-  youtubeId,
-  type KnowledgeResource,
-} from '@repo/api-contracts';
+import { youtubeId, type KnowledgeResource } from '@repo/api-contracts';
 import { AREA_ICONS } from './knowledge-areas';
+import { ropsEmbedHref } from './source-embed';
 
 @Component({
   selector: 'app-resource-card',
@@ -33,7 +30,11 @@ import { AREA_ICONS } from './knowledge-areas';
     RouterLink,
   ],
   templateUrl: './resource-card.component.html',
-  styleUrls: ['./knowledge.component.scss', './resource-card.component.scss'],
+  styleUrls: [
+    './knowledge.component.scss',
+    './resource-card.component.scss',
+    './source-preview.scss',
+  ],
 })
 export class ResourceCardComponent {
   private readonly sanitizer = inject(DomSanitizer);
@@ -52,16 +53,8 @@ export class ResourceCardComponent {
     () => this.expandedSource() === this.resource().sourceUrl,
   );
   readonly sourceEmbedUrl = computed(() => {
-    const parsed = RopsUrlSchema.safeParse(this.resource().sourceUrl);
-    if (!parsed.success) return null;
-    const url = new URL(parsed.data);
-    if (
-      !['https://rops.krakow.pl', 'https://obserwator.rops.krakow.pl'].includes(
-        url.origin,
-      )
-    )
-      return null;
-    return this.sanitizer.bypassSecurityTrustResourceUrl(url.href);
+    const href = ropsEmbedHref(this.resource().sourceUrl);
+    return href ? this.sanitizer.bypassSecurityTrustResourceUrl(href) : null;
   });
 
   toggleSource(): void {

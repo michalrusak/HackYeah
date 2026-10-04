@@ -108,9 +108,8 @@
             <a
               class="nav-link"
               [routerLink]="item.path"
-              routerLinkActive="active"
-              [routerLinkActiveOptions]="{ exact: item.path === '/' }"
-              ariaCurrentWhenActive="page"
+              [class.active]="activePath() === item.path"
+              [attr.aria-current]="activePath() === item.path ? 'page' : null"
               [attr.aria-label]="item.labelKey | translate"
               [title]="item.labelKey | translate"
               (click)="onNavigationClick()"

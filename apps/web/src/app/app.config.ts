@@ -18,6 +18,7 @@ import { PolishPaginatorIntl } from './core/services/material-labels';
 
 import { routes } from './app.routes';
 import { ApiConfigService } from './core/services/api-config.service';
+import { DemoService } from './core/services/demo.service';
 
 registerLocaleData(localePl);
 
@@ -29,7 +30,12 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(withFetch()),
-    provideAppInitializer(() => inject(ApiConfigService).load()),
+    provideAppInitializer(() => {
+      const demo = inject(DemoService);
+      return inject(ApiConfigService)
+        .load()
+        .then(() => demo.load());
+    }),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
         prefix: '/i18n/',

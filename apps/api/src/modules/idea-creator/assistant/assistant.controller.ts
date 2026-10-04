@@ -50,15 +50,19 @@ export class AssistantController {
       ),
     )
     body: AssistantChatRequest,
+    @Headers('x-edit-token') editToken?: string,
   ): Promise<ApiSuccessResponse<AssistantChatData>> {
-    return createApiSuccess(await this.service.chat(body));
+    return createApiSuccess(await this.service.chat(body, editToken));
   }
 
   @Get('assistant/history/:ideaId')
   async history(
     @Param('ideaId') ideaId: string,
+    @Headers('x-edit-token') editToken?: string,
   ): Promise<ApiSuccessResponse<{ messages: AssistantMessage[] }>> {
-    return createApiSuccess({ messages: await this.service.history(ideaId) });
+    return createApiSuccess({
+      messages: await this.service.history(ideaId, editToken),
+    });
   }
 
   @Post('assistant/expand')

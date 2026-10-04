@@ -19,6 +19,9 @@ import {
 } from '../../../shared/ai/openrouter.client.js';
 import { IdeasRepository } from '../ideas/ideas.repository.js';
 import { AssistantRepository } from './assistant.repository.js';
+import { matchesEditToken } from '../../../shared/edit-token.js';
+import { DomainError } from '../../../shared/errors/domain.error.js';
+import type { IdeaRow } from '../ideas/idea.mapper.js';
 
 const COMMON_GUARDRAILS =
   'Jesteś asystentem kreatora innowacji społecznych w Małopolsce. ' +
@@ -60,17 +63,22 @@ export class AssistantService {
     @Inject(OpenRouterClient) private readonly ai: OpenRouterClient,
   ) {}
 
-  async chat(request: AssistantChatRequest): Promise<AssistantChatData> {
-    const history = request.ideaId
-      ? await this.repository.findHistory(request.ideaId)
-      : [];
-    const context = request.ideaId
-      ? await this.ideaContext(request.ideaId)
-      : '';
+  async chat(
+    request: AssistantChatRequest,
+    token?: string,
+  ): Promise<AssistantChatData> {
+    const idea = request.ideaId
+      ? await this.readableIdea(request.ideaId, token)
+      : null;
+    const owner = idea !== null && matchesEditToken(token, idea.editTokenHash);
+    const history =
+      idea && owner ? await this.repository.findHistory(idea.id) : [];
+    const context = idea ? this.ideaContext(idea) : '';
 
     const messages: ChatMessage[] = [
       ...history.map((entry) => ({
-        role: entry.role === 'USER' ? ('user' as const) : ('assistant' as const),
+        role:
+          entry.role === 'USER' ? ('user' as const) : ('assistant' as const),
         content: entry.content,
       })),
       {
@@ -91,8 +99,8 @@ export class AssistantService {
       messages,
     });
 
-    if (request.ideaId) {
-      await this.repository.append(request.ideaId, [
+    if (idea && owner) {
+      await this.repository.append(idea.id, [
         { role: 'USER', content: request.message },
         { role: 'ASSISTANT', content: result.reply },
       ]);
@@ -100,7 +108,11 @@ export class AssistantService {
     return result;
   }
 
-  async history(ideaId: string): Promise<AssistantMessage[]> {
+  async history(ideaId: string, token?: string): Promise<AssistantMessage[]> {
+    const idea = await this.readableIdea(ideaId, token);
+    if (!matchesEditToken(token, idea.editTokenHash)) {
+      throw DomainError.forbidden('Ta rozmowa należy do autora pomysłu.');
+    }
     const rows = await this.repository.findHistory(ideaId);
     return rows.map((row) => ({
       role: (row.role === 'USER' ? 'user' : 'assistant') as AssistantRole,
@@ -134,9 +146,19 @@ export class AssistantService {
     });
   }
 
-  private async ideaContext(ideaId: string): Promise<string> {
+  private async readableIdea(ideaId: string, token?: string): Promise<IdeaRow> {
     const row = await this.ideas.findById(ideaId);
-    if (!row) return '';
+    if (
+      !row ||
+      (row.status !== 'PUBLISHED' &&
+        !matchesEditToken(token, row.editTokenHash))
+    ) {
+      throw DomainError.notFound('Nie znaleźliśmy tej fiszki.');
+    }
+    return row;
+  }
+
+  private ideaContext(row: IdeaRow): string {
     return [
       'Pracujemy nad tym pomysłem:',
       `Tytuł: ${row.title}`,

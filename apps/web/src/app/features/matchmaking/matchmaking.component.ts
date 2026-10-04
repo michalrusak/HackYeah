@@ -67,9 +67,13 @@ export class MatchmakingComponent {
   private readonly router = inject(Router);
   private readonly adaptation = inject(AdaptationService);
 
-  adapt(): void {
-    this.adaptation.begin(this.description.value);
-    void this.router.navigate(['/dostosuj/mobilne-centrum-pomocy']);
+  adapt(match?: InnovationMatch): void {
+    const id = match?.id ?? 'mobilne-centrum-pomocy';
+    const title = match?.name ?? '';
+    this.adaptation.begin(this.description.value, id, title);
+    void this.router.navigate(['/dostosuj', id], {
+      queryParams: title ? { title } : undefined,
+    });
   }
 
   private readonly service = inject(MatchmakingService);

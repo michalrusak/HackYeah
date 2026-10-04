@@ -6,6 +6,10 @@ Komendy działają tak samo na **Windows (PowerShell)**, **macOS** i **Linux (ba
 
 Funkcjonalności: [matchmaking społeczny](docs/MATCHMAKING.md) i [Zasobnik wiedzy](docs/KNOWLEDGE.md). Zasobnik wymaga migracji PostgreSQL, inicjalizacji katalogu i konfiguracji hasła administratora według swojej dokumentacji. Strony: `/matchmaking`, `/zasobnik`, `/zasobnik/admin`.
 
+Przygotowanie wersji dla jury: [instrukcja demo i scenariusz odbioru](docs/DEMO.md).
+Kontrola działającej aplikacji: `pnpm demo:check`. Pełne testy API z lokalnym
+PostgreSQL: `pnpm test:db`.
+
 ---
 
 ## Wymagania
@@ -41,7 +45,7 @@ pnpm install
 pnpm setup        # tworzy .env z .env.example (tylko pierwszy raz)
 pnpm docker:up    # uruchamia PostgreSQL
 pnpm db:migrate   # tworzy tabele aplikacji bez resetowania danych
-pnpm db:seed      # katalog ROPS dla matchmakingu i demonstracyjne profile testera
+pnpm db:seed      # katalog ROPS, profile testerów, przykładowe pomysły i nabory
 pnpm dev          # API + frontend w trybie developerskim
 ```
 
@@ -102,7 +106,7 @@ Wszystkie uruchamiasz z **katalogu głównego** repozytorium.
 | `pnpm docker:down` | Stop PostgreSQL |
 | `pnpm docker:logs` | Logi bazy |
 | `pnpm db:migrate` | Migracje tabel aplikacji bez resetowania danych |
-| `pnpm db:seed` | Idempotentne wczytanie katalogu ROPS i fikcyjnych profili testera |
+| `pnpm db:seed` | Idempotentne wczytanie katalogu ROPS, fikcyjnych profili testerów, pomysłów i naborów |
 
 ### Pojedyncza aplikacja
 
@@ -131,6 +135,7 @@ Plik `.env` jest w **rootcie** repozytoria. Turbo ładuje go automatycznie.
 | `API_URL` | `http://localhost:3000` | Frontend → backend |
 | `DATABASE_URL` | `postgresql://hackyeah:hackyeah@localhost:5432/hackyeah` | Prisma |
 | `POSTGRES_*` | `hackyeah` / `5432` | Docker Compose |
+| `DEMO_MODE`, `DEMO_ADMIN_PASSWORD`, `DEMO_ACCOUNT_PASSWORD` | tryb demo włączony | Dane logowania dla jury — [docs/DEMO.md](docs/DEMO.md) |
 
 ---
 

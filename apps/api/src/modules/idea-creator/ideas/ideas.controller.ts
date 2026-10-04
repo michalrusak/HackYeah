@@ -101,7 +101,9 @@ export class IdeasController {
     @Param('id') id: string,
     @Headers('x-edit-token') editToken?: string,
   ): Promise<ApiSuccessResponse<IdeaData>> {
-    return createApiSuccess({ idea: await this.service.publish(id, editToken) });
+    return createApiSuccess({
+      idea: await this.service.publish(id, editToken),
+    });
   }
 
   @Delete(':id')
@@ -125,8 +127,9 @@ export class IdeasController {
   @Throttle(AI_THROTTLE)
   async plainLanguage(
     @Param('id') id: string,
+    @Headers('x-edit-token') editToken?: string,
   ): Promise<ApiSuccessResponse<PlainLanguageData>> {
-    return createApiSuccess(await this.service.plainLanguage(id));
+    return createApiSuccess(await this.service.plainLanguage(id, editToken));
   }
 
   /** Przepina opis fiszki do istniejącego rankingu innowacji ROPS. */
@@ -138,7 +141,10 @@ export class IdeasController {
     @Res({ passthrough: true }) response: Response,
     @Headers('x-edit-token') editToken?: string,
   ): Promise<ApiSuccessResponse<MatchmakingData> | ApiErrorResponse> {
-    const description = await this.service.describeForMatchmaking(id, editToken);
+    const description = await this.service.describeForMatchmaking(
+      id,
+      editToken,
+    );
     const outcome = await this.matchmaking.match(description);
     response.status(outcome.status);
     return outcome.body;

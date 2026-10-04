@@ -323,7 +323,14 @@
       "maxGrant": "Maksymalny grant",
       "sections": "Sekcje wniosku",
       "howToApply": "Aby złożyć wniosek, wejdź w swoją fiszkę i wybierz „Przygotuj wniosek”.",
-      "chooseIdea": "Wybierz pomysł"
+      "chooseIdea": "Wybierz pomysł",
+      "alertTitle": "Alert Grantowy ROPS",
+      "alertSubtitle": "Otrzymuj automatyczne powiadomienia e-mail, gdy tylko ROPS ogłosi nowy nabór wniosków lub zmieni warunki finansowania.",
+      "alertAreasLabel": "Wybierz interesujące Cię obszary wsparcia:",
+      "alertEmailLabel": "Twój adres e-mail",
+      "alertEmailError": "Wpisz poprawny adres e-mail",
+      "alertSubmit": "Zapisz się na alert grantowy",
+      "alertSuccess": "Dziękujemy! Twój adres e-mail został zapisany. Wyślemy powiadomienie, gdy tylko pojawi się nowy nabór."
     },
     "application": {
       "title": "Wniosek grantowy",
@@ -638,6 +645,17 @@
       "validation": "Sprawdź oznaczone pola. Pod każdym z nich znajdziesz instrukcję.",
       "rateLimit": "Zbyt wiele prób. Odczekaj chwilę i spróbuj ponownie.",
       "generic": "Nie udało się połączyć z usługą. Sprawdź połączenie i spróbuj ponownie."
+    }
+  },
+  "demo": {
+    "accountsIntro": "Login i hasło uzupełnione na potrzeby demo. Inne konta:",
+    "adminIntro": "Hasło uzupełnione na potrzeby demo.",
+    "loginIntro": "Login i hasło uzupełnione na potrzeby demo.",
+    "expertIntro": "Dane uzupełnione na potrzeby demo.",
+    "roles": {
+      "tester": "Tester",
+      "organizer": "Organizator testu",
+      "expert": "Ekspert"
     }
   },
   "adaptation": {
@@ -1043,6 +1061,7 @@
       "queueEmpty": "Nie ma zasobów w tym widoku.",
       "staleBadge": "Sprawdź ponownie",
       "checkSource": "Otwórz źródło do sprawdzenia",
+      "showSource": "Pokaż źródło do sprawdzenia",
       "verifyPublish": "Zweryfikuj i opublikuj",
       "confirm": "Potwierdź aktualność",
       "unpublish": "Wycofaj do szkicu",
@@ -1137,6 +1156,36 @@
           "grant": "Zapisano. Ekspert zobaczy swój panel po odświeżeniu strony.",
           "revoke": "Rola odebrana. Sprawy tej osoby wróciły do puli."
         }
+      },
+      "calls": {
+        "tab": "Nabory",
+        "title": "Nabory grantowe Hubu",
+        "intro": "Zarządzaj naborami grantowymi i definicjami formularza wniosku. Opublikowany nabór jest od razu widoczny w generatorze wniosków, a zarejestrowani mieszkańcy i NGO otrzymują alert e-mail.",
+        "newCall": "Nowy nabór grantowy",
+        "editCall": "Edytuj nabór",
+        "name": "Nazwa naboru",
+        "operator": "Operator naboru",
+        "description": "Opis i cele naboru",
+        "opensAt": "Data i godzina otwarcia",
+        "closesAt": "Data i godzina zakończenia",
+        "budget": "Budżet całkowity (opcjonalnie)",
+        "maxGrant": "Maksymalny grant na wniosek (opcjonalnie)",
+        "isPublished": "Opublikowany dla wnioskodawców",
+        "published": "Opublikowany",
+        "draft": "Szkic naboru",
+        "togglePublish": "Zmień status publikacji",
+        "sectionsTitle": "Pytania i sekcje formularza wniosku",
+        "sectionsIntro": "Zdefiniuj pytania, na które wnioskodawca musi odpowiedzieć. Generator wniosków z AI dopasuje treść fiszki do tych pytań.",
+        "addSection": "Dodaj sekcję wniosku",
+        "removeSection": "Usuń sekcję",
+        "sectionTitle": "Tytuł sekcji (np. Uzasadnienie potrzeby)",
+        "sectionQuestion": "Pytanie pomocnicze dla wnioskodawcy",
+        "sectionHelp": "Wskazówka (opcjonalnie)",
+        "sectionMaxLength": "Limit znaków",
+        "saveCall": "Zapisz i opublikuj nabór",
+        "saving": "Zapisujemy nabór…",
+        "callSaved": "Nabór został pomyślnie zapisany.",
+        "empty": "Brak naborów w bazie. Kliknij przycisk powyżej, aby utworzyć pierwszy nabór."
       }
     },
     "trends": {

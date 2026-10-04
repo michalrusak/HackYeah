@@ -1,10 +1,14 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { z } from 'zod';
 import {
   AcknowledgementSchema,
+  AdminGrantCallListDataSchema,
+  AdminGrantCallSchema,
   AdminLoginSchema,
   AdminSessionSchema,
   ContactQueueDataSchema,
   ContactThreadDataSchema,
+  CreateGrantCallRequestSchema,
   ExpertGrantRequestSchema,
   ExpertListDataSchema,
   IdeaDecisionRequestSchema,
@@ -23,9 +27,12 @@ import {
   ModerationListDataSchema,
   NeedSignalSchema,
   SendMessageSchema,
+  type AdminGrantCall,
+  type AdminGrantCallListData,
   type AdminSession,
   type ContactQueueData,
   type ContactThreadData,
+  type CreateGrantCallRequest,
   type ExpertGrantRequest,
   type ExpertListData,
   type IdeaDecisionRequest,
@@ -212,6 +219,32 @@ export class KnowledgeService {
       {},
       ExpertListDataSchema,
       this.csrf(),
+    );
+  }
+
+  adminCalls(): Observable<AdminGrantCallListData> {
+    return this.api.get('/knowledge/admin/calls', AdminGrantCallListDataSchema, true);
+  }
+
+  adminCreateCall(input: CreateGrantCallRequest): Observable<{ call: AdminGrantCall }> {
+    return this.api.post(
+      '/knowledge/admin/calls',
+      CreateGrantCallRequestSchema.parse(input),
+      z.object({ call: AdminGrantCallSchema }),
+      this.csrf(),
+    );
+  }
+
+  adminToggleCallPublish(id: string, isPublished: boolean): Observable<{ call: AdminGrantCall }> {
+    return this.api.request(
+      'PATCH',
+      `/knowledge/admin/calls/${encodeURIComponent(id)}/publish`,
+      z.object({ call: AdminGrantCallSchema }),
+      {
+        body: { isPublished },
+        headers: { 'X-CSRF-Token': this.csrf() },
+        withCredentials: true,
+      },
     );
   }
 

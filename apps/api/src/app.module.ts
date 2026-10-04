@@ -16,6 +16,7 @@ import { ExpertsModule } from './modules/experts/experts.module.js';
 import { TesterProjectsModule } from './modules/tester-projects/tester-projects.module.js';
 
 import { AdaptationModule } from './modules/adaptation/adaptation.module.js';
+import { DemoModule } from './modules/demo/demo.module.js';
 
 const isTestEnv = process.env.NODE_ENV === 'test';
 
@@ -46,7 +47,7 @@ const isTestEnv = process.env.NODE_ENV === 'test';
     AdaptationModule,
     ...(isTestEnv
       ? []
-      : [TestersModule, TesterProjectsModule, PilotMatchesModule]),
+      : [TestersModule, TesterProjectsModule, PilotMatchesModule, DemoModule]),
   ],
   controllers: [AppController],
   providers: [

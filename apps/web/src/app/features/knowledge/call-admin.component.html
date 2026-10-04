@@ -1,0 +1,228 @@
+<section class="call-admin">
+  <div class="header-row">
+    <div>
+      <h3>{{ "knowledge.admin.calls.title" | translate }}</h3>
+      <p class="intro">{{ "knowledge.admin.calls.intro" | translate }}</p>
+    </div>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      (click)="showCreate.set(!showCreate())"
+    >
+      <mat-icon aria-hidden="true">{{ showCreate() ? 'close' : 'add' }}</mat-icon>
+      {{ (showCreate() ? 'knowledge.admin.cancel' : 'knowledge.admin.calls.newCall') | translate }}
+    </button>
+  </div>
+
+  @if (error(); as err) {
+    <div class="alert alert-error" role="alert">{{ err }}</div>
+  }
+  @if (success(); as msg) {
+    <div class="alert alert-success" role="status">{{ msg }}</div>
+  }
+
+  @if (showCreate()) {
+    <mat-card appearance="outlined" class="create-card">
+      <mat-card-header>
+        <mat-card-title>{{ "knowledge.admin.calls.newCall" | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="form" (ngSubmit)="submitCreate()">
+          <div class="form-grid">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ "knowledge.admin.calls.name" | translate }}</mat-label>
+              <input matInput formControlName="name" placeholder="np. Innowacje dla Seniorów 2026" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ "knowledge.admin.calls.operator" | translate }}</mat-label>
+              <input matInput formControlName="operator" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ "knowledge.admin.calls.description" | translate }}</mat-label>
+              <textarea matInput formControlName="description" rows="3"></textarea>
+            </mat-form-field>
+
+            <div class="date-row">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "knowledge.admin.calls.opensAt" | translate }}</mat-label>
+                <input matInput type="date" formControlName="opensAt" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "knowledge.admin.calls.closesAt" | translate }}</mat-label>
+                <input matInput type="date" formControlName="closesAt" />
+              </mat-form-field>
+            </div>
+
+            <div class="date-row">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "knowledge.admin.calls.budget" | translate }}</mat-label>
+                <input matInput formControlName="budget" placeholder="np. 500 000 zł" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ "knowledge.admin.calls.maxGrant" | translate }}</mat-label>
+                <input matInput formControlName="maxGrant" placeholder="np. 50 000 zł" />
+              </mat-form-field>
+            </div>
+
+            <div class="checkbox-row">
+              <mat-checkbox formControlName="isPublished">
+                {{ "knowledge.admin.calls.isPublished" | translate }}
+              </mat-checkbox>
+            </div>
+          </div>
+
+          <div class="sections-builder">
+            <h4>{{ "knowledge.admin.calls.sectionsTitle" | translate }}</h4>
+            <p class="section-hint">{{ "knowledge.admin.calls.sectionsIntro" | translate }}</p>
+
+            @for (sec of sections(); track $index) {
+              <div class="section-card">
+                <div class="section-header">
+                  <strong>#{{ $index + 1 }} {{ sec.title }}</strong>
+                  @if (sections().length > 1) {
+                    <button
+                      mat-button
+                      color="warn"
+                      type="button"
+                      (click)="removeSection($index)"
+                    >
+                      <mat-icon aria-hidden="true">delete</mat-icon>
+                      {{ "knowledge.admin.calls.removeSection" | translate }}
+                    </button>
+                  }
+                </div>
+
+                <div class="section-fields">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ "knowledge.admin.calls.sectionTitle" | translate }}</mat-label>
+                    <input
+                      matInput
+                      [value]="sec.title"
+                      (input)="updateSection($index, 'title', $any($event.target).value)"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ "knowledge.admin.calls.sectionQuestion" | translate }}</mat-label>
+                    <input
+                      matInput
+                      [value]="sec.question"
+                      (input)="updateSection($index, 'question', $any($event.target).value)"
+                    />
+                  </mat-form-field>
+
+                  <div class="section-subrow">
+                    <mat-form-field appearance="outline" class="flex-grow">
+                      <mat-label>{{ "knowledge.admin.calls.sectionHelp" | translate }}</mat-label>
+                      <input
+                        matInput
+                        [value]="sec.help"
+                        (input)="updateSection($index, 'help', $any($event.target).value)"
+                      />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="limit-input">
+                      <mat-label>{{ "knowledge.admin.calls.sectionMaxLength" | translate }}</mat-label>
+                      <input
+                        matInput
+                        type="number"
+                        [value]="sec.maxLength"
+                        (input)="updateSection($index, 'maxLength', $any($event.target).value)"
+                      />
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <button
+              mat-stroked-button
+              type="button"
+              class="add-section-btn"
+              (click)="addSection()"
+            >
+              <mat-icon aria-hidden="true">add</mat-icon>
+              {{ "knowledge.admin.calls.addSection" | translate }}
+            </button>
+          </div>
+
+          <div class="form-actions">
+            <button
+              mat-flat-button
+              color="primary"
+              type="submit"
+              [disabled]="loading() || form.invalid"
+            >
+              {{ (loading() ? 'knowledge.admin.calls.saving' : 'knowledge.admin.calls.saveCall') | translate }}
+            </button>
+            <button
+              mat-button
+              type="button"
+              (click)="showCreate.set(false)"
+            >
+              {{ "knowledge.admin.cancel" | translate }}
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <div class="calls-list">
+    @if (!calls().length && !loading()) {
+      <p class="empty-state">{{ "knowledge.admin.calls.empty" | translate }}</p>
+    }
+
+    @for (call of calls(); track call.id) {
+      <mat-card appearance="outlined" class="call-card">
+        <mat-card-header>
+          <div class="badge-row">
+            <span
+              class="status-badge"
+              [class.badge-published]="call.isPublished"
+              [class.badge-draft]="!call.isPublished"
+            >
+              {{ (call.isPublished ? 'knowledge.admin.calls.published' : 'knowledge.admin.calls.draft') | translate }}
+            </span>
+            <span class="dates">
+              {{ call.opensAt | date:'dd.MM.yyyy' }} – {{ call.closesAt | date:'dd.MM.yyyy' }}
+            </span>
+          </div>
+          <mat-card-title>{{ call.name }}</mat-card-title>
+          <mat-card-subtitle>{{ call.operator }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="desc">{{ call.description }}</p>
+          <div class="meta-row">
+            @if (call.budget) {
+              <span><strong>Budżet:</strong> {{ call.budget }}</span>
+            }
+            @if (call.maxGrant) {
+              <span><strong>Maks. grant:</strong> {{ call.maxGrant }}</span>
+            }
+            @if (call.applicationCount !== undefined) {
+              <span><strong>Złożone wnioski:</strong> {{ call.applicationCount }}</span>
+            }
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="loading()"
+            (click)="togglePublish(call)"
+          >
+            <mat-icon aria-hidden="true">{{ call.isPublished ? 'visibility_off' : 'visibility' }}</mat-icon>
+            {{ (call.isPublished ? 'Wyłącz publikację' : 'Opublikuj nabór') }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+</section>
+

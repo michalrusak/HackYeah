@@ -17,6 +17,71 @@
     <p class="error" role="alert">{{ key | translate }}</p>
   }
 
+  <mat-card class="alert-subscription-card">
+    <mat-card-content>
+      <div class="alert-header">
+        <mat-icon aria-hidden="true" class="alert-icon">notifications_active</mat-icon>
+        <div>
+          <h2>{{ "ideaCreator.calls.alertTitle" | translate }}</h2>
+          <p>{{ "ideaCreator.calls.alertSubtitle" | translate }}</p>
+        </div>
+      </div>
+
+      @if (subscribeSuccess()) {
+        <div class="alert-success" role="status">
+          <mat-icon aria-hidden="true">check_circle</mat-icon>
+          <p>{{ "ideaCreator.calls.alertSuccess" | translate }}</p>
+        </div>
+      } @else {
+        <div class="alert-areas-label">
+          <span>{{ "ideaCreator.calls.alertAreasLabel" | translate }}</span>
+        </div>
+        <div class="area-chips" role="group" [attr.aria-label]="'ideaCreator.calls.alertAreasLabel' | translate">
+          @for (area of availableAreas; track area) {
+            <button
+              type="button"
+              class="area-chip"
+              [class.chip-active]="isAreaSelected(area)"
+              [attr.aria-pressed]="isAreaSelected(area)"
+              (click)="toggleArea(area)"
+            >
+              {{ area }}
+            </button>
+          }
+        </div>
+
+        <form class="alert-form" (ngSubmit)="subscribeAlert()">
+          <mat-form-field appearance="outline" class="email-field">
+            <mat-label>{{ "ideaCreator.calls.alertEmailLabel" | translate }}</mat-label>
+            <input
+              matInput
+              type="email"
+              [formControl]="alertEmail"
+              placeholder="twoj-email@przyklad.pl"
+              autocomplete="email"
+            />
+            @if (alertEmail.invalid && alertEmail.touched) {
+              <mat-error>{{ "ideaCreator.calls.alertEmailError" | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <button
+            mat-flat-button
+            type="submit"
+            [disabled]="subscribing()"
+          >
+            <mat-icon aria-hidden="true">send</mat-icon>
+            {{ "ideaCreator.calls.alertSubmit" | translate }}
+          </button>
+        </form>
+
+        @if (subscribeError(); as errKey) {
+          <p class="error" role="alert">{{ errKey | translate }}</p>
+        }
+      }
+    </mat-card-content>
+  </mat-card>
+
   @if (!loading() && !hasOpenCall()) {
     <mat-card class="closed-notice">
       <mat-card-content>

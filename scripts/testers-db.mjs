@@ -7,7 +7,10 @@ const rootDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
 );
-const packageManager = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+const packageManager = process.env.npm_execpath
+  ? process.execPath
+  : process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+const packageManagerArgs = process.env.npm_execpath ? [process.env.npm_execpath] : [];
 const action = process.argv[2];
 if (!["migrate", "seed"].includes(action)) {
   console.error("Usage: node scripts/testers-db.mjs migrate|seed");
@@ -18,19 +21,19 @@ loadRootEnv();
 try {
   if (action === "migrate") {
     await waitForExit(
-      execLocal(packageManager, ["--filter", "api", "db:migrate:deploy"], {
+      execLocal(packageManager, [...packageManagerArgs, "--filter", "api", "db:migrate:deploy"], {
         cwd: rootDir,
       }),
     );
     process.exit(0);
   }
   await waitForExit(
-    execLocal(packageManager, ["--filter", "@repo/api-contracts", "build"], {
+    execLocal(packageManager, [...packageManagerArgs, "--filter", "@repo/api-contracts", "build"], {
       cwd: rootDir,
     }),
   );
   await waitForExit(
-    execLocal(packageManager, ["--filter", "api", "build"], { cwd: rootDir }),
+    execLocal(packageManager, [...packageManagerArgs, "--filter", "api", "build"], { cwd: rootDir }),
   );
   await waitForExit(
     execLocal(process.execPath, ["dist/modules/knowledge/seed.js"], {
@@ -43,6 +46,11 @@ try {
       ["apps/api/dist/database/testers-db.cli.js", action],
       { cwd: rootDir },
     ),
+  );
+  await waitForExit(
+    execLocal(process.execPath, ["prisma/seed.mjs"], {
+      cwd: path.join(rootDir, "apps/api"),
+    }),
   );
 } catch (error) {
   console.error(

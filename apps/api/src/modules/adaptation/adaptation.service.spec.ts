@@ -174,8 +174,8 @@ describe('Adaptation validation', () => {
     AdaptationRequestSchema,
     'Invalid adaptation',
   );
-  it('rejects unknown innovations, assistant roles and excessive history', () => {
-    expect(() => pipe.transform({ ...input, innovationId: 'other' })).toThrow();
+  it('rejects empty innovation IDs, assistant roles and excessive history', () => {
+    expect(() => pipe.transform({ ...input, innovationId: '' })).toThrow();
     expect(() =>
       pipe.transform({
         ...input,

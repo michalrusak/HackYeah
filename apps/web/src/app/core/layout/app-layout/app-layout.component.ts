@@ -3,6 +3,7 @@ import { FocusMonitor } from '@angular/cdk/a11y';
 import {
   afterNextRender,
   Component,
+  computed,
   ElementRef,
   inject,
   Injector,
@@ -20,7 +21,6 @@ import {
   ActivatedRoute,
   NavigationEnd,
   RouterLink,
-  RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -33,7 +33,6 @@ import { NAV_ITEMS } from '../../constants/app.constants';
   imports: [
     RouterOutlet,
     RouterLink,
-    RouterLinkActive,
     TranslatePipe,
     MatButtonModule,
     MatIconModule,
@@ -54,6 +53,25 @@ export class AppLayoutComponent {
       .pipe(map((state) => state.matches)),
     { initialValue: false },
   );
+
+  private readonly url = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map(() => this.router.url),
+    ),
+    { initialValue: this.router.url },
+  );
+  /** Najdłuższa pasująca pozycja menu: na „/zasobnik/admin” aktywny jest Administrator, nie Zasobnik. */
+  readonly activePath = computed(() => {
+    const path = this.url().split(/[?#]/)[0] ?? '';
+    return (
+      this.navItems
+        .filter(
+          (item) => path === item.path || path.startsWith(`${item.path}/`),
+        )
+        .sort((a, b) => b.path.length - a.path.length)[0]?.path ?? null
+    );
+  });
 
   @ViewChild('mainContent', { read: ElementRef })
   private mainContent?: ElementRef<HTMLElement>;

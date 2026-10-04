@@ -5,6 +5,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
   Injector,
@@ -12,18 +13,24 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormGroupDirective,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import type {
-  ExpertIdeaDetailData,
-  ExpertIdeaListData,
-  ExpertQueueData,
-  ExpertThreadData,
+import {
+  AuthLoginInputSchema,
+  type ExpertIdeaDetailData,
+  type ExpertIdeaListData,
+  type ExpertQueueData,
+  type ExpertThreadData,
 } from '@repo/api-contracts';
 import {
   catchError,
@@ -36,7 +43,8 @@ import {
   type Observable,
 } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
-import { projectAccount } from '../testers/projects/project-dialog-access';
+import { DemoService } from '../../core/services/demo.service';
+import { authErrorKey } from '../auth/auth-error';
 import { ExpertService } from './expert.service';
 
 /** Sprawy i pomysły z dziedzin eksperta: szybka odpowiedź i opinia. */
@@ -54,16 +62,18 @@ import { ExpertService } from './expert.service';
   templateUrl: './expert-panel.component.html',
   styleUrls: [
     '../knowledge/knowledge.component.scss',
+    '../knowledge/knowledge-admin.component.scss',
     '../knowledge/idea-moderation.component.scss',
   ],
 })
 export class ExpertPanelComponent {
   readonly auth = inject(AuthService);
   private readonly service = inject(ExpertService);
-  private readonly dialog = inject(MatDialog);
+  private readonly demo = inject(DemoService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
   private readonly heading = viewChild<ElementRef<HTMLElement>>('heading');
+  private readonly loginForm = viewChild(FormGroupDirective);
 
   readonly checking = signal(true);
   readonly busy = signal(false);
@@ -80,7 +90,26 @@ export class ExpertPanelComponent {
     validators: [Validators.maxLength(4000)],
   });
 
+  readonly form = new FormGroup({
+    login: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    password: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+  });
+  /** Konto eksperta dla jury — `null` poza trybem demo. */
+  readonly demoExpert = computed(
+    () =>
+      this.demo.data()?.accounts.find(({ role }) => role === 'expert') ?? null,
+  );
+
   constructor() {
+    effect(() => {
+      if (this.demoExpert() && this.form.pristine) this.resetLogin();
+    });
     this.auth
       .refresh()
       .pipe(
@@ -109,16 +138,65 @@ export class ExpertPanelComponent {
     .subscribe((data) => this.show(data));
 
   login(): void {
-    projectAccount(this.dialog, this.auth)
+    const parsed = AuthLoginInputSchema.safeParse(this.form.getRawValue());
+    if (this.busy()) return;
+    if (!parsed.success) {
+      this.form.markAllAsTouched();
+      this.errorKey.set('auth.errors.validation');
+      return;
+    }
+    this.busy.set(true);
+    this.errorKey.set(null);
+    this.auth
+      .login(parsed.data.login, parsed.data.password)
       .pipe(
-        filter(() => !!this.auth.user()?.expert),
-        switchMap(() => this.lists()),
+        switchMap(({ user }) => (user?.expert ? this.lists() : of(null))),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: (data) => this.show(data),
-        error: () => this.errorKey.set('expert.error'),
+        next: (data) => {
+          this.busy.set(false);
+          if (data) this.show(data);
+          this.resetLogin();
+        },
+        error: (error: unknown) => {
+          this.busy.set(false);
+          this.errorKey.set(authErrorKey(error, true));
+        },
       });
+  }
+
+  logout(): void {
+    if (this.busy()) return;
+    this.busy.set(true);
+    this.auth
+      .logout()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.busy.set(false);
+          this.queue.set(null);
+          this.ideas.set(null);
+          this.close();
+          this.resetLogin();
+        },
+        error: () => {
+          this.busy.set(false);
+          this.errorKey.set('expert.error');
+        },
+      });
+  }
+
+  // Czyści też stan wysłania, żeby puste pola nie świeciły się na czerwono.
+  private resetLogin(): void {
+    const account = this.demoExpert();
+    const value = {
+      login: account?.login ?? '',
+      password: account?.password ?? '',
+    };
+    const directive = this.loginForm();
+    if (directive) directive.resetForm(value);
+    else this.form.reset(value);
   }
 
   select(tab: 'conversations' | 'ideas'): void {

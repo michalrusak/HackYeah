@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
     "setup": "node scripts/setup.mjs",
+    "demo:check": "node scripts/demo-check.mjs",
+    "test:db": "node scripts/knowledge-test.mjs",
     "build": "turbo run build --ui=tui",
     "predev": "node scripts/setup.mjs",
     "dev": "turbo run dev --ui=tui",

@@ -16,7 +16,12 @@ const apiOrigin = (process.env.API_URL ?? "http://localhost:3000").replace(
 const scenarios = [
   { key: "seniors", expected: "senior-cuder" },
   { key: "migrants", expected: "health-guide-pl" },
-  { key: "school", expected: "bez-presji-z-depresji" },
+  {
+    key: "school",
+    description:
+      "Uczeń wraca do szkoły po leczeniu depresji i długiej nieobecności. Szukamy materiałów dla nauczycieli i klasy, które pomogą mu bezpiecznie wrócić do nauki i relacji z rówieśnikami.",
+    expected: "bez-presji-z-depresji",
+  },
   {
     description:
       "Starsi mieszkańcy nie potrafią obsłużyć bankomatu ani paczkomatu. Szukamy bezpiecznego sposobu ćwiczenia tych urządzeń.",

@@ -12,6 +12,7 @@ import { AssistantRepository } from './assistant/assistant.repository.js';
 import { AssistantService } from './assistant/assistant.service.js';
 import { VisualService } from './assistant/visual.service.js';
 import { CallsController } from './calls/calls.controller.js';
+import { CallsAdminController } from './calls/calls-admin.controller.js';
 import { CallsRepository } from './calls/calls.repository.js';
 import { CallsService } from './calls/calls.service.js';
 import { CanvasController } from './canvas/canvas.controller.js';
@@ -42,6 +43,7 @@ import { ModerationService } from './moderation/moderation.service.js';
     IdeasController,
     CanvasController,
     CallsController,
+    CallsAdminController,
     ApplicationsController,
     AssistantController,
     MaterialsController,

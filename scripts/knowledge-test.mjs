@@ -30,6 +30,7 @@ try {
 const env = {
   DATABASE_URL: testUrl.href,
   KNOWLEDGE_TEST_DATABASE_URL: testUrl.href,
+  TEST_DATABASE_URL: testUrl.href,
 };
 await waitForExit(
   execLocal("prisma", ["migrate", "deploy", "--config", "prisma7.config.ts"], {

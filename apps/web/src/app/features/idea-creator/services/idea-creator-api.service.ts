@@ -46,6 +46,7 @@ import {
 import { map, type Observable } from 'rxjs';
 import { z, type ZodType } from 'zod';
 import { ApiConfigService } from '../../../core/services/api-config.service';
+import { EditTokenStore } from './edit-token.store';
 
 export interface IdeaListFilters {
   kind?: string;
@@ -65,6 +66,7 @@ export interface IdeaListFilters {
 export class IdeaCreatorApiService {
   private readonly http = inject(HttpClient);
   private readonly config = inject(ApiConfigService);
+  private readonly tokens = inject(EditTokenStore);
 
   private get baseUrl(): string {
     return this.config.apiUrl;
@@ -154,9 +156,15 @@ export class IdeaCreatorApiService {
       .pipe(unwrap(CreatedIdeaDataSchema));
   }
 
-  plainLanguage(id: string): Observable<PlainLanguageData> {
+  plainLanguage(id: string, token?: string): Observable<PlainLanguageData> {
     return this.http
-      .post<unknown>(`${this.baseUrl}/ideas/${id}/plain-language`, {})
+      .post<unknown>(
+        `${this.baseUrl}/ideas/${id}/plain-language`,
+        {},
+        {
+          headers: auth(token),
+        },
+      )
       .pipe(unwrap(PlainLanguageDataSchema));
   }
 
@@ -237,6 +245,22 @@ export class IdeaCreatorApiService {
       .pipe(unwrap(GrantCallDataSchema));
   }
 
+  subscribeCallAlerts(
+    email: string,
+    areas: string[],
+  ): Observable<{ success: boolean; email: string }> {
+    return this.http
+      .post<unknown>(`${this.baseUrl}/calls/subscribe`, { email, areas })
+      .pipe(
+        unwrap(
+          z.object({
+            success: z.boolean(),
+            email: z.string(),
+          }),
+        ),
+      );
+  }
+
   createApplication(
     callId: string,
     ideaId: string,
@@ -273,10 +297,7 @@ export class IdeaCreatorApiService {
       .pipe(unwrap(ApplicationDataSchema));
   }
 
-  generateApplication(
-    id: string,
-    token?: string,
-  ): Observable<ApplicationData> {
+  generateApplication(id: string, token?: string): Observable<ApplicationData> {
     return this.http
       .post<unknown>(
         `${this.baseUrl}/applications/${id}/generate`,
@@ -306,7 +327,10 @@ export class IdeaCreatorApiService {
       })
       .pipe(
         unwrap(
-          z.object({ filename: z.string().min(1), markdown: z.string().min(1) }),
+          z.object({
+            filename: z.string().min(1),
+            markdown: z.string().min(1),
+          }),
         ),
       );
   }
@@ -316,10 +340,14 @@ export class IdeaCreatorApiService {
     ideaId?: string,
   ): Observable<AssistantChatData> {
     return this.http
-      .post<unknown>(`${this.baseUrl}/assistant/chat`, {
-        message,
-        ...(ideaId ? { ideaId } : {}),
-      })
+      .post<unknown>(
+        `${this.baseUrl}/assistant/chat`,
+        {
+          message,
+          ...(ideaId ? { ideaId } : {}),
+        },
+        { headers: auth(ideaId ? this.tokens.ideaToken(ideaId) : undefined) },
+      )
       .pipe(unwrap(AssistantChatDataSchema));
   }
 

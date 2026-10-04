@@ -3,13 +3,52 @@
 
 @if (checking()) {
   <p role="status">{{ "expert.checking" | translate }}</p>
-} @else if (!auth.user()) {
+} @else if (!auth.user()?.expert) {
   <section class="login-panel">
-    <h2>{{ "expert.loginTitle" | translate }}</h2>
-    <p>{{ "expert.loginIntro" | translate }}</p>
-    <button mat-flat-button type="button" (click)="login()">
-      {{ "auth.login" | translate }}
-    </button>
+    @if (auth.user()) {
+      <h2>{{ "expert.notExpertTitle" | translate }}</h2>
+      <p>{{ "expert.notExpert" | translate }}</p>
+      <p>
+        <a routerLink="/rops-contact">{{ "nav.rops_contact" | translate }}</a>
+      </p>
+    } @else {
+      <h2>{{ "expert.loginTitle" | translate }}</h2>
+      <p>{{ "expert.loginIntro" | translate }}</p>
+    }
+    @if (demoExpert()) {
+      <p class="demo-note" role="note">
+        {{ "demo.loginIntro" | translate }}
+      </p>
+    }
+    <form [formGroup]="form" (ngSubmit)="login()">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ "auth.loginLabel" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="login"
+          autocomplete="username"
+          autocapitalize="none"
+          spellcheck="false"
+          maxlength="40"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ "auth.passwordLabel" | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="password"
+          type="password"
+          autocomplete="current-password"
+          maxlength="128"
+        />
+      </mat-form-field>
+      @if (errorKey(); as key) {
+        <p class="error" role="alert">{{ key | translate }}</p>
+      }
+      <button mat-flat-button type="submit" [disabled]="busy()">
+        {{ (busy() ? "auth.saving" : "auth.login") | translate }}
+      </button>
+    </form>
   </section>
 } @else {
   @if (auth.user()?.expert; as expert) {
@@ -36,6 +75,9 @@
         (click)="select('ideas')"
       >
         {{ "expert.ideas.tab" | translate: { count: ideaCount() } }}
+      </button>
+      <button mat-button type="button" [disabled]="busy()" (click)="logout()">
+        {{ "auth.logout" | translate }}
       </button>
     </div>
 
@@ -340,16 +382,5 @@
         }
       </section>
     }
-  } @else {
-    @if (errorKey(); as key) {
-      <p class="error" role="alert">{{ key | translate }}</p>
-    }
-    <section class="login-panel">
-      <h2>{{ "expert.notExpertTitle" | translate }}</h2>
-      <p>{{ "expert.notExpert" | translate }}</p>
-      <a mat-stroked-button routerLink="/rops-contact">
-        {{ "nav.rops_contact" | translate }}
-      </a>
-    </section>
   }
 }

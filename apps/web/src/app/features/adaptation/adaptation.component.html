@@ -12,7 +12,7 @@
     <mat-icon aria-hidden="true">local_shipping</mat-icon>
     <div>
       <span>{{ "adaptation.selected" | translate }}</span
-      ><strong>{{ "adaptation.innovation" | translate }}</strong>
+      ><strong>{{ session.innovationTitle() || ("adaptation.innovation" | translate) }}</strong>
     </div>
     <span class="badge">{{ "adaptation.draft" | translate }}</span>
   </div>

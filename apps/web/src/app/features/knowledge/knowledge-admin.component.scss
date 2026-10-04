@@ -34,6 +34,12 @@
 .queue-attention strong {
   color: var(--mat-sys-error, #ba1a1a);
 }
+.resource-card.source-expanded {
+  grid-column: 1 / -1;
+}
+.source-toggle {
+  align-self: flex-start;
+}
 .badge-draft {
   background: var(--mat-sys-tertiary-container, #ffdea6);
   color: var(--mat-sys-on-tertiary-container, #271900);

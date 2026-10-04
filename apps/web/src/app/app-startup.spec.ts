@@ -6,6 +6,7 @@ import {
 } from '@angular/common/http/testing';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { createApiSuccess } from '@repo/api-contracts';
 import { AppComponent } from './app.component';
 import { appConfig } from './app.config';
 import { BreadcrumbService } from './core/services/breadcrumb.service';
@@ -27,6 +28,13 @@ describe('Application startup', () => {
       },
     });
     await init.donePromise;
+    http.expectOne('/api/demo').flush(
+      createApiSuccess({
+        adminPassword: null,
+        accounts: [],
+        expertGrant: null,
+      }),
+    );
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     await TestBed.inject(Router).navigateByUrl('/matchmaking');

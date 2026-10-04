@@ -28,6 +28,25 @@ mat-error {
   font-size: 0.875rem;
   line-height: 1.5;
 }
+.demo-note p {
+  line-height: 1.4;
+}
+.demo-accounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+.demo-accounts button {
+  min-height: 44px;
+  padding: 4px 12px;
+  font-size: 0.875rem;
+}
+.demo-accounts button[aria-pressed="true"] {
+  background: var(--hub-surface);
+  border-color: var(--hub-warning);
+  font-weight: 700;
+}
 .switch-mode {
   display: flex;
   flex-wrap: wrap;

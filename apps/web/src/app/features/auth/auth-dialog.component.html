@@ -14,6 +14,24 @@
 </div>
 <mat-dialog-content>
   <p id="auth-intro">{{ "auth." + mode() + "Intro" | translate }}</p>
+  @if (demoAccounts().length) {
+    <div class="demo-note" role="note">
+      <p>{{ "demo.accountsIntro" | translate }}</p>
+      <div class="demo-accounts">
+        @for (account of demoAccounts(); track account.login) {
+          <button
+            mat-stroked-button
+            type="button"
+            [attr.aria-pressed]="form.controls.login.value === account.login"
+            [disabled]="saving()"
+            (click)="useDemo(account)"
+          >
+            {{ "demo.roles." + account.role | translate }}
+          </button>
+        }
+      </div>
+    </div>
+  }
   <form
     id="auth-form"
     [formGroup]="form"

@@ -22,9 +22,12 @@ const hash = `scrypt:${salt}:${scryptSync(password, salt, 64).toString("hex")}`;
 const line = `KNOWLEDGE_ADMIN_PASSWORD_HASH=${hash}`;
 writeFileSync(
   envFile,
-  /^KNOWLEDGE_ADMIN_PASSWORD_HASH=/m.test(env)
+  (/^KNOWLEDGE_ADMIN_PASSWORD_HASH=/m.test(env)
     ? env.replace(/^KNOWLEDGE_ADMIN_PASSWORD_HASH=.*$/m, line)
-    : `${env.trimEnd()}\n${line}\n`,
+    : `${env.trimEnd()}\n${line}\n`
+  )
+    // Tryb demo podaje to hasło w formularzu, więc musi zostać zgodne z hashem.
+    .replace(/^DEMO_ADMIN_PASSWORD=.*$/m, `DEMO_ADMIN_PASSWORD=${password}`),
 );
 mkdirSync(fileURLToPath(new URL("../tmp/", import.meta.url)), {
   recursive: true,

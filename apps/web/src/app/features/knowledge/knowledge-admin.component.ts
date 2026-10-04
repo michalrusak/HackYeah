@@ -4,6 +4,7 @@ import {
   afterNextRender,
   Component,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
   Injector,
@@ -23,6 +24,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { DomSanitizer, type SafeResourceUrl } from '@angular/platform-browser';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   KnowledgeImportSchema,
@@ -36,12 +38,15 @@ import {
   type ModerationListData,
 } from '@repo/api-contracts';
 import { catchError, EMPTY, filter, forkJoin, interval, switchMap } from 'rxjs';
+import { DemoService } from '../../core/services/demo.service';
+import { CallAdminComponent } from './call-admin.component';
 import { ContactInboxComponent } from './contact-inbox.component';
 import { ExpertAdminComponent } from './expert-admin.component';
 import { IdeaModerationComponent } from './idea-moderation.component';
 import { KnowledgeService } from './knowledge.service';
 import { knowledgeError } from './knowledge-error';
 import { ResourceEditorComponent } from './resource-editor.component';
+import { ropsEmbedHref } from './source-embed';
 
 type QueueFilter = 'all' | 'draft' | 'published' | 'stale';
 
@@ -60,16 +65,25 @@ type QueueFilter = 'all' | 'draft' | 'published' | 'stale';
     IdeaModerationComponent,
     ContactInboxComponent,
     ExpertAdminComponent,
+    CallAdminComponent,
   ],
   templateUrl: './knowledge-admin.component.html',
-  styleUrls: ['./knowledge.component.scss', './knowledge-admin.component.scss'],
+  styleUrls: [
+    './knowledge.component.scss',
+    './knowledge-admin.component.scss',
+    './source-preview.scss',
+  ],
 })
 export class KnowledgeAdminComponent {
   readonly service = inject(KnowledgeService);
+  readonly demo = inject(DemoService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
+  private readonly sanitizer = inject(DomSanitizer);
   private readonly panelHeading =
     viewChild<ElementRef<HTMLElement>>('panelHeading');
+  private readonly sourceHeading =
+    viewChild<ElementRef<HTMLElement>>('sourceHeading');
   readonly form = new FormGroup({
     password: new FormControl('', {
       nonNullable: true,
@@ -106,13 +120,20 @@ export class KnowledgeAdminComponent {
   readonly ideas = signal<ModerationListData | null>(null);
   readonly contact = signal<ContactQueueData | null>(null);
   readonly tab = signal<
-    'resources' | 'ideas' | 'contact' | 'experts' | 'trends'
+    'resources' | 'ideas' | 'contact' | 'experts' | 'trends' | 'calls'
   >('resources');
   readonly editing = signal(false);
   readonly selected = signal<KnowledgeResource | null>(null);
   readonly page = signal(1);
+  readonly embedHref = ropsEmbedHref;
+  // Adres ramki powstaje raz przy otwarciu, żeby strona ROPS nie ładowała się od nowa.
+  readonly preview = signal<{ id: string; url: SafeResourceUrl } | null>(null);
 
   constructor() {
+    effect(() => {
+      const password = this.demo.data()?.adminPassword;
+      if (password && this.form.pristine) this.form.setValue({ password });
+    });
     this.service
       .restoreSession()
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -157,7 +178,9 @@ export class KnowledgeAdminComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.form.reset();
+          this.form.reset({
+            password: this.demo.data()?.adminPassword ?? '',
+          });
           this.load();
           this.focusPanel();
         },
@@ -187,7 +210,35 @@ export class KnowledgeAdminComponent {
       });
   }
 
+  /** Pokazuje stronę źródłową ROPS w karcie zasobu albo zwija otwarty podgląd. */
+  togglePreview(resource: KnowledgeResource): void {
+    const href =
+      this.preview()?.id === resource.id
+        ? null
+        : ropsEmbedHref(resource.sourceUrl);
+    this.preview.set(
+      href
+        ? {
+            id: resource.id,
+            url: this.sanitizer.bypassSecurityTrustResourceUrl(href),
+          }
+        : null,
+    );
+    afterNextRender(
+      () => {
+        const target = href
+          ? this.sourceHeading()?.nativeElement
+          : document.getElementById(`source-toggle-${resource.id}`);
+        target?.focus({ preventScroll: true });
+        // Otwarty podgląd trafia na górę ekranu, żeby ramka była od razu widoczna.
+        target?.scrollIntoView({ block: href ? 'start' : 'nearest' });
+      },
+      { injector: this.injector },
+    );
+  }
+
   load(): void {
+    this.preview.set(null);
     this.loading.set(true);
     this.error.set(null);
     const filter = this.filter();

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { AppLayoutComponent } from './app-layout.component';
 
@@ -50,6 +50,28 @@ describe('Sidebar interactions', () => {
       ?.dispatchEvent(new MouseEvent('mouseenter'));
     fixture.detectChanges();
     expect(element.querySelector('.sidebar-dismissed')).toBeNull();
+  });
+
+  it('marks only the most specific menu entry as the current page', async () => {
+    const fixture = TestBed.createComponent(AppLayoutComponent);
+    const element: HTMLElement = fixture.nativeElement;
+    const current = (): (string | null)[] =>
+      Array.from(element.querySelectorAll('.nav-link.active')).map((link) =>
+        link.getAttribute('href'),
+      );
+    const router = TestBed.inject(Router);
+    router.resetConfig([{ path: '**', children: [] }]);
+
+    await router.navigateByUrl('/zasobnik/admin');
+    fixture.detectChanges();
+    expect(current()).toEqual(['/zasobnik/admin']);
+    expect(
+      element.querySelector('.nav-link.active')?.getAttribute('aria-current'),
+    ).toBe('page');
+
+    await router.navigateByUrl('/zasobnik/temat/Seniorzy?kind=report');
+    fixture.detectChanges();
+    expect(current()).toEqual(['/zasobnik']);
   });
 
   it('Escape closes a pinned sidebar', () => {

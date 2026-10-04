@@ -181,6 +181,23 @@ a[mat-stroked-button] {
   min-height: 44px;
 }
 
+/* Informacja o danych logowania uzupełnionych w trybie demo. */
+.demo-note {
+  width: fit-content;
+  max-width: 100%;
+  margin: 8px 0 12px;
+  padding: 6px 12px;
+  border: 1px solid var(--hub-warning);
+  border-radius: var(--hub-control-radius);
+  background: var(--hub-warning-soft);
+  color: var(--hub-ink);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+.demo-note p {
+  margin: 0 0 6px;
+}
+
 .character-count {
   white-space: nowrap;
   padding-left: 8px;

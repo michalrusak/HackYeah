@@ -9,6 +9,11 @@
   <section class="login-panel">
     <h2>{{ "knowledge.admin.loginTitle" | translate }}</h2>
     <p>{{ "knowledge.admin.loginIntro" | translate }}</p>
+    @if (demo.data()?.adminPassword) {
+      <p class="demo-note" role="note">
+        {{ "demo.adminIntro" | translate }}
+      </p>
+    }
     <form [formGroup]="form" (ngSubmit)="login()">
       <mat-form-field appearance="outline"
         ><mat-label>{{ "knowledge.admin.password" | translate }}</mat-label
@@ -80,6 +85,13 @@
       (click)="tab.set('trends')"
     >
       {{ "knowledge.admin.trends" | translate }}</button
+    ><button
+      mat-stroked-button
+      type="button"
+      [attr.aria-pressed]="tab() === 'calls'"
+      (click)="tab.set('calls')"
+    >
+      {{ "knowledge.admin.calls.tab" | translate }}</button
     ><button mat-button type="button" [disabled]="loading()" (click)="load()">
       {{ "knowledge.admin.refresh" | translate }}</button
     ><button mat-button type="button" [disabled]="loading()" (click)="logout()">
@@ -156,7 +168,10 @@
       }
       <div class="resource-grid">
         @for (resource of data.resources; track resource.id) {
-          <article class="resource-card">
+          <article
+            class="resource-card"
+            [class.source-expanded]="preview()?.id === resource.id"
+          >
             <div class="badges">
               <span
                 class="badge"
@@ -183,16 +198,38 @@
               }}
               · {{ resource.updatedAt | date: "dd.MM.yyyy HH:mm" }}
             </p>
-            <a
-              [href]="resource.sourceUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              >{{ "knowledge.admin.checkSource" | translate
-              }}<span class="sr-only">
-                — {{ resource.title }}.
-                {{ "knowledge.newTab" | translate }}</span
-              ></a
-            >
+            @if (embedHref(resource.sourceUrl)) {
+              <button
+                mat-stroked-button
+                type="button"
+                class="source-toggle"
+                [id]="'source-toggle-' + resource.id"
+                [attr.aria-expanded]="preview()?.id === resource.id"
+                [attr.aria-controls]="'source-preview-' + resource.id"
+                (click)="togglePreview(resource)"
+              >
+                <mat-icon aria-hidden="true">{{
+                  preview()?.id === resource.id ? "expand_less" : "expand_more"
+                }}</mat-icon>
+                {{
+                  (preview()?.id === resource.id
+                    ? "knowledge.preview.collapse"
+                    : "knowledge.admin.showSource"
+                  ) | translate
+                }}<span class="sr-only"> — {{ resource.title }}</span>
+              </button>
+            } @else {
+              <a
+                [href]="resource.sourceUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                >{{ "knowledge.admin.checkSource" | translate
+                }}<span class="sr-only">
+                  — {{ resource.title }}.
+                  {{ "knowledge.newTab" | translate }}</span
+                ></a
+              >
+            }
             <div class="actions card-actions">
               @if (resource.status === "draft") {
                 <button
@@ -234,6 +271,44 @@
                 }}<span class="sr-only"> — {{ resource.title }}</span>
               </button>
             </div>
+            @if (preview(); as open) {
+              @if (open.id === resource.id) {
+                <section
+                  class="source-preview"
+                  [id]="'source-preview-' + resource.id"
+                  [attr.aria-labelledby]="'source-heading-' + resource.id"
+                >
+                  <h4
+                    #sourceHeading
+                    tabindex="-1"
+                    [id]="'source-heading-' + resource.id"
+                  >
+                    {{
+                      "knowledge.preview.title"
+                        | translate: { title: resource.title }
+                    }}
+                  </h4>
+                  <iframe
+                    [src]="open.url"
+                    [title]="
+                      'knowledge.preview.title'
+                        | translate: { title: resource.title }
+                    "
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-downloads"
+                    referrerpolicy="no-referrer"
+                  ></iframe>
+                  <button
+                    mat-stroked-button
+                    type="button"
+                    class="source-close"
+                    (click)="togglePreview(resource)"
+                  >
+                    <mat-icon aria-hidden="true">expand_less</mat-icon>
+                    {{ "knowledge.preview.collapse" | translate }}
+                  </button>
+                </section>
+              }
+            }
           </article>
         }
       </div>
@@ -459,5 +534,8 @@
         </details>
       </section>
     }
+  }
+  @if (tab() === "calls") {
+    <app-call-admin />
   }
 }

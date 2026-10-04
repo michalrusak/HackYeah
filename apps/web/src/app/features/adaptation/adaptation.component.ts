@@ -16,7 +16,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -52,6 +52,7 @@ export class AdaptationComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly draft = inject(ContactDraftService);
   private readonly injector = inject(Injector);
   private readonly responseHeading =
@@ -70,6 +71,14 @@ export class AdaptationComponent {
   readonly answerForm = new FormGroup({ answer: this.answer });
 
   constructor() {
+    const routeId = this.route.snapshot.paramMap.get('id');
+    if (routeId) {
+      this.session.innovationId.set(routeId);
+    }
+    const qTitle = this.route.snapshot.queryParamMap.get('title');
+    if (qTitle) {
+      this.session.innovationTitle.set(qTitle);
+    }
     if (this.session.need() && !this.session.result()) this.start();
   }
 
@@ -96,8 +105,9 @@ export class AdaptationComponent {
   }
 
   private request(need: string, turns: AdaptationRequest['turns']): void {
+    const activeId = this.session.innovationId() || ADAPTABLE_INNOVATION_ID;
     const input = AdaptationRequestSchema.safeParse({
-      innovationId: ADAPTABLE_INNOVATION_ID,
+      innovationId: activeId,
       need,
       turns,
     });
@@ -108,7 +118,7 @@ export class AdaptationComponent {
     this.loading.set(true);
     this.errorKey.set('');
     this.session
-      .update(input.data.need, input.data.turns)
+      .update(input.data.need, input.data.turns, activeId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {

@@ -28,6 +28,9 @@
       "passThroughEnv": [
         "DATABASE_URL",
         "KNOWLEDGE_ADMIN_PASSWORD_HASH",
+        "DEMO_MODE",
+        "DEMO_ADMIN_PASSWORD",
+        "DEMO_ACCOUNT_PASSWORD",
         "NODE_ENV",
         "OPENROUTER_API_KEY",
         "OPENROUTER_MODEL",
@@ -45,6 +48,9 @@
       "passThroughEnv": [
         "DATABASE_URL",
         "KNOWLEDGE_ADMIN_PASSWORD_HASH",
+        "DEMO_MODE",
+        "DEMO_ADMIN_PASSWORD",
+        "DEMO_ACCOUNT_PASSWORD",
         "NODE_ENV",
         "OPENROUTER_API_KEY",
         "OPENROUTER_MODEL",

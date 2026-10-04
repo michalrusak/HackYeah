@@ -1,6 +1,8 @@
 import {
   Component,
+  computed,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
   signal,
@@ -20,8 +22,10 @@ import { TranslatePipe } from '@ngx-translate/core';
 import {
   AuthLoginInputSchema,
   AuthRegisterInputSchema,
+  type DemoAccount,
 } from '@repo/api-contracts';
 import { AuthService } from '../../core/services/auth.service';
+import { DemoService } from '../../core/services/demo.service';
 import { authErrorKey } from './auth-error';
 
 export type AuthMode = 'login' | 'register';
@@ -42,6 +46,7 @@ export type AuthMode = 'login' | 'register';
 })
 export class AuthDialogComponent {
   private readonly auth = inject(AuthService);
+  private readonly demo = inject(DemoService);
   private readonly dialog = inject(
     MatDialogRef<AuthDialogComponent, 'authenticated'>,
   );
@@ -65,8 +70,34 @@ export class AuthDialogComponent {
     password: ['', [Validators.required, Validators.maxLength(128)]],
   });
 
+  /** Konta demo dla jury — puste poza trybem demo i przy rejestracji. */
+  readonly demoAccounts = computed(() =>
+    this.mode() === 'login' ? (this.demo.data()?.accounts ?? []) : [],
+  );
+
+  constructor() {
+    effect(() => {
+      const accounts = this.demoAccounts();
+      const account =
+        accounts.find(({ role }) => role === 'tester') ?? accounts[0];
+      if (account && this.form.pristine) this.useDemo(account);
+    });
+  }
+
+  useDemo({ login, password }: DemoAccount): void {
+    this.errorKey.set(null);
+    this.form.setValue({ login, password });
+  }
+
   switchMode(): void {
     if (this.saving()) return;
+    // Login konta demo jest zajęty, więc nie przenosimy go do rejestracji.
+    if (
+      this.demoAccounts().some(
+        ({ login }) => login === this.form.controls.login.value,
+      )
+    )
+      this.form.controls.login.reset();
     this.mode.update((mode) => (mode === 'login' ? 'register' : 'login'));
     this.errorKey.set(null);
     this.form.controls.password.reset();

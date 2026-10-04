@@ -364,11 +364,10 @@
                       </div>
                     </mat-card-content>
                     <mat-card-actions>
-                      @if (match.id === "mobilne-centrum-pomocy") {
-                        <button mat-flat-button type="button" (click)="adapt()">
-                          {{ "adaptation.cta" | translate }}
-                        </button>
-                      }
+                      <button mat-flat-button type="button" (click)="adapt(match)">
+                        <mat-icon aria-hidden="true">tune</mat-icon>
+                        {{ "adaptation.cta" | translate }}
+                      </button>
                       <button
                         #previewToggle
                         class="preview-toggle"

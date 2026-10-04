@@ -233,6 +233,46 @@ describe('Knowledge administrator quick actions', () => {
     expect(component.error()).toBe('knowledge.errors.conflict');
     http.verify();
   });
+
+  it('embeds the ROPS source inside the resource card instead of opening a new tab', () => {
+    TestBed.configureTestingModule({
+      imports: [KnowledgeAdminComponent],
+      providers,
+    });
+    const fixture = TestBed.createComponent(KnowledgeAdminComponent);
+    const http = TestBed.inject(HttpTestingController);
+    fixture.detectChanges();
+    http
+      .expectOne('/api/knowledge/admin/session')
+      .flush({}, { status: 401, statusText: 'Unauthorized' });
+    const component = fixture.componentInstance;
+    component.service.session.set(session);
+    component.list.set({
+      resources: [resource],
+      total: 1,
+      page: 1,
+      pageSize: 20,
+    });
+    fixture.detectChanges();
+    const element: HTMLElement = fixture.nativeElement;
+    const toggle = element.querySelector<HTMLButtonElement>('.source-toggle');
+    expect(element.querySelector('iframe')).toBeNull();
+    expect(
+      element.querySelector('.resource-card a[target="_blank"]'),
+    ).toBeNull();
+
+    toggle?.click();
+    fixture.detectChanges();
+    expect(element.querySelector('iframe')?.getAttribute('src')).toBe(
+      resource.sourceUrl,
+    );
+    expect(toggle?.getAttribute('aria-expanded')).toBe('true');
+
+    toggle?.click();
+    fixture.detectChanges();
+    expect(element.querySelector('iframe')).toBeNull();
+    http.verify();
+  });
 });
 
 describe('Idea moderation', () => {

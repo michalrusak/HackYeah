@@ -3,7 +3,7 @@ import { z } from "zod";
 export const ADAPTABLE_INNOVATION_ID = "mobilne-centrum-pomocy";
 export const AdaptationRequestSchema = z
   .object({
-    innovationId: z.literal(ADAPTABLE_INNOVATION_ID),
+    innovationId: z.string().trim().min(1).max(100),
     need: z.string().trim().min(1).max(4000),
     turns: z
       .array(
@@ -33,6 +33,8 @@ export const AdaptationSourceIdSchema = z.enum([
   "individual",
   "resources",
   "team",
+  "model",
+  "guidelines",
 ]);
 export const AdaptationAdviceSchema = z
   .object({
@@ -128,3 +130,4 @@ export const adaptationJsonSchema = object({
 export type AdaptationRequest = z.infer<typeof AdaptationRequestSchema>;
 export type AdaptationAdvice = z.infer<typeof AdaptationAdviceSchema>;
 export type AdaptationData = z.infer<typeof AdaptationDataSchema>;
+export type AdaptationSource = z.infer<typeof AdaptationSourceSchema>;

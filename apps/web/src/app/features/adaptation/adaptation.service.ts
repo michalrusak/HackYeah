@@ -11,20 +11,24 @@ import { ApiService } from '../../core/services/api.service';
 @Injectable({ providedIn: 'root' })
 export class AdaptationService {
   private readonly api = inject(ApiService);
+  readonly innovationId = signal<string>(ADAPTABLE_INNOVATION_ID);
+  readonly innovationTitle = signal<string>('');
   readonly need = signal('');
   readonly turns = signal<AdaptationRequest['turns']>([]);
   readonly result = signal<AdaptationData | null>(null);
 
-  begin(need: string): void {
-    if (this.need() === need) return;
+  begin(need: string, innovationId = ADAPTABLE_INNOVATION_ID, title = ''): void {
+    if (this.need() === need && this.innovationId() === innovationId) return;
+    this.innovationId.set(innovationId);
+    this.innovationTitle.set(title);
     this.need.set(need);
     this.turns.set([]);
     this.result.set(null);
   }
 
-  update(need: string, turns: AdaptationRequest['turns']) {
+  update(need: string, turns: AdaptationRequest['turns'], innovationId = this.innovationId()) {
     const body = AdaptationRequestSchema.parse({
-      innovationId: ADAPTABLE_INNOVATION_ID,
+      innovationId: innovationId || ADAPTABLE_INNOVATION_ID,
       need,
       turns,
     });

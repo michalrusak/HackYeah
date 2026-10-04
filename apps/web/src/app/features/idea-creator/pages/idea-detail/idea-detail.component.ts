@@ -83,10 +83,14 @@ export class IdeaDetailComponent implements OnInit {
       this.showPlainLanguage.set(true);
       return;
     }
-    this.run('plainLanguage', this.api.plainLanguage(this.ideaId()), (data) => {
-      this.plainLanguage.set(data.text);
-      this.showPlainLanguage.set(true);
-    });
+    this.run(
+      'plainLanguage',
+      this.api.plainLanguage(this.ideaId(), this.token()),
+      (data) => {
+        this.plainLanguage.set(data.text);
+        this.showPlainLanguage.set(true);
+      },
+    );
   }
 
   loadRelated(): void {

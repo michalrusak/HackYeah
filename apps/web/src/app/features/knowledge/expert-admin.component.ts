@@ -1,9 +1,17 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
+  FormGroupDirective,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -20,6 +28,7 @@ import {
   type SocialArea,
 } from '@repo/api-contracts';
 import type { Observable } from 'rxjs';
+import { DemoService } from '../../core/services/demo.service';
 import { KnowledgeService } from './knowledge.service';
 
 /** Nadawanie roli eksperta kontom użytkowników — tylko dla ROPS. */
@@ -38,7 +47,9 @@ import { KnowledgeService } from './knowledge.service';
 })
 export class ExpertAdminComponent {
   private readonly service = inject(KnowledgeService);
+  readonly demo = inject(DemoService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly formDirective = viewChild(FormGroupDirective);
 
   readonly areas = SocialAreaSchema.options;
   readonly experts = signal<ExpertAccount[] | null>(null);
@@ -65,6 +76,10 @@ export class ExpertAdminComponent {
   });
 
   constructor() {
+    effect(() => {
+      const grant = this.demo.data()?.expertGrant;
+      if (grant && this.form.pristine) this.form.setValue(grant);
+    });
     this.run(this.service.experts(), null);
   }
 
@@ -106,7 +121,8 @@ export class ExpertAdminComponent {
         this.experts.set(experts);
         this.busy.set(false);
         if (notice) {
-          this.form.reset();
+          // Czyści też stan wysłania — inaczej puste pola świecą się na czerwono.
+          this.formDirective()?.resetForm();
           this.noticeKey.set(notice);
         }
       },

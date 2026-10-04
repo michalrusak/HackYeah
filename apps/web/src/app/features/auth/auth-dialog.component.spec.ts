@@ -9,6 +9,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideTranslateService } from '@ngx-translate/core';
 import { createApiSuccess } from '@repo/api-contracts';
 import { AuthService } from '../../core/services/auth.service';
+import { DemoService } from '../../core/services/demo.service';
 import { AuthDialogComponent } from './auth-dialog.component';
 
 const user = {
@@ -115,6 +116,41 @@ describe('AuthDialogComponent', () => {
     expect(localStorage.getItem(storageKey)).toBe('b'.repeat(64));
     expect(fixture.componentInstance.saving()).toBeFalse();
     expect(close).not.toHaveBeenCalled();
+  });
+
+  it('prefills a demo account when logging in and lets the jury pick another one', () => {
+    const accounts = [
+      { login: 'demo-tester', password: 'demo password 1', role: 'tester' },
+      { login: 'demo-ekspert', password: 'demo password 1', role: 'expert' },
+    ];
+    TestBed.inject(DemoService).load();
+    http
+      .expectOne('/api/demo')
+      .flush(
+        createApiSuccess({ adminPassword: null, accounts, expertGrant: null }),
+      );
+    fixture.detectChanges();
+    const root: HTMLElement = fixture.nativeElement;
+    expect(root.querySelector('.demo-note')).toBeNull();
+
+    fixture.componentInstance.switchMode();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.form.getRawValue()).toEqual({
+      login: 'demo-tester',
+      password: 'demo password 1',
+    });
+    root
+      .querySelectorAll<HTMLButtonElement>('.demo-accounts button')[1]
+      ?.click();
+    expect(fixture.componentInstance.form.controls.login.value).toBe(
+      'demo-ekspert',
+    );
+
+    fixture.componentInstance.switchMode();
+    expect(fixture.componentInstance.form.getRawValue()).toEqual({
+      login: '',
+      password: '',
+    });
   });
 
   it('uses password manager hints, allows revealing passwords and logs in without a legacy key', () => {

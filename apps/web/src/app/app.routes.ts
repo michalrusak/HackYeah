@@ -24,12 +24,17 @@ export const routes: Routes = [
         data: { breadcrumb: 'nav.matchmaking' },
       },
       {
-        path: 'dostosuj/mobilne-centrum-pomocy',
+        path: 'dostosuj/:id',
         loadComponent: () =>
           import('./features/adaptation/adaptation.component').then(
             (m) => m.AdaptationComponent,
           ),
         data: { breadcrumb: 'adaptation.cta' },
+      },
+      {
+        path: 'dostosuj',
+        redirectTo: 'dostosuj/mobilne-centrum-pomocy',
+        pathMatch: 'full',
       },
       {
         path: 'tester-innowacji',

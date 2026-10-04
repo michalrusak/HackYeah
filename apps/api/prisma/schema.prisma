@@ -287,6 +287,16 @@ model GrantCall {
   @@index([isPublished, opensAt])
 }
 
+model GrantAlertSubscription {
+  id        String   @id @default(cuid())
+  email     String   @db.VarChar(255)
+  areas     String[] @default([])
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email])
+  @@map("grant_alert_subscriptions")
+}
+
 model Application {
   id          String    @id @default(cuid())
   ideaId      String

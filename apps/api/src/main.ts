@@ -16,7 +16,18 @@ async function bootstrap() {
     origin: configureCorsOrigin,
     credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
+    // Nagłówki własne aplikacji: bez nich przeglądarka blokuje zapisy przy
+    // API pod innym adresem niż frontend (np. `pnpm start`).
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Accept',
+      'Origin',
+      'X-Knowledge-CSRF',
+      'X-CSRF-Token',
+      'X-Edit-Token',
+      'X-Tester-Key',
+    ],
   });
   await app.listen(process.env.PORT ?? 3000);
 }

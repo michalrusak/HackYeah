@@ -130,6 +130,7 @@ describe.skipIf(!databaseUrl)('Account authentication with PostgreSQL', () => {
     expect(AuthSessionResponseSchema.parse(me.body).data.user).toEqual({
       id: account.id,
       login,
+      expert: null,
     });
     expect(JSON.stringify(me.body)).not.toMatch(/password|ownerHash|token/i);
     await request(app.getHttpServer())

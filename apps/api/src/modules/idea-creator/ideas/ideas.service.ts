@@ -11,7 +11,10 @@ import {
   type UpdateIdeaRequest,
 } from '@repo/api-contracts';
 import { OpenRouterClient } from '../../../shared/ai/openrouter.client.js';
-import { createEditToken, matchesEditToken } from '../../../shared/edit-token.js';
+import {
+  createEditToken,
+  matchesEditToken,
+} from '../../../shared/edit-token.js';
 import { DomainError } from '../../../shared/errors/domain.error.js';
 import { MailService } from '../../../shared/mail/mail.service.js';
 import {
@@ -69,9 +72,15 @@ export class IdeasService {
   }
 
   /** Opis wysyłany do matchmakingu, żeby podpiąć pokrewne innowacje ROPS. */
-  async describeForMatchmaking(id: string, token: string | undefined): Promise<string> {
+  async describeForMatchmaking(
+    id: string,
+    token: string | undefined,
+  ): Promise<string> {
     const row = await this.findOrFail(id);
-    if (row.status !== 'PUBLISHED' && !matchesEditToken(token, row.editTokenHash)) {
+    if (
+      row.status !== 'PUBLISHED' &&
+      !matchesEditToken(token, row.editTokenHash)
+    ) {
       throw DomainError.notFound('Nie znaleźliśmy tej fiszki.');
     }
     return [row.problem, row.targetAudience, row.essence]
@@ -88,7 +97,8 @@ export class IdeasService {
     await this.requireOwned(id, token);
     const data: Record<string, unknown> = { ...input };
     if (input.contactEmail !== undefined) {
-      data['contactEmail'] = input.contactEmail === '' ? null : input.contactEmail;
+      data['contactEmail'] =
+        input.contactEmail === '' ? null : input.contactEmail;
     }
     // Zmiana treści unieważnia przepisaną wersję w prostym języku.
     data['plainLanguageSummary'] = null;
@@ -151,9 +161,12 @@ export class IdeasService {
     return { idea: toIdea(row), editToken: token };
   }
 
-  async plainLanguage(id: string): Promise<PlainLanguageData> {
+  async plainLanguage(id: string, token?: string): Promise<PlainLanguageData> {
     const row = await this.findOrFail(id);
-    if (row.status !== 'PUBLISHED') {
+    if (
+      row.status !== 'PUBLISHED' &&
+      !matchesEditToken(token, row.editTokenHash)
+    ) {
       throw DomainError.notFound('Nie znaleźliśmy tej fiszki.');
     }
     if (row.plainLanguageSummary) {
@@ -185,10 +198,7 @@ export class IdeasService {
     return result;
   }
 
-  async requireOwned(
-    id: string,
-    token: string | undefined,
-  ): Promise<IdeaRow> {
+  async requireOwned(id: string, token: string | undefined): Promise<IdeaRow> {
     const row = await this.findOrFail(id);
     if (!matchesEditToken(token, row.editTokenHash)) {
       throw DomainError.forbidden(

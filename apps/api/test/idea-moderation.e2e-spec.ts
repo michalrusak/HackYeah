@@ -18,6 +18,7 @@ import { KnowledgeModule } from '../src/modules/knowledge/knowledge.module.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 import { DomainExceptionFilter } from '../src/shared/filters/domain-exception.filter.js';
 import { MailService } from '../src/shared/mail/mail.service.js';
+import { OpenRouterClient } from '../src/shared/ai/openrouter.client.js';
 
 const databaseUrl = process.env.KNOWLEDGE_TEST_DATABASE_URL;
 const password = 'Synthetic test password only';
@@ -39,6 +40,7 @@ describe.skipIf(!databaseUrl)(
     let app: INestApplication;
     let prisma: PrismaService;
     const sent: { to: string | null | undefined; subject: string }[] = [];
+    const ai = { completeJson: vi.fn() };
 
     beforeAll(async () => {
       const url = new URL(databaseUrl ?? '');
@@ -68,6 +70,8 @@ describe.skipIf(!databaseUrl)(
           IdeaCreatorModule,
         ],
       })
+        .overrideProvider(OpenRouterClient)
+        .useValue(ai)
         .overrideProvider(MailService)
         .useValue({
           ideaUrl: (id: string) => `${origin}/pomysly/${id}`,
@@ -87,6 +91,7 @@ describe.skipIf(!databaseUrl)(
     });
 
     beforeEach(async () => {
+      ai.completeJson.mockReset();
       sent.length = 0;
       await prisma.idea.deleteMany();
     });
@@ -116,6 +121,76 @@ describe.skipIf(!databaseUrl)(
       return { id: created.idea.id, token: created.editToken };
     }
     const http = () => request(app.getHttpServer());
+
+    it('simplifies the author draft without exposing it or its cached summary', async () => {
+      const idea = await createIdea();
+      const path = `/api/ideas/${idea.id}/plain-language`;
+      await http().post(path).expect(404);
+      await http().post(path).set('X-Edit-Token', 'wrong-token').expect(404);
+      expect(ai.completeJson).not.toHaveBeenCalled();
+      ai.completeJson.mockResolvedValue({
+        text: 'Prosty opis testowego pomysłu.',
+      });
+      const result = await http()
+        .post(path)
+        .set('X-Edit-Token', idea.token)
+        .expect(200);
+      expect(result.body.data.text).toBe('Prosty opis testowego pomysłu.');
+      await http().post(path).expect(404);
+      await http().post(path).set('X-Edit-Token', idea.token).expect(200);
+      expect(ai.completeJson).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the author assistant conversation private even after publication', async () => {
+      const idea = await createIdea();
+      const historyPath = `/api/assistant/history/${idea.id}`;
+      const message = { ideaId: idea.id, message: 'Prywatne pytanie autora' };
+      await http().get(historyPath).expect(404);
+      await http().post('/api/assistant/chat').send(message).expect(404);
+      await http()
+        .post('/api/assistant/chat')
+        .set('X-Edit-Token', 'wrong-token')
+        .send(message)
+        .expect(404);
+      expect(ai.completeJson).not.toHaveBeenCalled();
+      ai.completeJson.mockResolvedValue({
+        reply: 'Odpowiedź asystenta',
+        followUps: [],
+      });
+      await http()
+        .post('/api/assistant/chat')
+        .set('X-Edit-Token', idea.token)
+        .send(message)
+        .expect(200);
+      const history = await http()
+        .get(historyPath)
+        .set('X-Edit-Token', idea.token)
+        .expect(200);
+      expect(history.body.data.messages).toHaveLength(2);
+      await prisma.idea.update({
+        where: { id: idea.id },
+        data: { status: 'PUBLISHED' },
+      });
+      await http().get(historyPath).expect(403);
+      await http()
+        .post('/api/assistant/chat')
+        .send({ ...message, message: 'Publiczne pytanie' })
+        .expect(200);
+      expect(ai.completeJson).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          messages: [
+            expect.objectContaining({
+              content: expect.stringContaining('Publiczne pytanie'),
+            }),
+          ],
+        }),
+      );
+      const after = await http()
+        .get(historyPath)
+        .set('X-Edit-Token', idea.token)
+        .expect(200);
+      expect(after.body.data.messages).toEqual(history.body.data.messages);
+    });
 
     it('holds a submitted idea for ROPS, notifies the administrator and publishes only after a decision', async () => {
       const idea = await createIdea();
